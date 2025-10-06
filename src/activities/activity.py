@@ -1,9 +1,7 @@
-
-
 class Activity:
-    def init(self,duration):
+    def init(self, sport_type, place, start_time, duration):
+        self.sport_type = sport_type
+        self.place = place
+        self.start_time = start_time
         self.duration = duration
 
-    def calculate_burn_calories(self):
-        pass
-        # implemented in activity subclass
