@@ -1,0 +1,8 @@
+class Weight:
+    def __init__(self, value, date, calories):
+        self.value = value
+        self.date = date
+        self.calories = calories
+
+    def get_value(self):
+        return self.value
