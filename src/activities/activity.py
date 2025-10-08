@@ -4,4 +4,3 @@ class Activity:
         self.place = place
         self.start_time = start_time
         self.duration = duration
-
