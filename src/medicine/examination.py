@@ -1,5 +1,5 @@
 class Examination:
-    def __init__(self, exam_type, date, result):
-        self.exam_type = exam_type
+    def __init__(self, examination_type, date, result):
+        self.examination_type = examination_type
         self.date = date
         self.result = result
