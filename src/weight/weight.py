@@ -3,5 +3,5 @@ class Weight:
         self.value = value
         self.date = date
 
-    def get_value(self):
+    def get_weight(self):
         return self.value

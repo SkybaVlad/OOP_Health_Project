@@ -1,5 +1,5 @@
 class Medicine:
-    def __init__(self, name, dosage, frequency):
+    def __init__(self, name, frequency):
         self.name = name
         self.frequency = frequency
 
