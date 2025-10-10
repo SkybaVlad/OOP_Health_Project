@@ -31,10 +31,10 @@ class Facade:
         self.sleep = sleep
 
     def get_weight(self):
-        self.weight.get_weight()
+        return self.weight.get_weight()
 
     def get_sleep_duration(self):
-        self.sleep.get_sleep_duration()
+        return self.sleep.get_sleep_duration()
 
     def eat(self, calories, meal_name):
         self.nutrition.add_meals(calories, meal_name)
