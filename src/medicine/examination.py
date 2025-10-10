@@ -6,4 +6,3 @@ class Examination:
 
     def return_result_of_examination(self):
         return self.result
-
