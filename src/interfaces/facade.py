@@ -51,12 +51,11 @@ class Facade:
         self.weight.remove_weight(value)
 
     def do_examination(self):
-        # do examination
-        # get result
-        # if result is false
-        #   patient_status = false
-        # else patient_status = true
-        pass
+        result = self.examination.return_result_of_examination()
+        if result is False:
+            self.patient_status.set_patient_status(False)
+        else:
+            self.patient_status.set_patient_status(True)
 
     def drink_water(self, amount_of_water):
         return self.water.add_water(amount_of_water)
@@ -68,4 +67,7 @@ class Facade:
         return self.water.get_remaining()
 
     def get_medicine(self):
-        pass
+        value = self.patient_status.get_patient_status()
+        if value is False:
+            self.medicine.calculate_dosage()
+            self.patient_status.set_patient_status(True)
