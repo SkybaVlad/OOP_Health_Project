@@ -4,10 +4,9 @@ class Sleep:
        self.went_to_sleep = went_to_sleep
 
     def get_sleep_duration(self):
-        temp = int(self.went.to.sleep-self.woke_up)
-        if temp < 8 :
-            print("Ops, you need sleep more")
+        if self.woke_up < self.went_to_sleep:
+            temp = 24 - self.went_to_sleep + self.woke_up
         else:
-            print("My congratulations, you got some sleep and fulled energy:)")
+            temp = self.woke_up - self.went_to_sleep
         return temp
 
