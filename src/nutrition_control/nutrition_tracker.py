@@ -9,8 +9,8 @@ class Nutrition:
     def add_meals(self,calories,meal_name):
         self.consumed_calories += calories
         self.calories_remaining -= calories
-        self.meals.append(f"{meal_name} - {calories}")
-        print(f"{meal_name} - {calories} calories was added to the nutrition")
+        self.meals.append(meal_name)
+        return meal_name
 
     def get_consumed_calories(self):
         return self.consumed_calories
