@@ -7,9 +7,20 @@ from src.nutrition_control.nutrition_tracker import Nutrition
 from src.water_balance.waterbalance import WaterBalance
 from src.sleep_control.sleep_tracker import Sleep
 
+
 class Facade:
 
-    def __init__(self, weight, activity, medicine,patient_status,examination,nutrition,water,sleep):
+    def __init__(
+        self,
+        weight,
+        activity,
+        medicine,
+        patient_status,
+        examination,
+        nutrition,
+        water,
+        sleep,
+    ):
         self.weight = weight
         self.activity = activity
         self.medicine = medicine
@@ -29,10 +40,9 @@ class Facade:
         pass
 
     def do_activity(self):
-        # do activity
-        # burn calories
-        # new weight
-        pass
+        calories = self.activity.burn_calories()
+        value = calories / 7700
+        self.weight.remove_weight(value)
 
     def do_examination(self):
         # do examination
