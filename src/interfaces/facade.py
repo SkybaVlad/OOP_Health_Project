@@ -25,8 +25,14 @@ class Facade:
     def get_sleep_duration(self):
         self.sleep.get_sleep_duration()
 
-    def eat(self):
-        pass
+    def eat(self,calories, meal_name):
+        self.nutrition.add_meals(calories,meal_name)
+
+    def get_consumed_calories(self):
+        return self.nutrition.get_consumed_calories()
+
+    def get_remaining_calories(self):
+        return self.nutrition.get_remaining_calories()
 
     def do_activity(self):
         # do activity
