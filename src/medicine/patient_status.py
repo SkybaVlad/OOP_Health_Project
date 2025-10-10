@@ -3,5 +3,8 @@ class PatientStatus:
         self.is_sick = is_sick
         self.disease_type = disease_type
 
-    def is_sick(self):
+    def get_is_sick_status(self):
         return self.is_sick()
+
+    def set_is_sick_status(self, value):
+        self.is_sick = value
