@@ -9,8 +9,8 @@ class WaterBalance:
     def add_water(self, amount_of_water):
         self.consumed += amount_of_water
         self.remaining -= amount_of_water
-        self.water.append(f"{amount_of_water} - liters of water")
-        print(f"{amount_of_water} - liters of water were just drunk, \nliters left to drink - {self.remaining}")
+        self.water.append(amount_of_water)
+        return amount_of_water
 
     def get_consumed(self):
         return self.consumed
