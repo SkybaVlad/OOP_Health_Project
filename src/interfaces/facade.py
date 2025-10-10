@@ -5,28 +5,25 @@ from src.medicine.patient_status import PatientStatus
 from src.medicine.examination import Examination
 from src.nutrition_control.nutrition_tracker import Nutrition
 from src.water_balance.waterbalance import WaterBalance
-
+from src.sleep_control.sleep_tracker import Sleep
 
 class Facade:
 
-    def __init__(
-        self,
-    ):  # maybe add User class and send user object as arg of init method
-        # self.weight = Weight()
-        # self.activity = Activity()
-        # self.medicine = Medicine()
-        # self.patient_status = PatientStatus()
-        # self.examination = Examination()
-        # self.nutrition = Nutrition()
-        # self.water_balance = WaterBalance()
-        pass
+    def __init__(self, weight, activity, medicine,patient_status,examination,nutrition,water,sleep):
+        self.weight = weight
+        self.activity = activity
+        self.medicine = medicine
+        self.patient_status = patient_status
+        self.examination = examination
+        self.nutrition = nutrition
+        self.water = water
+        self.sleep = sleep
 
     def get_weight(self):
-        # self.weight.get_weight()
-        pass
+        self.weight.get_weight()
 
-    def sleep(self):
-        pass
+    def get_sleep_duration(self):
+        self.sleep.get_sleep_duration()
 
     def eat(self):
         pass
@@ -45,8 +42,14 @@ class Facade:
         # else patient_status = true
         pass
 
-    def drink_water(self):
-        pass
+    def drink_water(self, amount_of_water):
+        return self.water.add_water(amount_of_water)
+
+    def get_consumed_water(self):
+        return self.water.get_consumed()
+
+    def get_remaining_water(self):
+        return self.water.get_remaining()
 
     def get_medicine(self):
         pass
