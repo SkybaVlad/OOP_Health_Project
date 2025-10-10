@@ -3,3 +3,7 @@ class Examination:
         self.examination_type = examination_type
         self.date = date
         self.result = result
+
+    def return_result_of_examination(self):
+        return self.result
+
