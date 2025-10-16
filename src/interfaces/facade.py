@@ -16,15 +16,14 @@ class Facade:
         initial_weight,
         medicine,
         patient_status,
-        examination,
         nutrition,
         water,
         sleep,
     ):
         self.weight = Weight(initial_weight)
         self.medicine = medicine
-        self.patient_status = patient_status
-        self.examination = examination
+        self.patient_status = PatientStatus()
+        self.examination = Examination()
         self.nutrition = nutrition
         self.water = water
         self.sleep = sleep
@@ -47,15 +46,18 @@ class Facade:
     def do_activity(self, activity_name, duration):
         activity_object = Activity(activity_name, duration)
         burned_calories = activity_object.count_of_burned_calories()
-        value = burned_calories / 7700  # to get value in kilogram
-        self.weight.remove_weight(value)  # change weight value for user
+        weight_to_remove = burned_calories / 7700  # to get value in kilogram
+        self.weight.remove_weight(weight_to_remove)  # change weight value for user
 
     def do_examination(self):
-        result = self.examination.return_result_of_examination()
-        if result is False:
-            self.patient_status.set_patient_status(False)
+        self.examination.do_examination("Type Of Examination")
+        result_of_examination = self.examination.get_result_of_examination()
+        if result_of_examination is False:
+            self.patient_status.set_is_sick_status(False)
+            # detect a disease name and set it into patient_status.set_disease_type(disease_name)
         else:
-            self.patient_status.set_patient_status(True)
+            self.patient_status.set_is_sick_status(True)
+            # detect a disease name and set it into patient_status.set_disease_type(None)
 
     def drink_water(self, amount_of_water):
         return self.water.add_water(amount_of_water)
@@ -67,7 +69,11 @@ class Facade:
         return self.water.get_remaining()
 
     def get_medicine(self):
-        value = self.patient_status.get_patient_status()
-        if value is False:
+        patient_status_of_health = self.patient_status.get_is_sick_status()
+        if patient_status_of_health is None:
+            print("You need to do examination to detect your health status")
+            return
+        if patient_status_of_health is False:
             self.medicine.calculate_dosage()
-            self.patient_status.set_patient_status(True)
+            self.patient_status.set_is_sick_status(True)
+            self.patient_status.set_disease_type(None)
