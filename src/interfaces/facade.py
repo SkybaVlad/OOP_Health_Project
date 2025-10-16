@@ -14,7 +14,6 @@ class Facade:
         self,
         user,
         initial_weight,
-        activity,
         medicine,
         patient_status,
         examination,
@@ -23,7 +22,6 @@ class Facade:
         sleep,
     ):
         self.weight = Weight(initial_weight)
-        self.activity = activity
         self.medicine = medicine
         self.patient_status = patient_status
         self.examination = examination
@@ -46,10 +44,11 @@ class Facade:
     def get_remaining_calories(self):
         return self.nutrition.get_remaining_calories()
 
-    def do_activity(self):
-        calories = self.activity.burn_calories()
-        value = calories / 7700
-        self.weight.remove_weight(value)
+    def do_activity(self, activity_name, duration):
+        activity_object = Activity(activity_name, duration)
+        burned_calories = activity_object.count_of_burned_calories()
+        value = burned_calories / 7700  # to get value in kilogram
+        self.weight.remove_weight(value)  # change weight value for user
 
     def do_examination(self):
         result = self.examination.return_result_of_examination()
