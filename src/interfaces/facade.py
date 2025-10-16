@@ -12,7 +12,8 @@ class Facade:
 
     def __init__(
         self,
-        weight,
+        user,
+        initial_weight,
         activity,
         medicine,
         patient_status,
@@ -21,7 +22,7 @@ class Facade:
         water,
         sleep,
     ):
-        self.weight = weight
+        self.weight = Weight(initial_weight)
         self.activity = activity
         self.medicine = medicine
         self.patient_status = patient_status
