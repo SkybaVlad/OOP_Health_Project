@@ -16,17 +16,18 @@ class Facade:
         initial_weight,
         medicine,
         patient_status,
-        nutrition,
-        water,
-        sleep,
+        total_calories,
+        total_goal,
+        woke_up,
+        went_to_sleep,
     ):
         self.weight = Weight(initial_weight)
         self.medicine = medicine
         self.patient_status = PatientStatus()
         self.examination = Examination()
-        self.nutrition = nutrition
-        self.water = water
-        self.sleep = sleep
+        self.nutrition = Nutrition(total_calories)
+        self.water = WaterBalance(total_goal)
+        self.sleep = Sleep(woke_up, went_to_sleep)
 
     def get_weight(self):
         return self.weight.get_weight()
@@ -36,6 +37,16 @@ class Facade:
 
     def eat(self, calories, meal_name):
         self.nutrition.add_meals(calories, meal_name)
+
+        consumed_calories = self.nutrition.consumed_calories
+        total_calories = self.nutrition.total_calories
+
+        if consumed_calories > total_calories:
+            status = "Overate" # add status to patient/user
+            weight_to_add = (consumed_calories - total_calories) / 7700
+            self.weight.add_weight(weight_to_add)
+        else:
+            status = "Eaten" # add status to patient/user
 
     def get_consumed_calories(self):
         return self.nutrition.get_consumed_calories()
