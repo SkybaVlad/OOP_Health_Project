@@ -17,3 +17,6 @@ class WaterBalance:
 
     def get_remaining(self):
         return self.remaining
+
+    def get_total_goal(self):
+        return self.total_goal

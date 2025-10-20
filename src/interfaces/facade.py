@@ -71,7 +71,15 @@ class Facade:
             # detect a disease name and set it into patient_status.set_disease_type(None)
 
     def drink_water(self, amount_of_water):
-        return self.water.add_water(amount_of_water)
+        self.water.add_water(amount_of_water)
+
+        consumed = self.water.get_consumed()
+        total_goal = self.water.get_total_goal()
+
+        if consumed > total_goal:
+            status = "Overhydrated" # add status to patient/user
+        else:
+            status = "Drinking" # add status to patient/user
 
     def get_consumed_water(self):
         return self.water.get_consumed()
