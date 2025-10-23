@@ -12,16 +12,13 @@ class Facade:
 
     def __init__(
         self,
-        user,
-        initial_weight,
         medicine,
-        patient_status,
         total_calories,
         total_goal,
         woke_up,
         went_to_sleep,
     ):
-        self.weight = Weight(initial_weight)
+        self.weight = Weight()
         self.medicine = medicine
         self.patient_status = PatientStatus()
         self.examination = Examination()
@@ -30,7 +27,15 @@ class Facade:
         self.sleep = Sleep(woke_up, went_to_sleep)
 
     def get_weight(self):
-        return self.weight.get_weight()
+        weight_value = self.weight.get_weight()
+        if weight_value is None:
+            return None
+        return weight_value
+
+    def set_weight(self, value_of_weight):
+        self.weight = self.weight.set_weight(value_of_weight)
+
+    # maybe add load method that allows gets all data about users and initialize all fields in constructor
 
     def get_sleep_duration(self):
         return self.sleep.get_sleep_duration()
@@ -42,11 +47,11 @@ class Facade:
         total_calories = self.nutrition.total_calories
 
         if consumed_calories > total_calories:
-            status = "Overate" # add status to patient/user
+            status = "Overate"  # add status to patient/user
             weight_to_add = (consumed_calories - total_calories) / 7700
             self.weight.add_weight(weight_to_add)
         else:
-            status = "Eaten" # add status to patient/user
+            status = "Eaten"  # add status to patient/user
 
     def get_consumed_calories(self):
         return self.nutrition.get_consumed_calories()
@@ -77,15 +82,17 @@ class Facade:
         total_goal = self.water.get_total_goal()
 
         if consumed > total_goal:
-            status = "Overhydrated" # add status to patient/user
+            status = "Overhydrated"  # add status to patient/user
         else:
-            status = "Drinking" # add status to patient/user
+            status = "Drinking"  # add status to patient/user
 
     def get_consumed_water(self):
         return self.water.get_consumed()
 
     def get_remaining_water(self):
         return self.water.get_remaining()
+
+    # maybe add load_medicine_recipe()
 
     def get_medicine(self):
         patient_status_of_health = self.patient_status.get_is_sick_status()
