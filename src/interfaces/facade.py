@@ -19,6 +19,7 @@ class Facade:
         went_to_sleep,
     ):
         self.weight = Weight()
+        self.activity = Activity()
         self.medicine = medicine
         self.patient_status = PatientStatus()
         self.examination = Examination()
@@ -59,11 +60,15 @@ class Facade:
     def get_remaining_calories(self):
         return self.nutrition.get_remaining_calories()
 
-    def do_activity(self, activity_name, duration):
-        activity_object = Activity(activity_name, duration)
-        burned_calories = activity_object.count_of_burned_calories()
-        weight_to_remove = burned_calories / 7700  # to get value in kilogram
-        self.weight.remove_weight(weight_to_remove)  # change weight value for user
+    def do_activity(
+        self, intensity_of_activity, start_time_of_activity, end_time_of_activity
+    ):
+        self.activity.set_specific_activity_type_object(
+            intensity_of_activity, start_time_of_activity, end_time_of_activity
+        )
+        count_of_burned_calories = self.activity.count_of_burned_calories()
+        # weight_to_remove = burned_calories / 7700  # to get value in kilogram
+        # self.weight.remove_weight(weight_to_remove)  # change weight value for user
 
     def do_examination(self):
         self.examination.do_examination("Type Of Examination")
