@@ -4,6 +4,8 @@ import math
 class Activity:
     def __init__(self):
         self.specific_activity_type_object = None
+        # maybe add hashmap tp track history activity in specific day but need cover situation where more than
+        # 2 activities in one day
 
     def count_of_burned_calories(self):
         self.specific_activity_type_object.calculate_count_of_burned_calories()
