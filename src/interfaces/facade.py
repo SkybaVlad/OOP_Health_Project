@@ -44,8 +44,8 @@ class Facade:
     def eat(self, calories, meal_name):
         self.nutrition.add_meals(calories, meal_name)
 
-        consumed_calories = self.nutrition.consumed_calories
-        total_calories = self.nutrition.total_calories
+        consumed_calories = self.nutrition.get_consumed_calories()
+        total_calories = self.nutrition.get_total_calories()
 
         if consumed_calories > total_calories:
             status = "Overate"  # add status to patient/user

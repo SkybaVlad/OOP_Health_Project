@@ -17,3 +17,6 @@ class Nutrition:
 
     def get_remaining_calories(self):
         return self.calories_remaining
+
+    def get_total_calories(self):
+        return self.total_calories
