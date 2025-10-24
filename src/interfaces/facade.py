@@ -70,6 +70,8 @@ class Facade:
         # weight_to_remove = burned_calories / 7700  # to get value in kilogram
         # self.weight.remove_weight(weight_to_remove)  # change weight value for user
 
+    # add def check_activity_history or check_activity_in_specific_day
+
     def do_examination(self):
         self.examination.do_examination("Type Of Examination")
         result_of_examination = self.examination.get_result_of_examination()
