@@ -6,14 +6,22 @@ class Activity:
 
     def __init__(self):
         self.specific_activity_type_object = None
-        self.manager_of_activities = ActivityContainer() # maybe storage objects instead a activity_name
+        self.manager_of_activities = (
+            ActivityContainer()
+        )  # maybe storage objects instead a activity_name
 
     def count_of_burned_calories(self):
         self.specific_activity_type_object.calculate_count_of_burned_calories()
 
-    def create_specific_activity_type_object(self, activity_name, intensity, start_time, end_time, data_of_activity):
-        self.specific_activity_type_object = SpecificActivityType(activity_name, intensity, start_time, end_time)
-        self.manager_of_activities.add_activity(self.specific_activity_type_object, data_of_activity)
+    def create_specific_activity_type_object(
+        self, activity_name, intensity, start_time, end_time, data_of_activity
+    ):
+        self.specific_activity_type_object = SpecificActivityType(
+            activity_name, intensity, start_time, end_time
+        )
+        self.manager_of_activities.add_activity(
+            self.specific_activity_type_object, data_of_activity
+        )
 
     def calculate_duration_of_activity(self):
         self.specific_activity_type_object.calculate_duration_of_activity()
@@ -27,7 +35,13 @@ class Activity:
 
 class SpecificActivityType:
 
-    def __init__(self, activity_name, intensity_of_activity, start_time_of_activity, end_time_of_activity):
+    def __init__(
+        self,
+        activity_name,
+        intensity_of_activity,
+        start_time_of_activity,
+        end_time_of_activity,
+    ):
         self.activity_name = activity_name
         self.intensity_of_activity = intensity_of_activity  # 1 to 10
         self.start_time_of_activity = start_time_of_activity
