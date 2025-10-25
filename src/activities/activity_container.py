@@ -5,6 +5,7 @@ class ActivityContainer:
 
     # need check on invalid param
 
+    # need typehints
     def add_activity(self, specific_activity_object, data_of_activity):
         if data_of_activity in self.dictionary.keys():
             self.dictionary[data_of_activity].append(specific_activity_object)
@@ -14,6 +15,7 @@ class ActivityContainer:
     def clear_all_activities(self):
         pass
 
+    # need typehints tp return
     def get_activity_in_specific_date(self, data_of_activity):
         return self.dictionary[data_of_activity]
 
