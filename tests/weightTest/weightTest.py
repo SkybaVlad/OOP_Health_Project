@@ -1,5 +1,5 @@
 import unittest
-from src.weight.weight import Weight
+from src.body_metrics.body_metrics import Weight
 
 
 class TestWeight(unittest.TestCase):
