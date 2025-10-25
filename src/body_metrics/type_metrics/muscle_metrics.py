@@ -1,0 +1,2 @@
+class MuscleMetrics:
+    pass
