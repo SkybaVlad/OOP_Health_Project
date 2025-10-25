@@ -5,16 +5,13 @@ class ActivityContainer:
 
     # need check on invalid param
 
-    def add_activity(self, activity_name, data_of_activity):
+    def add_activity(self, specific_activity_object, data_of_activity):
         if data_of_activity in self.dictionary.keys():
-            self.dictionary[data_of_activity].append(activity_name)
+            self.dictionary[data_of_activity].append(specific_activity_object)
         else:
-            self.dictionary[data_of_activity] = [activity_name]
+            self.dictionary[data_of_activity] = [specific_activity_object]
 
-    def remove_activity(self):
-        pass
-
-    def remove_all_activities(self):
+    def clear_all_activities(self):
         pass
 
     def get_activity_in_specific_date(self, data_of_activity):
@@ -23,3 +20,6 @@ class ActivityContainer:
     def get_all_activities(self):
         pass
         # need sort hashtable
+
+    def get_all_dates(self):
+        pass
