@@ -5,9 +5,9 @@ class SpecificActivityType:
 
     def __init__(
         self,
-        activity_name,
-        intensity_of_activity,
-        start_time_of_activity,
+        activity_name: str,
+        intensity_of_activity: int,
+        start_time_of_activity,  # if str need edit method that uses this field for math calculation
         end_time_of_activity,
     ):
         self.activity_name = activity_name
