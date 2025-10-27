@@ -1,6 +1,6 @@
 import unittest
 from src.activities.activity_container import ActivityContainer
-from src.activities.activity import SpecificActivityType
+from src.activities.activity_type import SpecificActivityType
 
 
 class ActivityContainerTest(unittest.TestCase):
