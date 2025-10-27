@@ -1,3 +1,6 @@
+from src.activities.activity_type import SpecificActivityType
+
+
 class ActivityContainer:
 
     def __init__(self):
@@ -6,7 +9,9 @@ class ActivityContainer:
     # need check on invalid param
 
     # need typehints
-    def add_activity(self, specific_activity_object, data_of_activity):
+    def add_activity(
+        self, specific_activity_object: SpecificActivityType, data_of_activity: str
+    ):
         if data_of_activity in self.dictionary.keys():
             self.dictionary[data_of_activity].append(specific_activity_object)
         else:
@@ -16,7 +21,7 @@ class ActivityContainer:
         pass
 
     # need typehints tp return
-    def get_activity_in_specific_date(self, data_of_activity):
+    def get_activity_in_specific_date(self, data_of_activity: str):
         return self.dictionary[data_of_activity]
 
     def get_all_activities(self):
