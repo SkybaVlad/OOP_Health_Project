@@ -21,8 +21,10 @@ class TestUserBodyInfo(unittest.TestCase):
         self.assertEqual(self.user_body_info.get_weight(), 5.5)
 
     def test_set_and_get_weight_with_invalid_data(self):
-        with self.assertRaises(ValueError):
-            self.user_body_info.set_weight(-10)
+        self.user_body_info.set_weight(100)
+        self.user_body_info.set_weight(-10)
+        self.assertEqual(self.user_body_info.get_weight(), 100)
+        self.assertEqual(self.user_body_info.set_weight(-10), None)
 
     def test_set_and_get_height_with_valid_int_data(self):
         self.user_body_info.set_height(100)
@@ -33,8 +35,10 @@ class TestUserBodyInfo(unittest.TestCase):
         self.assertEqual(self.user_body_info.get_height(), 5.5)
 
     def test_set_and_get_height_with_invalid_data(self):
-        with self.assertRaises(ValueError):
-            self.user_body_info.set_height(-10)
+        self.user_body_info.set_height(100)
+        self.user_body_info.set_height(-10)
+        self.assertEqual(self.user_body_info.get_height(), 100)
+        self.assertEqual(self.user_body_info.set_height(-10), None)
 
     def test_set_and_get_fat_percentage_with_valid_int_data(self):
         self.user_body_info.set_fat_percentage(100)
@@ -45,8 +49,10 @@ class TestUserBodyInfo(unittest.TestCase):
         self.assertEqual(self.user_body_info.get_fat_percentage(), 5.5)
 
     def test_set_and_get_fat_percentage_with_invalid_data(self):
-        with self.assertRaises(ValueError):
-            self.user_body_info.set_fat_percentage(-10)
+        self.user_body_info.set_fat_percentage(100)
+        self.user_body_info.set_fat_percentage(-10)
+        self.assertEqual(self.user_body_info.get_fat_percentage(), 100)
+        self.assertEqual(self.user_body_info.set_fat_percentage(-10), None)
 
     def test_set_and_get_percentage_of_water_level_with_valid_int_data(self):
         self.user_body_info.set_percentage_of_water_level(100)
@@ -57,5 +63,7 @@ class TestUserBodyInfo(unittest.TestCase):
         self.assertEqual(self.user_body_info.get_percentage_of_water_level(), 5.5)
 
     def test_set_and_get_percentage_of_water_level_with_invalid_data(self):
-        with self.assertRaises(ValueError):
-            self.user_body_info.set_percentage_of_water_level(-10)
+        self.user_body_info.set_percentage_of_water_level(100)
+        self.user_body_info.set_percentage_of_water_level(-10)
+        self.assertEqual(self.user_body_info.get_percentage_of_water_level(), 100)
+        self.assertEqual(self.user_body_info.set_percentage_of_water_level(-5), None)
