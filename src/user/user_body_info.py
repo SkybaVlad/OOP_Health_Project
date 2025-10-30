@@ -19,8 +19,8 @@ class UserBodyInfo:
     def get_body_mass_index(self):
         return self.body_mass_index
 
-    def get_water_level(self):
-        return self.water_level
+    def get_percentage_of_water_level(self):
+        return self.percentage_of_water_level
 
     def get_lean_body_mass_index(self):
         return self.lean_body_mass_index
