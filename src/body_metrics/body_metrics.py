@@ -1,16 +1,26 @@
-from src.body_metrics.type_metrics.weight_metrics import WeightMetrics
-from src.body_metrics.type_metrics.fat_metrics import FatMetrics
-from src.body_metrics.type_metrics.muscle_metrics import MuscleMetrics
+import math
 
 
 class BodyMetrics:
     def __init__(self):
-        self.weight_metrics = WeightMetrics()
-        self.fat_metrics = FatMetrics
-        self.muscle_metrics = MuscleMetrics()
+        pass
 
-    def get_weight(self):
-        return self.weight_metrics.get_weight()
+    def calculate_body_mass_index_metrics(self, user_weight, user_height):
+        return user_weight / math.pow(user_height / 100, 2)
 
-    def set_weight(self, value_of_weight):
-        self.weight_metrics.set_weight(value_of_weight)
+    def calculate_basal_metabolic_rate_metrics(
+        self, user_weight, user_height, user_age, user_sex
+    ):
+        if user_sex == 'male':
+            return 10 * user_weight + 6.25 * user_height - 5 * user_age + 5
+        else:
+            return 10 * user_weight + 6.25 * user_height - 5 * user_age - 161
+
+    def calculate_lean_body_mass_metrics(self, user_weight, user_percentage_of_fat):
+        return user_weight * (1 - user_percentage_of_fat / 100)
+
+    def calculate_fat_mass_metrics(self, user_weight, user_percentage_of_fat):
+        lbm_metrics = self.calculate_lean_body_mass_metrics(
+            user_weight, user_percentage_of_fat
+        )
+        return user_weight - lbm_metrics
