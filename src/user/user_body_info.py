@@ -22,13 +22,21 @@ class UserBodyInfo:
         return self.percentage_of_water_level
 
     def set_weight(self, weight):
+        self._validate_data(weight)
         self.weight = weight
 
     def set_height(self, height):
+        self._validate_data(height)
         self.height = height
 
     def set_fat_percentage(self, fat_percentage):
+        self._validate_data(fat_percentage)
         self.fat_percentage = fat_percentage
 
     def set_get_percentage_of_water_level(self, percentage_of_water_level):
+        self._validate_data(percentage_of_water_level)
         self.percentage_of_water_level = percentage_of_water_level
+
+    def _validate_data(self, data):
+        if data < 0:
+            raise ValueError
