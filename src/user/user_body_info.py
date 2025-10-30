@@ -9,34 +9,34 @@ class UserBodyInfo:
         self.percentage_of_water_level: float = 0.0
         self.user_body_goals = None
 
-    def get_weight(self):
+    def get_weight(self) -> float:
         return self.weight
 
-    def get_height(self):
+    def get_height(self) -> float:
         return self.height
 
-    def get_fat_percentage(self):
+    def get_fat_percentage(self) -> float:
         return self.fat_percentage
 
-    def get_percentage_of_water_level(self):
+    def get_percentage_of_water_level(self) -> float:
         return self.percentage_of_water_level
 
     def set_weight(self, weight):
-        self._validate_data(weight)
+        self._validate_data_for_setters(weight)
         self.weight = weight
 
     def set_height(self, height):
-        self._validate_data(height)
+        self._validate_data_for_setters(height)
         self.height = height
 
     def set_fat_percentage(self, fat_percentage):
-        self._validate_data(fat_percentage)
+        self._validate_data_for_setters(fat_percentage)
         self.fat_percentage = fat_percentage
 
-    def set_get_percentage_of_water_level(self, percentage_of_water_level):
-        self._validate_data(percentage_of_water_level)
+    def set_percentage_of_water_level(self, percentage_of_water_level):
+        self._validate_data_for_setters(percentage_of_water_level)
         self.percentage_of_water_level = percentage_of_water_level
 
-    def _validate_data(self, data):
-        if data < 0:
-            raise ValueError
+    def _validate_data_for_setters(self, data):
+        if data < 0 or data is None:
+            raise ValueError("data must be an positive number")
