@@ -31,4 +31,14 @@ class UserBodyInfo:
     def set_height(self, height):
         self.height = height
 
-    def set_fat_percentage(self):
+    def set_fat_percentage(self, fat_percentage):
+        self.fat_percentage = fat_percentage
+
+    def set_body_mass_index(self, body_mass_index):
+        self.body_mass_index = body_mass_index
+
+    def set_get_percentage_of_water_level(self, percentage_of_water_level):
+        self.percentage_of_water_level = percentage_of_water_level
+
+    def set_get_lean_body_mass_index(self, lean_body_mass_index):
+        self.lean_body_mass_index = lean_body_mass_index
