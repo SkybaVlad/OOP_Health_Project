@@ -10,4 +10,16 @@ class BodyMetricsType(enum.Enum):
 
 class BodyMetricsContainer:
     def __init__(self):
-        pass
+        self.dictionary = {}
+
+    def add_body_mass_index_metrics(self, value, date):
+        self.dictionary[(date, BodyMetricsType.body_mass_index_metrics.value)] = value
+
+    def add_basal_metabolic_rate(self, value, date):
+        self.dictionary[(date, BodyMetricsType.basal_metabolic_rate.value)] = value
+
+    def add_lean_body_mass(self, value, date):
+        self.dictionary[(date, BodyMetricsType.lean_body_mass.value)] = value
+
+    def add_fat_mass(self, value, date):
+        self.dictionary[(date, BodyMetricsType.fat_mass.value)] = value
