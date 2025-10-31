@@ -1,5 +1,5 @@
 import unittest
-from src.medicine.medicine import Medicine
+from src.medication.medication import Medicine
 
 
 class TestMedicine(unittest.TestCase):
