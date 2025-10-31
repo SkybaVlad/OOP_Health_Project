@@ -1,10 +1,7 @@
 from src.body_metrics.body_metrics import BodyMetrics
 from src.activities.activity import Activity
-from src.medicine.medicine import Medicine
-from src.medicine.patient_status import PatientStatus
-from src.medicine.examination import Examination
+from src.medication.medication import Medication, MedicationReminder
 from src.nutrition_control.nutrition_tracker import Nutrition
-from src.water_balance.waterbalance import WaterBalance
 from src.sleep_control.sleep_tracker import Sleep
 from src.user.user_body_info import UserBodyInfo
 
@@ -14,36 +11,45 @@ class Facade:
         self.user_body_info = UserBodyInfo()
         self.body_metrics = BodyMetrics()
         self.activity = Activity()
-        # self.medicine = medicine
-        # self.patient_status = PatientStatus()
-        # self.examination = Examination()
+        self.medication_reminder = MedicationReminder()
         # self.nutrition = Nutrition(total_calories)
-        # self.water = WaterBalance(total_goal)
         # self.sleep = Sleep(woke_up, went_to_sleep)
-
-    def set_weight(self, weight):
-        self.user_body_info.set_weight(weight)
 
     def get_weight(self):
         return self.user_body_info.get_weight()
 
-    def set_height(self, height):
-        self.user_body_info.set_height(height)
-
     def get_height(self):
         return self.user_body_info.get_height()
-
-    def set_fat_percentage(self, fat_percentage):
-        self.user_body_info.set_fat_percentage(fat_percentage)
 
     def get_fat_percentage(self):
         return self.user_body_info.get_fat_percentage()
 
-    def set_percentage_of_water_level(self, percentage_of_water_level):
-        self.user_body_info.set_percentage_of_water_level(percentage_of_water_level)
-
     def get_percentage_of_water_level(self):
         return self.user_body_info.get_percentage_of_water_level()
+
+    def get_body_mass_index(self):
+        return self.user_body_info.get_body_mass_index()
+
+    def get_basal_metabolic_rate(self):
+        return self.user_body_info.get_basal_metabolic_rate()
+
+    def get_lean_body_mass(self):
+        return self.user_body_info.get_lean_body_mass()
+
+    def get_fat_mass(self):
+        return self.user_body_info.fat_mass
+
+    def set_weight(self, weight):
+        self.user_body_info.set_weight(weight)
+
+    def set_height(self, height):
+        self.user_body_info.set_height(height)
+
+    def set_fat_percentage(self, fat_percentage):
+        self.user_body_info.set_fat_percentage(fat_percentage)
+
+    def set_percentage_of_water_level(self, percentage_of_water_level):
+        self.user_body_info.set_percentage_of_water_level(percentage_of_water_level)
 
     def get_sleep_duration(self):
         return self.sleep.get_sleep_duration()
@@ -81,16 +87,6 @@ class Facade:
     def get_history_of_all_activities(self) -> list:
         return self.activity.get_history_of_all_activities()
 
-    def do_examination(self):
-        self.examination.do_examination("Type Of Examination")
-        result_of_examination = self.examination.get_result_of_examination()
-        if result_of_examination is False:
-            self.patient_status.set_is_sick_status(False)
-            # detect a disease name and set it into patient_status.set_disease_type(disease_name)
-        else:
-            self.patient_status.set_is_sick_status(True)
-            # detect a disease name and set it into patient_status.set_disease_type(None)
-
     def drink_water(self, amount_of_water):
         self.water.add_water(amount_of_water)
 
@@ -116,11 +112,12 @@ class Facade:
     #         print("You need to do examination to detect your health status")
     #         return
     #     if patient_status_of_health is False:
-    #         self.medicine.calculate_dosage()
+    #         self.medication.calculate_dosage()
     #         self.patient_status.set_is_sick_status(True)
     #         self.patient_status.set_disease_type(None)
 
     def get_body_mass_index_metrics(self) -> float:
+        self.body_metrics.
         return self.body_metrics.calculate_body_mass_index_metrics(
             self.user_body_info.get_weight(), self.user_body_info.get_height()
         )
@@ -137,3 +134,9 @@ class Facade:
         return self.body_metrics.calculate_fat_mass_metrics(
             self.user_body_info.get_weight(), self.user_body_info.get_fat_percentage()
         )
+
+    def add_medication(self, medicine_name, medication_dosage, time_to_take_medication):
+        medication_object = Medication(medicine_name, medication_dosage)
+        self.medication_reminder.add_to_journal_of_medication(medication_object, time_to_take_medication)
+
+
