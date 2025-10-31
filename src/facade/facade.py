@@ -1,6 +1,7 @@
 from src.body_metrics.body_metrics import BodyMetrics
 from src.activities.activity import Activity
 from src.medication.medication import Medication, MedicationReminder
+from src.body_metrics.body_metrics_container import BodyMetricsContainer
 from src.nutrition_control.nutrition_tracker import Nutrition
 from src.sleep_control.sleep_tracker import Sleep
 from src.user.user_body_info import UserBodyInfo
@@ -12,6 +13,7 @@ class Facade:
         self.body_metrics = BodyMetrics()
         self.activity = Activity()
         self.medication_reminder = MedicationReminder()
+        self.body_metrics_container = BodyMetricsContainer()
         # self.nutrition = Nutrition(total_calories)
         # self.sleep = Sleep(woke_up, went_to_sleep)
 
@@ -41,15 +43,19 @@ class Facade:
 
     def set_weight(self, weight):
         self.user_body_info.set_weight(weight)
+        self.body_metrics_container.add_weight(weight)
 
     def set_height(self, height):
         self.user_body_info.set_height(height)
+        self.body_metrics_container.add_height(height)
 
     def set_fat_percentage(self, fat_percentage):
         self.user_body_info.set_fat_percentage(fat_percentage)
+        self.body_metrics_container.add_fat_percentage(fat_percentage)
 
     def set_percentage_of_water_level(self, percentage_of_water_level):
         self.user_body_info.set_percentage_of_water_level(percentage_of_water_level)
+        self.body_metrics_container.add_percentage_of_water_level(percentage_of_water_level)
 
     def get_sleep_duration(self):
         return self.sleep.get_sleep_duration()
