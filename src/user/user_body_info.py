@@ -1,4 +1,4 @@
-# from src. import UserBodyGoals
+from src.user.user_body_goals import UserBodyGoals
 
 
 class UserBodyInfo:
@@ -7,7 +7,7 @@ class UserBodyInfo:
         self.height: float = 0.0
         self.fat_percentage: float = 0.0
         self.percentage_of_water_level: float = 0.0
-        self.user_body_goals = None
+        self.user_body_goals = UserBodyGoals()
 
     def get_weight(self) -> float:
         return self.weight
