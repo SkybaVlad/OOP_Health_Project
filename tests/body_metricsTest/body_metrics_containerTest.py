@@ -31,18 +31,17 @@ class BodyMetricsContainerTest(unittest.TestCase):
         self.body_metrics_container.add_body_mass_index_metrics(30, "17:21")
         pass
 
-
     def test_add_basal_mass_index_metrics(self):
         self.body_metrics_container.add_basal_metabolic_rate(30, "17:20")
         self.assertIn(("17:20", 'bmr'), self.body_metrics_container.dictionary.keys())
-        self.assertEqual(self.body_metrics_container.dictionary[("17:20", 'bmr')], 30)
+        self.assertEqual(self.body_metrics_container.dictionary[("17:20", 'bmr')], [30])
 
     def test_add_lean_body_mass_metrics(self):
         self.body_metrics_container.add_lean_body_mass(30, "17:20")
         self.assertIn(("17:20", 'lbm'), self.body_metrics_container.dictionary.keys())
-        self.assertEqual(self.body_metrics_container.dictionary[("17:20", 'lbm')], 30)
+        self.assertEqual(self.body_metrics_container.dictionary[("17:20", 'lbm')], [30])
 
     def testadd_fat_mass_metrics(self):
         self.body_metrics_container.add_fat_mass(30, "17:20")
         self.assertIn(("17:20", 'fm'), self.body_metrics_container.dictionary.keys())
-        self.assertEqual(self.body_metrics_container.dictionary[("17:20", 'fm')], 30)
+        self.assertEqual(self.body_metrics_container.dictionary[("17:20", 'fm')], [30])
