@@ -1,11 +1,10 @@
-from src.user.user_body_info import UserBodyInfo
 from src.body_metrics.body_metrics import BodyMetrics
-from src.user.user import User
+#from src.user.user import User
+
 
 class UserBodyGoals:
     def __init__(self):
-        user = User(name, surname, age, sex)
-        self.user_body_info = UserBodyInfo()
+        #user = User(name, surname, age, sex)
         self.body_metrics = BodyMetrics()
         self.total_water_goal = 0
         self.total_calories_goal = 0
