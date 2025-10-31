@@ -38,32 +38,19 @@ class UserBodyInfo:
         return self.fat_mass
 
     def set_weight(self, weight):
-        try:
-            self._validate_data_for_setters(weight)
-        except ValueError:
-            pass
+        self._validate_data_for_setters(weight)
         self.weight = weight
 
     def set_height(self, height):
-        try:
-            self._validate_data_for_setters(height)
-        except ValueError:
-            pass
+        self._validate_data_for_setters(height)
         self.height = height
 
     def set_fat_percentage(self, fat_percentage):
-        try:
-            self._validate_data_for_setters(fat_percentage)
-        except ValueError as Error:
-            pass
+        self._validate_data_for_setters(fat_percentage)
         self.fat_percentage = fat_percentage
 
     def set_percentage_of_water_level(self, percentage_of_water_level):
-        try:
-            self._validate_data_for_setters(percentage_of_water_level)
-        except ValueError as Error:
-            print(Error)
-            return
+        self._validate_data_for_setters(percentage_of_water_level)
         self.percentage_of_water_level = percentage_of_water_level
 
     def set_body_mass_index(self, body_mass_index):
