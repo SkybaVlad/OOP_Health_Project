@@ -1,8 +1,9 @@
 from src.user.user_body_goals import UserBodyGoals
+from src.user.user_info import User
 
 
 class UserBodyInfo:
-    def __init__(self):
+    def __init__(self, user: User):
         self.weight: float = 0.0
         self.height: float = 0.0
         self.fat_percentage: float = 0.0
@@ -11,7 +12,7 @@ class UserBodyInfo:
         self.basal_metabolic_rate: float = 0.0
         self.lean_body_mass: float = 0.0
         self.fat_mass: float = 0.0
-        self.user_body_goals = UserBodyGoals()
+        self.user_body_goals = UserBodyGoals(user)
 
     def get_weight(self) -> float:
         return self.weight
