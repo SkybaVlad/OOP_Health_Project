@@ -66,3 +66,8 @@ class ActivityContainerTest(unittest.TestCase):
             self.activity_container_object.get_activity_in_specific_date("03.05.2007"),
             [self.activity_type_duplicate_1, self.activity_type_duplicate_2],
         )
+
+    def test_get_all_activities(self):
+        self.activity_container_object.add_activity(self.activity_type_unique_1, '03.05.2007')
+        self.activity_container_object.add_activity(self.activity_type_unique_2, '04.05.2007')
+        pass

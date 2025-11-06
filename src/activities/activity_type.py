@@ -1,4 +1,3 @@
-import math
 import enum
 
 
@@ -29,7 +28,7 @@ class SpecificActivityType:
 
     def __init__(
         self,
-        activity_name: ActivityType,
+        activity_name: str,
         burned_calories,
         # YYYY-MM-DDTHH:MM:SS
         start_time_of_activity,  # if str need edit method that uses this field for math calculation
