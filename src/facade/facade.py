@@ -1,19 +1,25 @@
 from src.body_metrics.body_metrics import BodyMetrics
-from src.activities.activity import Activity
 from src.medication.medication import Medication, MedicationReminder
 from src.body_metrics.body_metrics_container import BodyMetricsContainer
+from src.body_metrics.body_metrics_container import BodyMetricsType
+from src.user.user_body_goals import UserBodyGoals
+from src.user.user_info import User
+from src.activities.activity_type import SpecificActivityType
+from src.activities.activity_container import ActivityContainer
 from src.nutrition_control.nutrition_tracker import Nutrition
 from src.sleep_control.sleep_tracker import Sleep
 from src.user.user_body_info import UserBodyInfo
 
 
 class Facade:
-    def __init__(self):
+    def __init__(self, user: User):
         self.user_body_info = UserBodyInfo()
         self.body_metrics = BodyMetrics()
-        self.activity = Activity()
-        self.medication_reminder = MedicationReminder()
         self.body_metrics_container = BodyMetricsContainer()
+        self.medication_reminder = MedicationReminder()
+        self.activity_container = ActivityContainer()
+        self.user_body_goals = UserBodyGoals(self.user_body_info)
+        self.user = user
         # self.nutrition = Nutrition(total_calories)
         # self.sleep = Sleep(woke_up, went_to_sleep)
 
@@ -43,19 +49,20 @@ class Facade:
 
     def set_weight(self, weight):
         self.user_body_info.set_weight(weight)
-        self.body_metrics_container.add_weight(weight)
+        self.body_metrics_container.add_body_metrics(BodyMetricsType.weight.value, weight, '03.05.2025')
 
     def set_height(self, height):
         self.user_body_info.set_height(height)
-        self.body_metrics_container.add_height(height)
+        self.body_metrics_container.add_body_metrics(BodyMetricsType.height.value, height, '04.05.2025')
 
     def set_fat_percentage(self, fat_percentage):
         self.user_body_info.set_fat_percentage(fat_percentage)
-        self.body_metrics_container.add_fat_percentage(fat_percentage)
+        self.body_metrics_container.add_body_metrics(BodyMetricsType.fat_percentage.value, fat_percentage, '04.05.2025')
 
     def set_percentage_of_water_level(self, percentage_of_water_level):
         self.user_body_info.set_percentage_of_water_level(percentage_of_water_level)
-        self.body_metrics_container.add_percentage_of_water_level(percentage_of_water_level)
+        self.body_metrics_container.add_body_metrics(BodyMetricsType.percentage_of_water_level.value,
+                                                     percentage_of_water_level, '04.05.2025')
 
     def get_sleep_duration(self):
         return self.sleep.get_sleep_duration()
@@ -79,19 +86,15 @@ class Facade:
     def get_remaining_calories(self):
         return self.nutrition.get_remaining_calories()
 
-    def do_activity(self, activity_name, intensity_rate, start_time, end_time, date):
-        self.activity.create_specific_activity_type_object(
-            activity_name, intensity_rate, start_time, end_time, date
-        )
-        count_of_burned_calories = self.activity.count_of_burned_on_specific_activity()
-        # weight_to_remove = burned_calories / 7700  # to get value in kilogram
-        # self.body_metrics.remove_weight(weight_to_remove)  # change body_metrics value for user
+    def add_activity(self, activity_name, burned_calories, start_time, end_time, date):
+        activity_type_object = SpecificActivityType(activity_name, burned_calories, start_time, end_time)
+        self.activity_container.add_activity(activity_type_object, date)
 
     def get_activities_in_specific_date(self, date_of_activities) -> list:
-        return self.activity.get_activities_in_specific_date(date_of_activities)
+        return self.activity_container.get_activity_in_specific_date(date_of_activities)
 
     def get_history_of_all_activities(self) -> list:
-        return self.activity.get_history_of_all_activities()
+        return self.activity_container.get_all_activities()
 
     def drink_water(self, amount_of_water):
         self.water.add_water(amount_of_water)
@@ -112,24 +115,16 @@ class Facade:
 
     # maybe add load_medicine_recipe()
 
-    # def get_medicine(self):
-    #     patient_status_of_health = self.patient_status.get_is_sick_status()
-    #     if patient_status_of_health is None:
-    #         print("You need to do examination to detect your health status")
-    #         return
-    #     if patient_status_of_health is False:
-    #         self.medication.calculate_dosage()
-    #         self.patient_status.set_is_sick_status(True)
-    #         self.patient_status.set_disease_type(None)
-
     def get_body_mass_index_metrics(self) -> float:
-        self.body_metrics.
         return self.body_metrics.calculate_body_mass_index_metrics(
             self.user_body_info.get_weight(), self.user_body_info.get_height()
         )
 
     def get_basal_metabolic_rate_metrics(self) -> float:
-        return self.body_metrics.calculate_basal_metabolic_rate_metrics()
+        return self.body_metrics.calculate_basal_metabolic_rate_metrics(self.user_body_info.get_weight(),
+                                                                        self.user_body_info.get_height(),
+                                                                        self.user.get_age(),
+                                                                        self.user.get_sex())
 
     def get_lean_body_mass_metrics(self) -> float:
         return self.body_metrics.calculate_lean_body_mass_metrics(
@@ -146,3 +141,10 @@ class Facade:
         self.medication_reminder.add_to_journal_of_medication(medication_object, time_to_take_medication)
 
 
+user = User('Vlad', 'Skyba', 18, 'male')
+facade = Facade(user)
+facade.set_height(100)
+print(facade.get_height())
+facade.set_weight(80)
+print(facade.get_weight())
+print(facade.get_body_mass_index_metrics())

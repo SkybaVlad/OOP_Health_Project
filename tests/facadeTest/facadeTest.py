@@ -1,6 +1,6 @@
 import unittest
 
-from src.interfaces.facade import Facade
+from src.facade.facade import Facade
 
 
 class TestFacade(unittest.TestCase):
