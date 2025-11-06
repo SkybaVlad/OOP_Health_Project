@@ -8,7 +8,6 @@ class ActivityContainer:
 
     # need check on invalid param
 
-    # need typehints
     def add_activity(
         self, specific_activity_object: SpecificActivityType, data_of_activity: str
     ):
@@ -20,8 +19,7 @@ class ActivityContainer:
     def clear_all_activities(self):
         pass
 
-    # need typehints tp return
-    def get_activity_in_specific_date(self, data_of_activity: str):
+    def get_activity_in_specific_date(self, data_of_activity: str) -> list:
         return self.dictionary[data_of_activity]
 
     def get_all_activities(self):

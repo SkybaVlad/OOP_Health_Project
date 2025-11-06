@@ -1,47 +1,63 @@
 import math
+import enum
+
+
+class ActivityType(enum.Enum):
+    Running = 'Running'
+    Walking = 'Walking'
+    Cycling = 'Cycling'
+    Swimming = 'Swimming'
+    Yoga = 'Yoga'
+    StrengthTraining = 'Strength Training'
+    Hiking = 'Hiking'
+    Dancing = 'Dancing'
+    Football = 'Football'
+    Basketball = 'Basketball'
+    Tennis = 'Tennis'
+    Volleyball = 'Volleyball'
+    Skiing = 'Skiing'
+    Snowboarding = 'Snowboarding'
+    Skating = 'Skating'
+    Rowing = 'Rowing'
+    Boxing = 'Boxing'
+    JumpRope = 'Jump Rope'
+    Stretching = 'Stretching'
+    Other = 'Other'
 
 
 class SpecificActivityType:
 
     def __init__(
         self,
-        activity_name: str,
-        intensity_of_activity: int,
+        activity_name: ActivityType,
+        burned_calories,
         # YYYY-MM-DDTHH:MM:SS
         start_time_of_activity,  # if str need edit method that uses this field for math calculation
         end_time_of_activity,
     ):
-        self.activity_name = activity_name
-        self.intensity_of_activity = intensity_of_activity  # 1 to 10
-        self.start_time_of_activity = start_time_of_activity  #
-        self.end_time_of_activity = end_time_of_activity
-
-    def calculate_count_of_burned_calories(self):
-        return (
-            5
-            * pow(self.intensity_of_activity, 1.2)
-            * math.sqrt(self.calculate_activity_duration_in_minutes())
-            + 0.3
-            * self.intensity_of_activity
-            * self.calculate_activity_duration_in_minutes()
-        )
+        self._activity_name = activity_name
+        self._burned_calories = burned_calories
+        self._start_time_of_activity = start_time_of_activity  #
+        self._end_time_of_activity = end_time_of_activity
 
     def calculate_activity_duration_in_minutes(self):
-        return abs(self.start_time_of_activity - self.end_time_of_activity)
-
-    def get_intensity_of_specific_activity(self):
-        return self.intensity_of_activity
+        return abs(self._start_time_of_activity - self._end_time_of_activity)
 
     def get_name_of_specific_activity(self):
-        return self.activity_name
+        return self._activity_name
+
+    def get_burned_calories(self):
+        return self._burned_calories
 
     def get_start_time_of_specific_activity(self):
-        return self.start_time_of_activity
+        return self._start_time_of_activity
 
     def get_end_time_of_specific_activity(self):
-        return self.end_time_of_activity
+        return self._end_time_of_activity
 
     def _time_converter_in_minutes_(self):
-        start_time_of_activity = self.start_time_of_activity.split()
-        end_time_of_activity = self.end_time_of_activity.split()
+        start_time_of_activity = self._start_time_of_activity.split()
+        end_time_of_activity = self._end_time_of_activity.split()
         pass
+
+
