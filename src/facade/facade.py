@@ -18,7 +18,7 @@ class Facade:
         self.body_metrics_container = BodyMetricsContainer()
         self.medication_reminder = MedicationReminder()
         self.activity_container = ActivityContainer()
-        self.user_body_goals = UserBodyGoals(self.user_body_info)
+        self.user_body_goals = UserBodyGoals(self.user_body_info, user)
         self.user = user
         # self.nutrition = Nutrition(total_calories)
         # self.sleep = Sleep(woke_up, went_to_sleep)
@@ -45,7 +45,7 @@ class Facade:
         return self.user_body_info.get_lean_body_mass()
 
     def get_fat_mass(self):
-        return self.user_body_info.fat_mass
+        return self.user_body_info.get_fat_mass()
 
     def set_weight(self, weight):
         self.user_body_info.set_weight(weight)
@@ -148,3 +148,9 @@ print(facade.get_height())
 facade.set_weight(80)
 print(facade.get_weight())
 print(facade.get_body_mass_index_metrics())
+facade.set_weight(100)
+print(facade.get_weight())
+facade.add_activity('Football', 100, '17:20', '19:20', '03.05.2007')
+print(facade.get_activities_in_specific_date('03.05.2007'))
+facade.add_activity('Running', 300, '14:25', '15:25', '04.05.2007')
+print(facade.get_history_of_all_activities())

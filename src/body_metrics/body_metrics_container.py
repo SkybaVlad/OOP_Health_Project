@@ -14,57 +14,23 @@ class BodyMetricsType(enum.Enum):
 
 class BodyMetricsContainer:
     def __init__(self):
-        self.dictionary = {}
+        self._dictionary = {}
 
-    def add_body_mass_index_metrics(self, value, date):
-        if self._in_dict(date, BodyMetricsType.body_mass_index_metrics):
-            self.dictionary[(date, BodyMetricsType.body_mass_index_metrics.value)].append(value)
+    def add_body_metrics(self, metrics_type: str, value, date):
+        if self._in_dict(date, metrics_type):
+            self._dictionary[(date, metrics_type)].append(value)
         else:
-            self.dictionary[(date, BodyMetricsType.body_mass_index_metrics.value)] = [value]
+            self._dictionary[(date, metrics_type)] = [value]
 
-    def add_basal_metabolic_rate(self, value, date):
-        if self._in_dict(date, BodyMetricsType.basal_metabolic_rate.value):
-            self.dictionary[(date, BodyMetricsType.basal_metabolic_rate.value)].append(value)
-        else:
-            self.dictionary[(date, BodyMetricsType.basal_metabolic_rate.value)] = [value]
+    def get_metrics_in_specific_date(self, metrics_type: str, date) -> list:
+        return self._dictionary[(date, metrics_type)]
 
-    def add_lean_body_mass(self, value, date):
-        if self._in_dict(date, BodyMetricsType.lean_body_mass):
-            self.dictionary[(date, BodyMetricsType.lean_body_mass.value)].append(value)
-        else:
-            self.dictionary[(date, BodyMetricsType.lean_body_mass.value)] = [value]
+    def get_history_of_specific_matrics(self, metrics_type: str) -> list:
+        pass
 
-    def add_fat_mass(self, value, date):
-        if self._in_dict(date, BodyMetricsType.fat_mass.value):
-            self.dictionary[(date, BodyMetricsType.fat_mass.value)].append(value)
-        else:
-            self.dictionary[(date, BodyMetricsType.fat_mass.value)] = [value]
-
-    def add_weight(self, value, date):
-        if self._in_dict(date, BodyMetricsType.weight.value):
-            self.dictionary[(date, BodyMetricsType.weight.value)].append(value)
-        else:
-            self.dictionary[(date, BodyMetricsType.weight.value)] = [value]
-
-    def add_height(self, value, date):
-        if self._in_dict(date, BodyMetricsType.height.value):
-            self.dictionary[(date, BodyMetricsType.height.value)].append(value)
-        else:
-            self.dictionary[(date, BodyMetricsType.height.value)] = [value]
-
-    def add_fat_percentage(self, value, date):
-        if self._in_dict(date, BodyMetricsType.fat_percentage.value):
-            self.dictionary[(date, BodyMetricsType.fat_percentage.value)].append(value)
-        else:
-            self.dictionary[(date, BodyMetricsType.fat_percentage.value)] = [value]
-
-    def add_percentage_of_water_level(self, value, date):
-        if self._in_dict(date, BodyMetricsType.percentage_of_water_level.value):
-            self.dictionary[(date, BodyMetricsType.percentage_of_water_level.value)].append(value)
-        else:
-            self.dictionary[(date, BodyMetricsType.percentage_of_water_level.value)] = [value]
-
-    def _in_dict(self, date, metrics_type):
-        if (date, metrics_type) in self.dictionary.keys():
+    def _in_dict(self, date, metrics_type) -> bool:
+        if (date, metrics_type) in self._dictionary.keys():
             return True
         return False
+
+
