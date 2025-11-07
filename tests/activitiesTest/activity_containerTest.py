@@ -1,6 +1,6 @@
 import unittest
-from src.activities.activity_container import ActivityContainer
-from src.activities.activity_type import SpecificActivityType
+from services.activities import ActivityContainer
+from services.activities import SpecificActivityType
 
 
 class ActivityContainerTest(unittest.TestCase):
@@ -68,6 +68,10 @@ class ActivityContainerTest(unittest.TestCase):
         )
 
     def test_get_all_activities(self):
-        self.activity_container_object.add_activity(self.activity_type_unique_1, '03.05.2007')
-        self.activity_container_object.add_activity(self.activity_type_unique_2, '04.05.2007')
+        self.activity_container_object.add_activity(
+            self.activity_type_unique_1, '03.05.2007'
+        )
+        self.activity_container_object.add_activity(
+            self.activity_type_unique_2, '04.05.2007'
+        )
         pass

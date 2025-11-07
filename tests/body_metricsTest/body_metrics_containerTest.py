@@ -1,4 +1,4 @@
-from src.body_metrics.body_metrics_container import BodyMetricsContainer
+from data.body_metrics_container import BodyMetricsContainer
 import unittest
 
 
@@ -6,7 +6,6 @@ class BodyMetricsContainerTest(unittest.TestCase):
 
     def setUp(self):
         self.body_metrics_container = BodyMetricsContainer()
-
 
     def test_add_body_mass_index_metrics(self):
         self.body_metrics_container.add_body_mass_index_metrics(30, "17:20")

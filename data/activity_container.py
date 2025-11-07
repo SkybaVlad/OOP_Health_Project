@@ -1,4 +1,4 @@
-from src.activities.activity_type import SpecificActivityType
+from services.activities.activity_type import SpecificActivityType
 
 
 class ActivityContainer:
@@ -9,7 +9,7 @@ class ActivityContainer:
     # need check on invalid param
 
     def add_activity(
-            self, specific_activity_object: SpecificActivityType, data_of_activity: str
+        self, specific_activity_object: SpecificActivityType, data_of_activity: str
     ):
         if data_of_activity in self.dictionary.keys():
             self.dictionary[data_of_activity].append(specific_activity_object)
@@ -32,3 +32,4 @@ activity_object2 = SpecificActivityType("Running", 500, '16:20', '17:20')
 object = ActivityContainer()
 object.add_activity(activity_object1, '03.05.2007')
 object.add_activity(activity_object2, '01.05.2007')
+print(object.get_all_activities())

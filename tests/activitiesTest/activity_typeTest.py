@@ -1,5 +1,5 @@
 import unittest
-from src.activities.activity_type import SpecificActivityType
+from services.activities import SpecificActivityType
 
 
 class TestSpecificActivityTypeClass(unittest.TestCase):
