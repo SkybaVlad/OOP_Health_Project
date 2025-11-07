@@ -1,5 +1,5 @@
 import unittest
-from src.user.user_body_info import UserBodyInfo
+from services.user.user_body_info import UserBodyInfo
 
 
 class TestUserBodyInfo(unittest.TestCase):
