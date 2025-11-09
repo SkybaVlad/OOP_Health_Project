@@ -62,5 +62,5 @@ class UserBodyInfo:
         self.__fat_mass = fat_mass
 
     def __validate_data_for_setters(self, data):
-        if data < 0 or data is None:
-            raise ValueError("data must be an positive number")
+        if data is None or data < 0:
+            raise ValueError("data must be an positive number or not None")

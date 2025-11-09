@@ -46,30 +46,45 @@ class Facade:
         return self.user_body_info.get_fat_mass()
 
     def set_weight(self, weight):
-        self.user_body_info.set_weight(weight)
-        self.body_metrics_container.add_body_metrics(
-            BodyMetricsType.weight.value, weight, '03.05.2025'
-        )
+        try:
+            self.user_body_info.set_weight(weight)
+            self.__add_body_metrics_to_container(
+                BodyMetricsType.weight.value, weight, '03.05.2025'
+            )
+        except ValueError as error:
+            print(error)
 
     def set_height(self, height):
-        self.user_body_info.set_height(height)
-        self.body_metrics_container.add_body_metrics(
-            BodyMetricsType.height.value, height, '04.05.2025'
-        )
+        try:
+            self.user_body_info.set_height(height)
+            self.__add_body_metrics_to_container(
+                BodyMetricsType.height.value, height, '04.05.2025'
+            )
+        except ValueError as error:
+            print(error)
 
     def set_fat_percentage(self, fat_percentage):
-        self.user_body_info.set_fat_percentage(fat_percentage)
-        self.body_metrics_container.add_body_metrics(
-            BodyMetricsType.fat_percentage.value, fat_percentage, '04.05.2025'
-        )
+        try:
+            self.user_body_info.set_fat_percentage(fat_percentage)
+            self.__add_body_metrics_to_container(
+                BodyMetricsType.fat_percentage.value, fat_percentage, '04.05.2025'
+            )
+        except ValueError as error:
+            print(error)
 
     def set_percentage_of_water_level(self, percentage_of_water_level):
-        self.user_body_info.set_percentage_of_water_level(percentage_of_water_level)
-        self.body_metrics_container.add_body_metrics(
-            BodyMetricsType.percentage_of_water_level.value,
-            percentage_of_water_level,
-            '04.05.2025',
-        )
+        try:
+            self.user_body_info.set_percentage_of_water_level(percentage_of_water_level)
+            self.__add_body_metrics_to_container(
+                BodyMetricsType.percentage_of_water_level.value,
+                percentage_of_water_level,
+                '04.05.2025',
+            )
+        except ValueError as error:
+            print(error)
+
+    def __add_body_metrics_to_container(self, metrics_type, metrics_value, data):
+        self.body_metrics_container.add_body_metrics(metrics_type, metrics_value, data)
 
     def get_sleep_duration(self):
         return self.sleep.get_sleep_duration()
@@ -124,50 +139,44 @@ class Facade:
 
     # maybe add load_medicine_recipe()
 
-    def get_body_mass_index_metrics(self) -> float:
-        return self.body_metrics.calculate_body_mass_index_metrics(
-            self.user_body_info.get_weight(), self.user_body_info.get_height()
-        )
+    # def get_body_mass_index_metrics(self) -> float:
+    #     return self.body_metrics.calculate_body_mass_index_metrics(
+    #         self.user_body_info.get_weight(), self.user_body_info.get_height()
+    #     )
+    #
+    # def get_basal_metabolic_rate_metrics(self) -> float:
+    #     return self.body_metrics.calculate_basal_metabolic_rate_metrics(
+    #         self.user_body_info.get_weight(),
+    #         self.user_body_info.get_height(),
+    #         self.user.get_age(),
+    #         self.user.get_sex(),
+    #     )
+    #
+    # def get_lean_body_mass_metrics(self) -> float:
+    #     return self.body_metrics.calculate_lean_body_mass_metrics(
+    #         self.user_body_info.get_weight(), self.user_body_info.get_fat_percentage()
+    #     )
+    #
+    # def get_fat_mass_metrics(self) -> float:
+    #     return self.body_metrics.calculate_fat_mass_metrics(
+    #         self.user_body_info.get_weight(), self.user_body_info.get_fat_percentage()
+    #     )
 
-    def get_basal_metabolic_rate_metrics(self) -> float:
-        return self.body_metrics.calculate_basal_metabolic_rate_metrics(
-            self.user_body_info.get_weight(),
-            self.user_body_info.get_height(),
-            self.user.get_age(),
-            self.user.get_sex(),
-        )
+    def get_history_of_specific_metrics(self, metrics_type):
+        pass
 
-    def get_lean_body_mass_metrics(self) -> float:
-        return self.body_metrics.calculate_lean_body_mass_metrics(
-            self.user_body_info.get_weight(), self.user_body_info.get_fat_percentage()
-        )
+    def get_history_of_specific_metrics_in_some_period(
+        self, metrics_type, start_date, end_date
+    ) -> list:
+        pass
 
-    def get_fat_mass_metrics(self) -> float:
-        return self.body_metrics.calculate_fat_mass_metrics(
-            self.user_body_info.get_weight(), self.user_body_info.get_fat_percentage()
-        )
+    def get_history_of_specific_metrics_in_all_periods(
+        self, metrics_type, start_date, end_date
+    ) -> list:
+        pass
 
     def add_medication(self, medicine_name, medication_dosage, time_to_take_medication):
         medication_object = Medication(medicine_name, medication_dosage)
         self.medication_reminder.add_to_journal_of_medication(
             medication_object, time_to_take_medication
         )
-
-
-user = User('Vlad', 'Skyba', 18, 'male')
-facade = Facade(user)
-facade.set_height(100)
-print(facade.get_height())
-facade.set_weight(80)
-print(facade.get_weight())
-print(facade.get_body_mass_index_metrics())
-facade.set_weight(100)
-print(facade.get_weight())
-facade.add_activity('Football', 100, '17:20', '19:20', '03.05.2007')
-print(facade.get_activities_in_specific_date('03.05.2007'))
-facade.add_activity('Running', 300, '14:25', '15:25', '04.05.2007')
-print(facade.get_history_of_all_activities())
-print(facade.get_basal_metabolic_rate_metrics())
-facade.set_fat_percentage(15)
-print(facade.get_lean_body_mass_metrics())
-print(facade.get_body_mass_index_metrics())

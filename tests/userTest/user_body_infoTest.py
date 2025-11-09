@@ -67,3 +67,7 @@ class TestUserBodyInfo(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.user_body_info.set_weight(-100)
         self.assertEqual(self.user_body_info.get_percentage_of_water_level(), 100)
+
+
+if '__name__' == '__main__':
+    unittest.main()
