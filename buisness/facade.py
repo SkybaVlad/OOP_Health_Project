@@ -1,4 +1,11 @@
-from services.body_metrics.body_metrics import BodyMetrics
+from services.body_metrics.body_metrics import (
+    StrategyBodyMetricsInterface,
+    Context,
+    StrategyBMICalculator,
+    StrategyBMRCalculator,
+    StrategyLeanBodyMassCalculator,
+    StrategyFatMassCalculator,
+)
 from services.medication.medication import Medication, MedicationReminder
 from data.body_metrics_container import BodyMetricsContainer
 from data.body_metrics_container import BodyMetricsType
@@ -7,12 +14,13 @@ from services.user.user_info import User
 from services.activities.activity_type import SpecificActivityType
 from data.activity_container import ActivityContainer
 from services.user.user_body_info import UserBodyInfo
+from data.criteria import Criteria
 
 
 class Facade:
     def __init__(self, user: User):
         self.user_body_info = UserBodyInfo()
-        self.body_metrics = BodyMetrics()
+        self.strategy_context_body_metrics = Context()
         self.body_metrics_container = BodyMetricsContainer()
         self.medication_reminder = MedicationReminder()
         self.activity_container = ActivityContainer()
@@ -108,11 +116,8 @@ class Facade:
     def get_remaining_calories(self):
         return self.nutrition.get_remaining_calories()
 
-    def add_activity(self, activity_name, burned_calories, start_time, end_time, date):
-        activity_type_object = SpecificActivityType(
-            activity_name, burned_calories, start_time, end_time
-        )
-        self.activity_container.add_activity(activity_type_object, date)
+    def add_activity(self, activity_object: SpecificActivityType, date):
+        self.activity_container.add_activity(activity_object, date)
 
     def get_activities_in_specific_date(self, date_of_activities) -> list:
         return self.activity_container.get_activity_in_specific_date(date_of_activities)
@@ -139,40 +144,9 @@ class Facade:
 
     # maybe add load_medicine_recipe()
 
-    # def get_body_mass_index_metrics(self) -> float:
-    #     return self.body_metrics.calculate_body_mass_index_metrics(
-    #         self.user_body_info.get_weight(), self.user_body_info.get_height()
-    #     )
-    #
-    # def get_basal_metabolic_rate_metrics(self) -> float:
-    #     return self.body_metrics.calculate_basal_metabolic_rate_metrics(
-    #         self.user_body_info.get_weight(),
-    #         self.user_body_info.get_height(),
-    #         self.user.get_age(),
-    #         self.user.get_sex(),
-    #     )
-    #
-    # def get_lean_body_mass_metrics(self) -> float:
-    #     return self.body_metrics.calculate_lean_body_mass_metrics(
-    #         self.user_body_info.get_weight(), self.user_body_info.get_fat_percentage()
-    #     )
-    #
-    # def get_fat_mass_metrics(self) -> float:
-    #     return self.body_metrics.calculate_fat_mass_metrics(
-    #         self.user_body_info.get_weight(), self.user_body_info.get_fat_percentage()
-    #     )
-
     def get_history_of_specific_metrics(self, metrics_type):
-        pass
-
-    def get_history_of_specific_metrics_in_some_period(
-        self, metrics_type, start_date, end_date
-    ) -> list:
-        pass
-
-    def get_history_of_specific_metrics_in_all_periods(
-        self, metrics_type, start_date, end_date
-    ) -> list:
+        criteria_object = Criteria()
+        criteria_object.set_metrics_type(metrics_type)
         pass
 
     def add_medication(self, medicine_name, medication_dosage, time_to_take_medication):
@@ -180,3 +154,15 @@ class Facade:
         self.medication_reminder.add_to_journal_of_medication(
             medication_object, time_to_take_medication
         )
+
+    def get_metrics_data(self, filtration_criteria):
+        pass
+
+    def calculate_matric(
+        self,
+        strategy_of_calculation_body_metrics: StrategyBodyMetricsInterface,
+    ):
+        self.strategy_context_body_metrics.set_strategy(
+            strategy_of_calculation_body_metrics
+        )
+        return self.strategy_context_body_metrics.calculate()
