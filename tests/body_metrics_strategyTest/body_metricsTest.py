@@ -1,11 +1,15 @@
 import unittest
-from services.body_metrics.body_metrics import BodyMetrics
+from services.body_metrics.body_metrics import BodyMetricsCalculator
 
 
 class TestBodyMetricsClass(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.body_metrics = BodyMetricsCalculator()
 
-    def setUp(self):
-        self.body_metrics = BodyMetrics()
+    @classmethod
+    def tearDownClass(cls):
+        del cls.body_metrics
 
     def test_body_mass_index_metrics_with_valid_data(self):
         self.assertAlmostEqual(
