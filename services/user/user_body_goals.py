@@ -26,15 +26,14 @@ class UserBodyGoals:
     # Set ActivityLevel
 
     def calculate_total_calories_goal(self):
-        bmr = self.body_metrics.calculate_basal_metabolic_rate_metrics = (
-            self.body_metrics.calculate_basal_metabolic_rate_metrics(
-                self.user_body_info.get_weight(),
-                self.user_body_info.get_height(),
-                self.user.get_age(),
-                self.user.get_sex(),
-            )
+        bmr = self.body_metrics.calculate_basal_metabolic_rate_metrics(
+            self.user_body_info.get_weight(),
+            self.user_body_info.get_height(),
+            self.user.get_age(),
+            self.user.get_sex(),
         )
-        # self.total_calories_goal= bmr*activity_level придумати як рівень активності дізнаватися
+        activity_level = 1.2  # придумати як рівень активності дізнаватися
+        return bmr * activity_level
 
     def get_total_calories_goal(self):
         return self.total_calories_goal
