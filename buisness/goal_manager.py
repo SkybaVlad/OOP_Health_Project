@@ -15,6 +15,4 @@ class GoalManager:
         return self.history[-1]
 
     def check_history(self):
-        if not self.history:
-            return None
         return self.history
