@@ -1,4 +1,4 @@
-from services.sleep_control import Sleep
+from services.sleep_control.sleep_tracker import Sleep
 
 class SleepManager:
     def __init__(self):
