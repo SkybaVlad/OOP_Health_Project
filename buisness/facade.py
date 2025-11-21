@@ -15,6 +15,8 @@ from services.activities.activity_type import SpecificActivityType
 from data.activity_container import ActivityContainer
 from services.user.user_body_info import UserBodyInfo
 from data.criteria import Criteria
+from services.nutrition.meal import Meal
+from data.meal_container import MealContainer
 
 
 class Facade:
@@ -97,18 +99,8 @@ class Facade:
     def get_sleep_duration(self):
         return self.sleep.get_sleep_duration()
 
-    def eat(self, calories, meal_name):
-        self.nutrition.add_meals(calories, meal_name)
-
-        consumed_calories = self.nutrition.get_consumed_calories()
-        total_calories = self.nutrition.get_total_calories()
-
-        if consumed_calories > total_calories:
-            status = "Overate"  # add status to patient/user
-            weight_to_add = (consumed_calories - total_calories) / 7700
-            self.weight.add_weight(weight_to_add)
-        else:
-            status = "Eaten"  # add status to patient/user
+    def add_meal(self, meal: Meal, data):
+        self.meal_container.add_meals(meal, data)
 
     def get_consumed_calories(self):
         return self.nutrition.get_consumed_calories()
@@ -124,17 +116,6 @@ class Facade:
 
     def get_history_of_all_activities(self) -> list:
         return self.activity_container.get_all_activities()
-
-    def drink_water(self, amount_of_water):
-        self.water.add_water(amount_of_water)
-
-        consumed = self.water.get_consumed()
-        total_goal = self.water.get_total_goal()
-
-        if consumed > total_goal:
-            status = "Overhydrated"  # add status to patient/user
-        else:
-            status = "Drinking"  # add status to patient/user
 
     def get_consumed_water(self):
         return self.water.get_consumed()
