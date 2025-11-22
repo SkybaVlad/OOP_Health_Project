@@ -14,7 +14,10 @@ class MealContainer:
     def get_history(self):
         return self.dict
 
-    # def find_by_date(self, date):
+    def find_by_date(self, date):
+        if date not in self.dict:
+            return []
+        return self.dict[date]
 
     def sort_meals(self, meals):
         return sorted(meals, key=lambda m: m.calories, reverse=True)
