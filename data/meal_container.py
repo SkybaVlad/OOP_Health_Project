@@ -1,4 +1,4 @@
-from services.nutrition.meal import Meal
+from services.nutrition.meal import Meal, MealType
 
 
 class MealContainer:
@@ -14,15 +14,19 @@ class MealContainer:
     def get_history(self):
         return self.dict
 
-    def find_by_name(self, name: str):
-        result = []
-        for day, meals in self.dict.items():
-            for meal in meals:
-                if meal.meal_name == name:
-                    result.append(meal)
-        return result
+    # def find_by_date(self, date):
 
-    def sort_by_calories(self, date):
-        if date not in self.dict:
-            return []
-        return sorted(self.dict[date], key=lambda m: m.calories, reverse=True)
+    def sort_meals(self, meals):
+        return sorted(meals, key=lambda m: m.calories, reverse=True)
+
+    def sort_all_meals(self):
+        allmeals = []
+        for meals in self.dict.values():
+            allmeals.extend(meals)
+        return self.sort_meals(allmeals)
+
+    def sort_meals_by_day(self, date):
+        daymeals = []
+        for meal in self.dict[date]:
+            daymeals.append(meal)
+        return self.sort_meals(daymeals)
