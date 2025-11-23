@@ -25,11 +25,3 @@ class ActivityContainer:
 
     def get_all_dates(self):
         pass
-
-
-activity_object1 = SpecificActivityType("Football", 400, '17:20', '19:20')
-activity_object2 = SpecificActivityType("Running", 500, '16:20', '17:20')
-object = ActivityContainer()
-object.add_activity(activity_object1, '03.05.2007')
-object.add_activity(activity_object2, '01.05.2007')
-print(object.get_all_activities())
