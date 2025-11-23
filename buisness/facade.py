@@ -26,10 +26,8 @@ class Facade:
         self.body_metrics_container = BodyMetricsContainer()
         self.medication_reminder = MedicationReminder()
         self.activity_container = ActivityContainer()
-        self.user_body_goals = UserBodyGoals(self.user_body_info, user)
+        self.user_body_goals = UserBodyGoals()
         self.user = user
-        # self.nutrition = Nutrition(total_calories)
-        # self.sleep = Sleep(woke_up, went_to_sleep)
 
     def get_weight(self):
         return self.user_body_info.get_weight()
@@ -108,8 +106,8 @@ class Facade:
     def get_remaining_calories(self):
         return self.nutrition.get_remaining_calories()
 
-    def add_activity(self, activity_object: SpecificActivityType, date):
-        self.activity_container.add_activity(activity_object, date)
+    def add_activity(self, activity_object: SpecificActivityType):
+        self.activity_container.add_activity(activity_object)
 
     def get_activities_in_specific_date(self, date_of_activities) -> list:
         return self.activity_container.get_activity_in_specific_date(date_of_activities)
