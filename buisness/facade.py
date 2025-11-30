@@ -1,3 +1,4 @@
+from buisness.facade_container import FacadeContainer
 from services.body_metrics.body_metrics import (
     StrategyBodyMetricsInterface,
     Context,
@@ -7,25 +8,18 @@ from services.body_metrics.body_metrics import (
     StrategyFatMassCalculator,
 )
 from services.medication.medication import Medication, MedicationReminder
-from data.body_metrics_container import BodyMetricsContainer
-from data.body_metrics_container import BodyMetricsType
 from services.user.user_body_goals import UserBodyGoals
 from services.user.user_info import User
-from services.activities.activity_type import SpecificActivityType
-from data.activity_container import ActivityContainer
 from services.user.user_body_info import UserBodyInfo
-from data.criteria import Criteria
 from services.nutrition.meal import Meal
-from data.meal_container import MealContainer
 
 
 class Facade:
     def __init__(self, user: User):
         self.user_body_info = UserBodyInfo()
+        self.facade_container = FacadeContainer()
         self.strategy_context_body_metrics = Context()
-        self.body_metrics_container = BodyMetricsContainer()
         self.medication_reminder = MedicationReminder()
-        self.activity_container = ActivityContainer()
         self.user_body_goals = UserBodyGoals()
         self.user = user
 
@@ -91,9 +85,6 @@ class Facade:
         except ValueError as error:
             print(error)
 
-    def __add_body_metrics_to_container(self, metrics_type, metrics_value, data):
-        self.body_metrics_container.add_body_metrics(metrics_type, metrics_value, data)
-
     def get_sleep_duration(self):
         return self.sleep.get_sleep_duration()
 
@@ -106,15 +97,6 @@ class Facade:
     def get_remaining_calories(self):
         return self.nutrition.get_remaining_calories()
 
-    def add_activity(self, activity_object: SpecificActivityType):
-        self.activity_container.add_activity(activity_object)
-
-    def get_activities_in_specific_date(self, date_of_activities) -> list:
-        return self.activity_container.get_activity_in_specific_date(date_of_activities)
-
-    def get_history_of_all_activities(self) -> list:
-        return self.activity_container.get_all_activities()
-
     def get_consumed_water(self):
         return self.water.get_consumed()
 
@@ -123,19 +105,11 @@ class Facade:
 
     # maybe add load_medicine_recipe()
 
-    def get_history_of_specific_metrics(self, metrics_type):
-        criteria_object = Criteria()
-        criteria_object.set_metrics_type(metrics_type)
-        pass
-
     def add_medication(self, medicine_name, medication_dosage, time_to_take_medication):
         medication_object = Medication(medicine_name, medication_dosage)
         self.medication_reminder.add_to_journal_of_medication(
             medication_object, time_to_take_medication
         )
-
-    def get_metrics_data(self, filtration_criteria):
-        pass
 
     def calculate_matric(
         self,
