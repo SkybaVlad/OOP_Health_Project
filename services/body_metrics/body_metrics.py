@@ -1,5 +1,17 @@
 import math
 from abc import ABC, abstractmethod
+from enum import Enum
+
+
+class BodyMetricsType(Enum):
+    body_mass_index_metrics = 'bmi'
+    basal_metabolic_rate = 'bmr'
+    lean_body_mass = 'lbm'
+    fat_mass = 'fm'
+    weight = 'weight'
+    height = 'height'
+    fat_percentage = 'fp'
+    percentage_of_water_level = 'fwl'
 
 
 class StrategyBodyMetricsInterface(ABC):
