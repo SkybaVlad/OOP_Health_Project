@@ -1,4 +1,5 @@
-from buisness.facade_container import FacadeContainer
+from facade_logic.facade_container import FacadeContainer
+from services.activities.activity_type import SpecificActivityType
 from services.body_metrics.body_metrics import (
     StrategyBodyMetricsInterface,
     Context,
@@ -6,12 +7,14 @@ from services.body_metrics.body_metrics import (
     StrategyBMRCalculator,
     StrategyLeanBodyMassCalculator,
     StrategyFatMassCalculator,
+    BodyMetricsType,
 )
 from services.medication.medication import Medication, MedicationReminder
-from services.user.user_body_goals import UserBodyGoals
+from services.user.user_body_goals import UserBodyDailyGoals
 from services.user.user_info import User
 from services.user.user_body_info import UserBodyInfo
 from services.nutrition.meal import Meal
+from services.health_diary.daily_health_tracking import HealthDaily
 
 
 class Facade:
@@ -20,8 +23,9 @@ class Facade:
         self.facade_container = FacadeContainer()
         self.strategy_context_body_metrics = Context()
         self.medication_reminder = MedicationReminder()
-        self.user_body_goals = UserBodyGoals()
+        self.user_body_goals = UserBodyDailyGoals()
         self.user = user
+        self.health_diary = HealthDaily()
 
     def get_weight(self):
         return self.user_body_info.get_weight()
@@ -50,16 +54,14 @@ class Facade:
     def set_weight(self, weight):
         try:
             self.user_body_info.set_weight(weight)
-            self.__add_body_metrics_to_container(
-                BodyMetricsType.weight.value, weight, '03.05.2025'
-            )
+            self.facade_container.add_body_metrics()
         except ValueError as error:
             print(error)
 
     def set_height(self, height):
         try:
             self.user_body_info.set_height(height)
-            self.__add_body_metrics_to_container(
+            self.facade_container.add_body_metrics(
                 BodyMetricsType.height.value, height, '04.05.2025'
             )
         except ValueError as error:
@@ -68,7 +70,7 @@ class Facade:
     def set_fat_percentage(self, fat_percentage):
         try:
             self.user_body_info.set_fat_percentage(fat_percentage)
-            self.__add_body_metrics_to_container(
+            self.facade_container.add_body_metrics(
                 BodyMetricsType.fat_percentage.value, fat_percentage, '04.05.2025'
             )
         except ValueError as error:
@@ -77,7 +79,7 @@ class Facade:
     def set_percentage_of_water_level(self, percentage_of_water_level):
         try:
             self.user_body_info.set_percentage_of_water_level(percentage_of_water_level)
-            self.__add_body_metrics_to_container(
+            self.facade_container.add_body_metrics(
                 BodyMetricsType.percentage_of_water_level.value,
                 percentage_of_water_level,
                 '04.05.2025',
@@ -85,25 +87,27 @@ class Facade:
         except ValueError as error:
             print(error)
 
-    def get_sleep_duration(self):
-        return self.sleep.get_sleep_duration()
+    # maybe add load_medicine_recipe()
+
+    def add_activity(
+        self, activity_object: SpecificActivityType, data_of_activity: str
+    ) -> None:
+        self.facade_container.activity_container.add_activity(
+            activity_object, data_of_activity
+        )
+        # add activity object to the daily lists of activities
+        # add burned calories to the daily burned calories
 
     def add_meal(self, meal: Meal, data):
-        self.meal_container.add_meals(meal, data)
+        self.facade_container.meal_container.add_meal(meal, data)
+        # add calories of meal to daily consumed calories
+        # add meal to the daily meals
+        # add meals to the meals container
 
-    def get_consumed_calories(self):
-        return self.nutrition.get_consumed_calories()
-
-    def get_remaining_calories(self):
-        return self.nutrition.get_remaining_calories()
-
-    def get_consumed_water(self):
-        return self.water.get_consumed()
-
-    def get_remaining_water(self):
-        return self.water.get_remaining()
-
-    # maybe add load_medicine_recipe()
+    def add_body_metrics(self, metrics_type, value, data) -> None:
+        self.facade_container.body_metrics_container.add_body_metrics(
+            metrics_type, value, data
+        )
 
     def add_medication(self, medicine_name, medication_dosage, time_to_take_medication):
         medication_object = Medication(medicine_name, medication_dosage)
@@ -111,7 +115,7 @@ class Facade:
             medication_object, time_to_take_medication
         )
 
-    def calculate_matric(
+    def calculate_metrics(
         self,
         strategy_of_calculation_body_metrics: StrategyBodyMetricsInterface,
     ):
@@ -119,3 +123,9 @@ class Facade:
             strategy_of_calculation_body_metrics
         )
         return self.strategy_context_body_metrics.calculate()
+
+    def get_daily_results(self):
+        self.health_diary.
+
+    def create_new_health_dairy(self):
+        self.health_diary = HealthDaily()

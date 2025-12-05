@@ -24,6 +24,12 @@ class FacadeContainer:
     ) -> None:
         self.activity_container.add_activity(activity_object, data_of_activity)
 
+    def add_meal(self, meal: Meal, data):
+        self.meal_container.add_meal(meal, data)
+
+    def add_body_metrics(self, metrics_type, value, data) -> None:
+        self.body_metrics_container.add_body_metrics(metrics_type, value, data)
+
     def filter_activity_by_type(self, filtration_criteria: ActivityCriteria) -> list:
         self.filtration_activity.set_filtration_criteria(filtration_criteria)
         return self.filtration_activity.filter_by_type()
@@ -55,9 +61,6 @@ class FacadeContainer:
     ) -> list:
         pass
 
-    def add_body_metrics(self, metrics_type, value, data) -> None:
-        self.body_metrics_container.add_body_metrics(metrics_type, value, data)
-
     def filter_body_metrics_by_type(
         self, body_metrics_criteria: BodyMetricsCriteria
     ) -> list:
@@ -87,6 +90,3 @@ class FacadeContainer:
     ) -> list:
         self.filtration_body_metrics.set_filtration_criteria(body_metrics_criteria)
         return self.filtration_body_metrics.filter_by_less_value()
-
-    def add_meal(self, meal: Meal, data):
-        self.meal_container.add_meal(meal, data)
