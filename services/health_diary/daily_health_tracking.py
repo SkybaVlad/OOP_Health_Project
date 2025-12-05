@@ -31,6 +31,7 @@ class HealthDaily:
 class HealthDailyAnalyzer:
     """This class responsible for analyze daily health. This class analyze a health_diary object and
     user_body_daily_goals and provide methods that return results of analysis"""
+
     def __init__(self, health_diary, user_body_daily_goals):
         self.health_diary = health_diary
         self.user_body_daily_goals = user_body_daily_goals
@@ -42,13 +43,21 @@ class HealthDailyAnalyzer:
         return total_time_spent
 
     def get_remaining_of_consumed_calories(self) -> float:
-        return self.user_body_daily_goals.get_consumed_calories_goal() - self.health_diary.consumed_calories_for_day
+        return (
+            self.user_body_daily_goals.get_consumed_calories_goal()
+            - self.health_diary.consumed_calories_for_day
+        )
 
     def get_remaining_of_burned_calories(self) -> float:
-        return self.user_body_daily_goals.get_burned_calories_goal() - self.health_diary.burned_calories_for_day
+        return (
+            self.user_body_daily_goals.get_burned_calories_goal()
+            - self.health_diary.burned_calories_for_day
+        )
 
     def get_remaining_water(self) -> float:
-        return self.user_body_daily_goals.get_water_goal() - self.health_diary.drank_water
+        return (
+            self.user_body_daily_goals.get_water_goal() - self.health_diary.drank_water
+        )
 
     def get_consumed_calories(self) -> float:
         return self.health_diary.consumed_calories_for_day
@@ -68,4 +77,5 @@ class HealthDailyAnalyzer:
 
 class HealthMonthAnalyzer:
     """This class responsible for analyze a month statistics. This class analyze list of health_diary objects"""
+
     pass
