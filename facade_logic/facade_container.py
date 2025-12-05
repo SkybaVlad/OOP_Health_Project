@@ -58,25 +58,35 @@ class FacadeContainer:
     def add_body_metrics(self, metrics_type, value, data) -> None:
         self.body_metrics_container.add_body_metrics(metrics_type, value, data)
 
-    def filter_body_metrics_by_type(self, body_metrics_criteria: BodyMetricsCriteria) -> list:
+    def filter_body_metrics_by_type(
+        self, body_metrics_criteria: BodyMetricsCriteria
+    ) -> list:
         self.filtration_body_metrics.set_filtration_criteria(body_metrics_criteria)
         return self.filtration_body_metrics.filter_by_type()
 
-    def filter_body_metrics_by_specific_data(self, body_metrics_criteria: BodyMetricsCriteria) -> list:
+    def filter_body_metrics_by_specific_data(
+        self, body_metrics_criteria: BodyMetricsCriteria
+    ) -> list:
         self.filtration_body_metrics.set_filtration_criteria(body_metrics_criteria)
         return self.filtration_body_metrics.filter_by_specific_data()
 
-    def filter_body_metrics_period(self, body_metrics_criteria: BodyMetricsCriteria) -> list:
+    def filter_body_metrics_period(
+        self, body_metrics_criteria: BodyMetricsCriteria
+    ) -> list:
         self.filtration_body_metrics.set_filtration_criteria(body_metrics_criteria)
         return self.filtration_body_metrics.filter_by_period()
 
-    def filter_body_metrics_by_greater_value_of_burned_calories(self, body_metrics_criteria: BodyMetricsCriteria) -> list:
+    def filter_body_metrics_by_greater_value_of_burned_calories(
+        self, body_metrics_criteria: BodyMetricsCriteria
+    ) -> list:
         self.filtration_body_metrics.set_filtration_criteria(body_metrics_criteria)
         return self.filtration_body_metrics.filter_by_greater_value()
 
-    def filter_body_metrics_by_lesser_value_on_calories(self, body_metrics_criteria: BodyMetricsCriteria) -> list:
+    def filter_body_metrics_by_lesser_value_on_calories(
+        self, body_metrics_criteria: BodyMetricsCriteria
+    ) -> list:
         self.filtration_body_metrics.set_filtration_criteria(body_metrics_criteria)
         return self.filtration_body_metrics.filter_by_less_value()
 
     def add_meal(self, meal: Meal, data):
-        self.meal_container.add_meal(meal,data)
+        self.meal_container.add_meal(meal, data)
