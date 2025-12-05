@@ -1,0 +1,12 @@
+from services.health_diary.daily_health_tracking import HealthDaily
+
+
+class HealthDiary:
+    def __init__(self):
+        self.history_of_days = []
+
+    def add_day(self, specific_day: HealthDaily):
+        self.history_of_days.append(specific_day)
+
+    def get_history_of_days(self):
+        return self.history_of_days
