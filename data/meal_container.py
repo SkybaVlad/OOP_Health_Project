@@ -19,17 +19,19 @@ class MealContainer:
             return []
         return self.dict[date]
 
+
+class MealSorter:
     def sort_meals(self, meals):
         return sorted(meals, key=lambda m: m.calories, reverse=True)
 
     def sort_all_meals(self):
-        allmeals = []
+        all_meals = []
         for meals in self.dict.values():
-            allmeals.extend(meals)
-        return self.sort_meals(allmeals)
+            all_meals.extend(meals)
+        return self.sort_meals(all_meals)
 
     def sort_meals_by_day(self, date):
-        daymeals = []
+        day_meals = []
         for meal in self.dict[date]:
-            daymeals.append(meal)
-        return self.sort_meals(daymeals)
+            day_meals.append(meal)
+        return self.sort_meals(day_meals)
