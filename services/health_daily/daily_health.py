@@ -6,13 +6,16 @@ import time
 class HealthDaily:
     def __init__(self):
         self.day: str = time.strftime("%Y-%m-%d", time.localtime())
-        self.burned_calories_for_day: float = 0.0
-        self.consumed_calories_for_day: float = 0.0
+        self.burned_calories_for_day: float | None = None
+        self.consumed_calories_for_day: float | None = None
         self.list_of_activities_for_day: list[SpecificActivityType] = []
         self.list_of_meals_for_day: list = []
-        self.drunk_water: float = 0.0
-        self.sleep_duration: float = 0.0
-        self.count_of_steps_for_day = 0.0
+        self.drunk_water: float | None = None
+        self.sleep_duration: float | None = None
+        self.count_of_steps_for_day: float | None = None
+        self.weight: float | None = None
+        self.height: float | None = None
+        self.fat_percentage: float | None = None
 
     def add_activity(self, activity_object: SpecificActivityType) -> None:
         self.list_of_activities_for_day.append(activity_object)
@@ -30,3 +33,12 @@ class HealthDaily:
 
     def add_count_of_steps(self, count_of_steps) -> None:
         self.count_of_steps_for_day += count_of_steps
+
+    def set_weight(self, weight_value) -> None:
+        self.weight = weight_value
+
+    def set_height(self, height_value) -> None:
+        self.height = height_value
+
+    def set_fat_percentage(self, percentage_value) -> None:
+        self.fat_percentage = percentage_value
