@@ -1,5 +1,4 @@
 import enum
-import math
 from services.time_logic import TimeActivityManager
 
 
@@ -26,33 +25,48 @@ class ActivityType(enum.Enum):
     Other = 'Other'
 
 
+class ActivityCategory(enum.Enum):
+    Cardio = 'Cardio'
+    Strength = 'Strength'
+    Sport = 'Sport'
+
+
 class SpecificActivityType:
+    """This class describes the activity type. Class has a activity_category attribute that describes in ActivityCategory class,
+    activity_name attribute that describes in ActivityType class,
+    burned_calories attribute that describes amount of burned calories that user entered,
+    date_of_activity attribute describes a date when user do the activity and has the next format YYYY-MM-DD,
+    start_time_of_activity attribute describes a time when activity is started and has the next format HH:MM,
+    end_time_of_activity attribute describes a time when activity is ended and has the next format HH:MM
+    """
 
     def __init__(
         self,
+        activity_category: str,
         activity_name: str,
         burned_calories: float,
-        date_of_activity: str,  # YYYY-MM-DD -> 2025-11-20
-        start_time_of_activity: str,  # HH:MM -> 17:20
-        end_time_of_activity: str,  # HH:MM -> 19:20
+        date_of_activity: str,
+        start_time_of_activity: str,
+        end_time_of_activity: str,
     ):
+        self.activity_category = activity_category
         self._activity_name = activity_name
         self._burned_calories = burned_calories
         self.time_manager = TimeActivityManager(
             date_of_activity, start_time_of_activity, end_time_of_activity
         )
 
-    def get_name_of_specific_activity(self):
+    def get_name_of_specific_activity(self) -> str:
         return self._activity_name
 
-    def get_burned_calories(self):
+    def get_burned_calories(self) -> float:
         return self._burned_calories
 
-    def calculate_activity_duration_in_minutes(self):
+    def calculate_activity_duration_in_minutes(self) -> float:
         return self.time_manager.calculate_activity_duration_in_minutes()
 
-    def get_start_time_of_specific_activity(self):
+    def get_start_time_of_specific_activity(self) -> str:
         return self.time_manager.start_time_of_activity
 
-    def get_end_time_of_specific_activity(self):
+    def get_end_time_of_specific_activity(self) -> str:
         return self.time_manager.end_time_of_activity
