@@ -2,6 +2,7 @@ from services.body_metrics.body_metrics import StrategyBodyMetricsInterface
 from services.activities.activity_type import SpecificActivityType
 from services.nutrition.meal import Meal
 import time
+from services.time_logic import time_in_period
 
 
 class HealthDaily:
@@ -76,6 +77,32 @@ class HealthDailyAnalyzer:
 
 
 class HealthMonthAnalyzer:
-    """This class responsible for analyze a month statistics. This class analyze list of health_diary objects"""
+    """This class responsible for analyze a month statistics. This class analyze list of health_diary objects.
+    Constructor accepts a list of health_diary objects and start_data, end_data. Start_data and end_data have next the str format YYYY-MM-DD
+    """
 
-    pass
+    def __init__(self, list_of_health_diary: list, start_data: str, end_data: str):
+        self.list_of_health_diary = list_of_health_diary
+        self.start_data = start_data
+        self.end_data = end_data
+
+    def get_total_time_spent_on_activities_in_minutes(self) -> float:
+        total_time_spent = 0.0
+        for activity in self.list_of_health_diary:
+            if time_in_period(
+                self.start_data, self.end_data, activity.date_of_activity
+            ):
+                total_time_spent += activity.calculate_activity_duration_in_minutes()
+        return total_time_spent
+
+    def get_total_consumed_calories(self) -> float:
+        total_consumed_calories = 0.0
+        for day in self.list_of_health_diary:
+            total_consumed_calories += day.consumed_calories_for_day
+        return total_consumed_calories
+
+    def get_total_burned_calories(self) -> float:
+        total_burned_calories = 0.0
+        for day in self.list_of_health_diary:
+            total_burned_calories += day.burned_calories_for_day
+        return total_burned_calories
