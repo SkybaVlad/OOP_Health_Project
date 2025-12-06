@@ -1,5 +1,5 @@
 import unittest
-from buisness.facade import Facade
+from facade_logic.facade import Facade
 from unittest.mock import patch
 from services.user.user_info import User
 

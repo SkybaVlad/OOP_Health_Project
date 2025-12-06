@@ -3,7 +3,8 @@ from services.body_metrics.body_metrics import BodyMetricsType
 
 
 class BodyMetricsContainer:
-    """This class responsible for storing data about body metrics"""
+    """This class responsible for storing data about body metrics
+    Data has the next format YYYY-MM-DD"""
 
     def __init__(self):
         self._dictionary = {}

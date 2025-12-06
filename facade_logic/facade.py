@@ -14,7 +14,8 @@ from services.user.user_body_goals import UserBodyDailyGoals
 from services.user.user_info import User
 from services.user.user_body_info import UserBodyInfo
 from services.nutrition.meal import Meal
-from services.health_diary.daily_health_tracking import HealthDaily
+from services.health_diary.daily_health_tracking import HealthDaily, HealthDailyAnalyzer
+import time
 
 
 class Facade:
@@ -23,7 +24,7 @@ class Facade:
         self.facade_container = FacadeContainer()
         self.strategy_context_body_metrics = Context()
         self.medication_reminder = MedicationReminder()
-        self.user_body_goals = UserBodyDailyGoals()
+        self.user_body_daily_goals = UserBodyDailyGoals()
         self.user = user
         self.health_diary = HealthDaily()
 
@@ -89,25 +90,67 @@ class Facade:
 
     # maybe add load_medicine_recipe()
 
-    def add_activity(
-        self, activity_object: SpecificActivityType, data_of_activity: str
-    ) -> None:
-        self.facade_container.activity_container.add_activity(
-            activity_object, data_of_activity
-        )
-        # add activity object to the daily lists of activities
-        # add burned calories to the daily burned calories
+    def add_activity_in_some_term(self, date):
+        pass
 
-    def add_meal(self, meal: Meal, data):
-        self.facade_container.meal_container.add_meal(meal, data)
-        # add calories of meal to daily consumed calories
-        # add meal to the daily meals
-        # add meals to the meals container
+    def add_daily_activity(
+        self,
+        activity_object: SpecificActivityType,
+        provided_time_value=None,
+        time_value=time.strftime("%Y-%m-%d", time.localtime()),
+    ) -> None:
+        if provided_time_value:
+            self.facade_container.activity_container.add_activity(
+                activity_object, provided_time_value
+            )
+        if self.day_validator(time_value) and provided_time_value is None:
+            self.facade_container.activity_container.add_activity(
+                activity_object, self.health_diary.day
+            )
+            self.health_diary.add_activity(activity_object)
+        if not self.day_validator(time_value):
+            self.create_new_health_dairy()
+            self.facade_container.add_activity(activity_object, self.health_diary.day)
+            self.health_diary.add_activity(activity_object)
+
+    def add_daily_meal(
+        self,
+        meal: Meal,
+        provided_time_value=None,
+        time_value=time.strftime("%Y-%m-%d", time.localtime()),
+    ) -> None:
+        if provided_time_value:
+            self.facade_container.add_meal(meal, provided_time_value)
+        if self.day_validator(time_value) and provided_time_value is None:
+            self.facade_container.add_meal(meal, self.health_diary.day)
+            self.health_diary.add_meals(meal)
+        if not self.day_validator(time_value):
+            self.create_new_health_dairy()
+            self.facade_container.add_meal(meal, self.health_diary.day)
+            self.health_diary.add_meals(meal)
 
     def add_body_metrics(self, metrics_type, value, data) -> None:
         self.facade_container.body_metrics_container.add_body_metrics(
             metrics_type, value, data
         )
+
+    def add_daily_amount_of_drunk_water(
+        self,
+        amount_of_drunk_water: float,
+        time_value=time.strftime("%Y-%m-%d", time.localtime()),
+    ) -> None:
+        if not self.day_validator(time_value):
+            self.create_new_health_dairy()
+        self.health_diary.add_drunk(amount_of_drunk_water)
+
+    def add_daily_amount_of_sleep(
+        self,
+        amount_of_sleep: float,
+        time_value=time.strftime("%Y-%m-%d", time.localtime()),
+    ) -> None:
+        if not self.day_validator(time_value):
+            self.create_new_health_dairy()
+        self.health_diary.add_sleep(amount_of_sleep)
 
     def add_medication(self, medicine_name, medication_dosage, time_to_take_medication):
         medication_object = Medication(medicine_name, medication_dosage)
@@ -125,7 +168,25 @@ class Facade:
         return self.strategy_context_body_metrics.calculate()
 
     def get_daily_results(self):
-        self.health_diary.
+        health_analyzer = HealthDailyAnalyzer(
+            self.health_diary, self.user_body_daily_goals
+        )
+        return (
+            health_analyzer.get_burned_calories(),
+            health_analyzer.get_remaining_of_burned_calories(),
+            health_analyzer.get_remaining_of_consumed_calories(),
+            # body_metrics
+            health_analyzer.get_consumed_calories(),
+            health_analyzer.get_consumed_water(),
+            health_analyzer.get_remaining_water(),
+            health_analyzer.get_sleep_duration(),
+            health_analyzer.get_total_time_spent_on_activities_in_minutes(),
+        )
 
-    def create_new_health_dairy(self):
+    def day_validator(self, time_value) -> bool:
+        if time_value == self.health_diary.day:
+            return True
+        return False
+
+    def create_new_health_dairy(self) -> None:
         self.health_diary = HealthDaily()

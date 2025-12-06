@@ -1,8 +1,10 @@
 from data.body_metrics_container import BodyMetricsContainer
 from data.activity_container import ActivityContainer
+from services.time_logic import time_in_period
 
 
 class BodyMetricsCriteria:
+    """This class responsible for any type of body_metrics criteria"""
     def __init__(self):
         self.metrics_type = None
         self.specific_data = None
@@ -71,7 +73,7 @@ class FiltrationBodyMetrics:
         list_of_activities = [
             (metrics, dictionary_of_activities[(data, metrics)])
             for data, metrics in dictionary_of_activities
-            if time_compare(
+            if time_in_period(
                 self.body_metrics_filtration_criteria.start_data,
                 self.body_metrics_filtration_criteria.end_data,
                 data,
@@ -111,6 +113,7 @@ class FiltrationBodyMetrics:
 
 
 class ActivityCriteria:
+    """This class responsible for any type of activity criteria"""
     def __init__(self):
         self.activity_type = None
         self.specific_data = None
@@ -165,7 +168,7 @@ class FiltrationActivity:
 
     def filter_by_period(self) -> list:
         dictionary_of_activities = self.activity_container.get_all_activities()
-        list_of_activities = [specific_activity_object for data, specific_activity_object in dictionary_of_activities.items() if time_compare(self.filtration_activity_criteria.start_data, self.filtration_activity_criteria.end_data, data)]
+        list_of_activities = [specific_activity_object for data, specific_activity_object in dictionary_of_activities.items() if time_in_period(self.filtration_activity_criteria.start_data, self.filtration_activity_criteria.end_data, data)]
         return list_of_activities
 
     def filter_by_greater_value_of_burned_calories(self) -> list:
@@ -178,6 +181,3 @@ class FiltrationActivity:
         list_of_activities = [(data, specific_activity_object) for data, specific_activity_object in dictionary_of_activities.items() if specific_activity_object.burned_calories < self.filtration_activity_criteria.greater_value]
         return list_of_activities
 
-
-def time_compare(start_time: str, end_time: str, current_time: str):
-    pass
