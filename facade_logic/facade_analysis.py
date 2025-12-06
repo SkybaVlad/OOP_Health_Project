@@ -1,4 +1,7 @@
-from services.health_daily_track.health_analysis import HealthDailyAnalyzer, HealthAnalyzerInSomePeriod
+from services.health_daily.health_analysis import (
+    HealthDailyAnalyzer,
+    HealthAnalyzerInSomePeriod,
+)
 
 
 class AnalysisFacade:

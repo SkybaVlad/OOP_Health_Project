@@ -1,5 +1,5 @@
 import enum
-from services.body_metrics.body_metrics import BodyMetricsType
+from services.body_metrics.body_metrics_calculator import BodyMetricsType
 
 
 class BodyMetricsContainer:
