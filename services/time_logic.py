@@ -23,10 +23,11 @@ def time_in_period(start_time: str, end_time: str, current_time: str):
                 return False
     return True
 
-    if current_time[2] < start_time[2] or current_time[2] > end_time[2]:
-        return False
 
-    return True
+def time_converter_minutes_in_hours(time_in_minutes: float):
+    hours = math.floor(time_in_minutes / 60)
+    minutes = time_in_minutes - hours * 60
+    return hours, minutes
 
 
 def time_validator(date_of_activity: str, start_time: str, end_time: str):
