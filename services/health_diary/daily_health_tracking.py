@@ -42,7 +42,13 @@ class HealthDailyAnalyzer:
     """This class responsible for analyze daily health. This class analyze a health_diary object and
     user_body_daily_goals and provide methods that return results of analysis"""
 
-    def __init__(self, health_daily: HealthDaily, user_body_daily_goals: UserBodyDailyGoals, user_body_info: UserBodyInfo, user_info: User):
+    def __init__(
+        self,
+        health_daily: HealthDaily,
+        user_body_daily_goals: UserBodyDailyGoals,
+        user_body_info: UserBodyInfo,
+        user_info: User,
+    ):
         self.health_daily = health_daily
         self.user_body_daily_goals = user_body_daily_goals
         self.body_metrics_calculator = BodyMetricsCalculator(user_body_info, user_info)
@@ -86,7 +92,16 @@ class HealthDailyAnalyzer:
         return self.health_daily.sleep_duration
 
     def calculate_body_mass_index(self):
+        return self.body_metrics_calculator.calculate_body_mass_index_metrics()
 
+    def calculate_basal_metabolic_rate(self):
+        return self.body_metrics_calculator.calculate_basal_metabolic_rate()
+
+    def calculate_lean_body_mass_index(self):
+        return self.body_metrics_calculator.calculate_lean_body_mass()
+
+    def calculate_fat_mass(self):
+        return self.body_metrics_calculator.calculate_fat_mass()
 
 
 class HealthAnalyzerInSomePeriod:
