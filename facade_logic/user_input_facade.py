@@ -1,5 +1,4 @@
-
-from services.body_metrics.body_metrics import (
+from services.body_metrics.body_metrics_calculator import (
     BodyMetricsType,
 )
 from services.medication.medication import Medication, MedicationReminder
@@ -74,5 +73,3 @@ class UserInputFacade:
             )
         except ValueError as error:
             print(error)
-
-

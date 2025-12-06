@@ -1,6 +1,11 @@
 from services.activities.activity_type import ActivityCategory
-from services.body_metrics.body_metrics import BodyMetricsCalculator
-from services.health_daily_track.daily_health_tracking import HealthDaily
+from services.body_metrics.body_metrics_calculator import (
+    calculate_body_mass_index_metrics,
+    calculate_lean_body_mass,
+    calculate_fat_mass,
+    calculate_basal_metabolic_rate,
+)
+from services.health_daily.daily_health import HealthDaily
 from services.time_logic import time_in_period
 from services.user.user_body_goals import UserBodyDailyGoals
 from services.user.user_body_info import UserBodyInfo
@@ -9,7 +14,7 @@ from data.health_diary import HealthDiary
 
 
 class HealthDailyAnalyzer:
-    """This class responsible for analyze daily health. This class analyze a health_daily_track object and
+    """This class responsible for analyze daily health. This class analyze a health_daily object and
     user_body_daily_goals and provide methods that return results of analysis"""
 
     def __init__(
@@ -21,7 +26,8 @@ class HealthDailyAnalyzer:
     ):
         self.health_daily = health_daily
         self.user_body_daily_goals = user_body_daily_goals
-        self.body_metrics_calculator = BodyMetricsCalculator(user_body_info, user_info)
+        self.user_body_info = user_body_info
+        self.user = user_info
 
     def get_total_time_spent_on_activities_in_minutes(self) -> float:
         total_time_spent = 0.0
@@ -62,21 +68,88 @@ class HealthDailyAnalyzer:
         return self.health_daily.count_of_steps_for_day
 
     def calculate_body_mass_index(self):
-        return self.body_metrics_calculator.calculate_body_mass_index_metrics()
+        if self.health_daily.weight is None and self.health_daily.height is not None:
+            return calculate_body_mass_index_metrics(
+                self.user_body_info.get_weight(), self.health_daily.height
+            )
+        if self.health_daily.weight is not None and self.health_daily.height is None:
+            return calculate_body_mass_index_metrics(
+                self.health_daily.weight, self.user_body_info.get_height()
+            )
+        if self.health_daily.weight is None and self.health_daily.height is None:
+            return calculate_body_mass_index_metrics(
+                self.user_body_info.get_weight(), self.user_body_info.get_height()
+            )
+        return calculate_body_mass_index_metrics(
+            self.health_daily.weight, self.health_daily.height
+        )
 
     def calculate_basal_metabolic_rate(self):
-        return self.body_metrics_calculator.calculate_basal_metabolic_rate()
+        if self.health_daily.weight is None and self.health_daily.height is not None:
+            return calculate_basal_metabolic_rate(
+                self.user.get_sex(),
+                self.user_body_info.get_weight(),
+                self.health_daily.height,
+                self.user.get_age(),
+            )
+        if self.health_daily.weight is not None and self.health_daily.height is None:
+            return calculate_basal_metabolic_rate(
+                self.user.get_sex(),
+                self.health_daily.weight,
+                self.user_body_info.get_height(),
+                self.user.get_age(),
+            )
+        if self.health_daily.weight is None and self.health_daily.height is None:
+            return calculate_basal_metabolic_rate(
+                self.user.get_sex(),
+                self.user_body_info.get_weight(),
+                self.user_body_info.get_height(),
+                self.user.get_age(),
+            )
+        return calculate_basal_metabolic_rate(
+            self.user.get_sex(),
+            self.health_daily.weight,
+            self.health_daily.height,
+            self.user.get_age(),
+        )
 
     def calculate_lean_body_mass_index(self):
-        return self.body_metrics_calculator.calculate_lean_body_mass()
+        if (
+            self.health_daily.weight is None
+            and self.health_daily.fat_percentage is not None
+        ):
+            return calculate_lean_body_mass(
+                self.user_body_info.get_weight(),
+                self.user_body_info.get_fat_percentage(),
+            )
+        if self.health_daily.weight is not None and self.health_daily.height is None:
+            return calculate_lean_body_mass(
+                self.health_daily.weight, self.user_body_info.get_fat_percentage()
+            )
+        if (
+            self.health_daily.weight is None
+            and self.health_daily.fat_percentage is None
+        ):
+            return calculate_lean_body_mass(
+                self.user_body_info.get_weight(),
+                self.user_body_info.get_fat_percentage(),
+            )
+        return calculate_lean_body_mass(
+            self.health_daily.weight, self.health_daily.fat_percentage
+        )
 
     def calculate_fat_mass(self):
-        return self.body_metrics_calculator.calculate_fat_mass()
+        lean_body_mass_value = self.calculate_lean_body_mass_index()
+        if self.health_daily.weight is None:
+            return calculate_fat_mass(
+                self.user_body_info.get_weight(), lean_body_mass_value
+            )
+        return calculate_fat_mass(self.health_daily.weight, lean_body_mass_value)
 
 
 class HealthAnalyzerInSomePeriod:
-    """This class responsible for analyze a statistics on some period of time. This class analyze list of health_daily_track objects.
-    Constructor accepts a list of health_daily_track objects and start_data, end_data. Start_data and end_data have next
+    """This class responsible for analyze a statistics on some period of time. This class analyze list of health_daily objects.
+    Constructor accepts a list of health_daily objects and start_data, end_data. Start_data and end_data have next
     the str format YYYY-MM-DD
     """
 
