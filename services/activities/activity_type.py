@@ -45,16 +45,18 @@ class SpecificActivityType:
         activity_category: str,
         activity_name: str,
         burned_calories: float,
-        date_of_activity: str,
         start_time_of_activity: str,
         end_time_of_activity: str,
     ):
-        self.activity_category = activity_category
+        self._activity_category = activity_category
         self._activity_name = activity_name
         self._burned_calories = burned_calories
         self.time_manager = TimeActivityManager(
-            date_of_activity, start_time_of_activity, end_time_of_activity
+            start_time_of_activity, end_time_of_activity
         )
+
+    def get_activity_category(self) -> str:
+        return self._activity_category
 
     def get_name_of_specific_activity(self) -> str:
         return self._activity_name
