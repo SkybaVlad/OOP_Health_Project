@@ -22,7 +22,7 @@ class SpecificDaySpecification(Specification):
         self.date = date
 
     def is_satisfy_by(self, day: HealthDaily) -> bool:
-        return self.date == day.day
+        return self.date == day.date_of_day
 
 
 class PeriodSpecification(Specification):
@@ -37,7 +37,9 @@ class PeriodSpecification(Specification):
         self.end_period_time = end_period_time
 
     def is_satisfy_by(self, day: HealthDaily) -> bool:
-        return time_in_period(self.start_period_time, self.end_period_time, day.day)
+        return time_in_period(
+            self.start_period_time, self.end_period_time, day.date_of_day
+        )
 
 
 class ActivitySpecification(Specification):
