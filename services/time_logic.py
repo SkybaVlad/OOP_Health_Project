@@ -71,8 +71,7 @@ def time_validator(date_of_activity: str, start_time: str, end_time: str):
 
 
 class TimeActivityManager:
-    def __init__(self, date_of_activity, start_time_of_activity, end_time_of_activity):
-        self._date_of_activity = date_of_activity
+    def __init__(self, start_time_of_activity, end_time_of_activity):
         self.start_time_of_activity = start_time_of_activity
         self.end_time_of_activity = end_time_of_activity
 
@@ -94,7 +93,7 @@ class TimeActivityManager:
             end_time_of_activity[0] -= 1
         if end_time_of_activity[0] < start_time_of_activity[0]:
             end_time_of_activity[0] += 24
-        result = [0, 0]
+        result: list[int] = [0, 0]
         result[1] = math.fabs(end_time_of_activity[1] - start_time_of_activity[1])
         result[0] = end_time_of_activity[0] - start_time_of_activity[0]
         print(result)
