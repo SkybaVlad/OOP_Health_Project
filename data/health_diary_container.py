@@ -1,4 +1,5 @@
 from services.health_daily.daily_health import HealthDaily
+from services.time_logic import convert_data_from_string_to_number
 
 
 class HealthDiary:
@@ -21,8 +22,11 @@ class HealthDiary:
                 return day
         return None
 
-    def sort(self):
-        pass
+    def get_sorted_list_of_days(self):
+        return sorted(
+            self.history_of_all_days,
+            key=lambda day: convert_data_from_string_to_number(day.date_of_day),
+        )
 
     def get_history_of_days(self) -> list[HealthDaily]:
         return self.history_of_all_days
