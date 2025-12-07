@@ -1,6 +1,6 @@
 from services.activities.activity_type import SpecificActivityType
 from services.nutrition.meal import Meal
-import time
+from services.time_logic import time_converter_in_minutes
 
 
 class HealthDaily:
@@ -16,10 +16,15 @@ class HealthDaily:
         self.weight: float = 0.0
         self.height: float = 0.0
         self.fat_percentage: float = 0.0
+        self.total_time_spend_on_activities: float = 0.0
 
     def add_activity(self, activity_object: SpecificActivityType) -> None:
         self.list_of_activities_for_day.append(activity_object)
         self.burned_calories_for_day += activity_object.get_burned_calories()
+        self.total_time_spend_on_activities += time_converter_in_minutes(
+            activity_object.get_start_time_of_specific_activity(),
+            activity_object.get_end_time_of_specific_activity(),
+        )
 
     def add_meals(self, meal: Meal) -> None:
         self.list_of_meals_for_day.append(meal)
