@@ -33,11 +33,8 @@ class HealthDailyAnalyzer:
     def set_user_info(self, user_info: User):
         self.user = user_info
 
-    def get_total_time_spent_on_activities_in_minutes(self) -> float:
-        total_time_spent = 0.0
-        for activity in self.health_daily.list_of_activities_for_day:
-            total_time_spent += activity.calculate_activity_duration_in_minutes()
-        return total_time_spent
+    def get_total_time_spent_on_activities_in_minutes_current_day(self) -> float:
+        return self.health_daily.total_time_spend_on_activities
 
     def get_remaining_of_consumed_calories(self) -> float:
         return (
@@ -194,31 +191,13 @@ class HealthInSomePeriodAnalyzer:
             total_steps += day.count_of_steps_for_day
         return total_steps
 
-    def get_total_time_spent_on_cardio_activities_for_all_time(self):
+    def get_total_time_spent_on_specific_category_of_activities_for_all_time(
+        self, activity_category
+    ):
         total_time_spent = 0.0
         for day in self.list_health_diary:
             for activity in day.list_of_activities_for_day:
-                if activity.get_activity_category() == ActivityCategory.Cardio.value:
-                    total_time_spent += (
-                        activity.calculate_activity_duration_in_minutes()
-                    )
-        return total_time_spent
-
-    def get_total_time_spent_on_strength_activities_for_all_time(self):
-        total_time_spent = 0.0
-        for day in self.list_health_diary:
-            for activity in day.list_of_activities_for_day:
-                if activity.get_activity_category() == ActivityCategory.Strength.value:
-                    total_time_spent += (
-                        activity.calculate_activity_duration_in_minutes()
-                    )
-        return total_time_spent
-
-    def get_total_time_spent_on_sport_activities_for_all_time(self):
-        total_time_spent = 0.0
-        for day in self.list_health_diary:
-            for activity in day.list_of_activities_for_day:
-                if activity.get_activity_category() == ActivityCategory.Sport.value:
+                if activity.get_activity_category() == activity_category:
                     total_time_spent += (
                         activity.calculate_activity_duration_in_minutes()
                     )
