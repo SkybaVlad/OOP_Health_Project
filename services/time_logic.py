@@ -24,6 +24,10 @@ def time_in_period(start_time: str, end_time: str, current_time: str):
     return True
 
 
+def convert_data_from_string_to_number(date: str):
+    return int(date.replace("-", ""))
+
+
 def time_converter_minutes_in_hours(time_in_minutes: float):
     hours = math.floor(time_in_minutes / 60)
     minutes = time_in_minutes - hours * 60
@@ -70,32 +74,26 @@ def time_validator(date_of_activity: str, start_time: str, end_time: str):
         # need validate year value month value day value like day < 30 month < 12
 
 
-class TimeActivityManager:
-    def __init__(self, start_time_of_activity, end_time_of_activity):
-        self.start_time_of_activity = start_time_of_activity
-        self.end_time_of_activity = end_time_of_activity
+def time_converter_in_minutes(start_time_of_activity, end_time_of_activity):
+    """return time duration in minutes
+    For example start_time = 17:30, end_time = 19:30
+    Return 120 minutes
+    start_time_of_activity and end_time_of_activity are both strings
+    and should have the next format HH:MM"""
 
-    def calculate_activity_duration_in_minutes(self):
-        """return time duration in minutes
-        For example start_time = 17:30, end_time = 19:30
-        Return 120 minutes"""
-
-        return self._time_converter_in_minutes_()
-
-    def _time_converter_in_minutes_(self):
-        start_time_of_activity = self.start_time_of_activity.split(':')
-        end_time_of_activity = self.end_time_of_activity.split(':')
-        for i in range(len(start_time_of_activity)):
-            start_time_of_activity[i] = int(start_time_of_activity[i])
-            end_time_of_activity[i] = int(end_time_of_activity[i])
-        if end_time_of_activity[1] < start_time_of_activity[1]:
-            end_time_of_activity[1] += 60
-            end_time_of_activity[0] -= 1
-        if end_time_of_activity[0] < start_time_of_activity[0]:
-            end_time_of_activity[0] += 24
-        result: list[int] = [0, 0]
-        result[1] = math.fabs(end_time_of_activity[1] - start_time_of_activity[1])
-        result[0] = end_time_of_activity[0] - start_time_of_activity[0]
-        print(result)
-        res_in_minutes = result[0] * 60 + result[1]
-        return res_in_minutes
+    start_time_of_activity = start_time_of_activity.split(':')
+    end_time_of_activity = end_time_of_activity.split(':')
+    for i in range(len(start_time_of_activity)):
+        start_time_of_activity[i] = int(start_time_of_activity[i])
+        end_time_of_activity[i] = int(end_time_of_activity[i])
+    if end_time_of_activity[1] < start_time_of_activity[1]:
+        end_time_of_activity[1] += 60
+        end_time_of_activity[0] -= 1
+    if end_time_of_activity[0] < start_time_of_activity[0]:
+        end_time_of_activity[0] += 24
+    result: list[int] = [0, 0]
+    result[1] = math.fabs(end_time_of_activity[1] - start_time_of_activity[1])
+    result[0] = end_time_of_activity[0] - start_time_of_activity[0]
+    print(result)
+    res_in_minutes = result[0] * 60 + result[1]
+    return res_in_minutes
