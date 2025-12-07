@@ -3,6 +3,7 @@ from services.nutrition.meal import Meal
 from data.health_diary_container import HealthDiary
 import time
 from services.health_daily.daily_health import HealthDaily
+from services.specification_for_filter import *
 
 
 class DairyFacade:
@@ -176,11 +177,3 @@ class DairyFacade:
 
     def get_list_of_all_days(self):
         return self.health_diary.get_history_of_days()
-
-
-activity_obj = SpecificActivityType("Cardio", "Yoga", 600, "17-20", "19-00")
-
-facade_diary = DairyFacade()
-facade_diary.add_activity(activity_obj, "2025-07-12")
-print(facade_diary.get_list_of_all_days())
-print(type(facade_diary.get_list_of_all_days()[0]))
