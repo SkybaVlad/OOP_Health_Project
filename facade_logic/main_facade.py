@@ -1,32 +1,46 @@
 from facade_logic.facade_dairy_manager import DairyFacade
+from services.user.user_body_goals import UserBodyDailyGoals
 from services.user.user_info import User
 from services.user.user_body_info import UserBodyInfo
 from services.health_analysis import HealthDailyAnalyzer, HealthInSomePeriodAnalyzer
 from services.specification_for_filter import *
 from services.time_logic import time_converter_minutes_in_hours
+from data.health_diary_container import HealthDiary
+import time
 
 
 class MainFacade:
-    def __init__(self, user: User):
-        self.dairy_facade: DairyFacade = DairyFacade()
-        self.user_body_info: UserBodyInfo = UserBodyInfo()
-        self.user: User = user
-        self.health_daily_analyzer: HealthDailyAnalyzer = HealthDailyAnalyzer()
-        self.health_analyzer_some_period: HealthInSomePeriodAnalyzer = (
-            HealthInSomePeriodAnalyzer()
-        )
+    def __init__(
+        self,
+        user: User,
+        health_daily: HealthDaily,
+        health_diary: HealthDiary,
+        health_diary_facade: DairyFacade,
+        user_body_info: UserBodyInfo,
+        user_body_daily_goals: UserBodyDailyGoals,
+        health_daily_analyzer: HealthDailyAnalyzer,
+        health_in_some_period_analyzer: HealthInSomePeriodAnalyzer,
+    ):
+        self.user = user
+        self.health_daily = health_daily
+        self.health_diary = health_diary
+        self.health_diary_facade = health_diary_facade
+        self.user_body_info = user_body_info
+        self.user_body_daily_goals = user_body_daily_goals
+        self.health_daily_analyzer = health_daily_analyzer
+        self.health_in_some_period_analyzer = health_in_some_period_analyzer
 
     def add_weight(self, weight_value, date: str) -> None:
         self.user_body_info.set_weight(weight_value)
-        self.dairy_facade.set_weight(weight_value, date)
+        self.health_diary_facade.set_weight(weight_value, date)
 
     def add_height(self, height_value, date: str) -> None:
         self.user_body_info.set_height(height_value)
-        self.dairy_facade.set_height(height_value, date)
+        self.health_diary_facade.set_height(height_value, date)
 
     def add_fat_percentage(self, fat_percentage_value, date: str) -> None:
         self.user_body_info.set_fat_percentage(fat_percentage_value)
-        self.dairy_facade.set_fat_percentage(fat_percentage_value, date)
+        self.health_diary_facade.set_fat_percentage(fat_percentage_value, date)
 
     def get_total_time_spent_on_activities_in_minutes_current_day(self) -> float:
         return (
@@ -78,16 +92,18 @@ class MainFacade:
 
     def get_total_time_spent_on_activities_in_minutes_for_all_time(self) -> float:
         return (
-            self.health_analyzer_some_period.get_total_time_spent_on_activities_in_minutes_for_all_time()
+            self.health_in_some_period_analyzer.get_total_time_spent_on_activities_in_minutes_for_all_time()
         )
 
     def get_total_consumed_calories_for_all_time(self) -> float:
         return (
-            self.health_analyzer_some_period.get_total_consumed_calories_for_all_time()
+            self.health_in_some_period_analyzer.get_total_consumed_calories_for_all_time()
         )
 
     def get_total_burned_calories_for_all_time(self) -> float:
-        return self.health_analyzer_some_period.get_total_burned_calories_for_all_time()
+        return (
+            self.health_in_some_period_analyzer.get_total_burned_calories_for_all_time()
+        )
 
     def get_total_steps_for_all_time(self) -> float:
         return self.get_total_steps_for_all_time()
@@ -95,36 +111,36 @@ class MainFacade:
     def get_total_time_spent_on_specific_category_of_activities_for_all_time(
         self, activity_category
     ) -> float:
-        return self.health_analyzer_some_period.get_total_time_spent_on_specific_category_of_activities_for_all_time(
+        return self.health_in_some_period_analyzer.get_total_time_spent_on_specific_category_of_activities_for_all_time(
             activity_category
         )
 
     def get_day_with_max_consumed_calories_for_all_time(self) -> HealthDaily:
         return (
-            self.health_analyzer_some_period.get_day_with_max_consumed_calories_for_all_time()
+            self.health_in_some_period_analyzer.get_day_with_max_consumed_calories_for_all_time()
         )
 
     def get_day_with_max_burned_calories_for_all_time(self) -> HealthDaily:
         return (
-            self.health_analyzer_some_period.get_day_with_max_burned_calories_for_all_time()
+            self.health_in_some_period_analyzer.get_day_with_max_burned_calories_for_all_time()
         )
 
     def get_day_with_max_steps_for_all_time(self) -> HealthDaily:
-        return self.health_analyzer_some_period.get_day_with_max_steps_for_all_time()
+        return self.health_in_some_period_analyzer.get_day_with_max_steps_for_all_time()
 
     def get_day_with_max_time_spent_on_activities_for_all_time(self) -> HealthDaily:
         return (
-            self.health_analyzer_some_period.get_day_with_max_time_spent_on_activities_for_all_time()
+            self.health_in_some_period_analyzer.get_day_with_max_time_spent_on_activities_for_all_time()
         )
 
     def get_day_with_max_amount_of_drunk_water_for_all_time(self) -> HealthDaily:
         return (
-            self.health_analyzer_some_period.get_day_with_max_amount_of_drunk_water_for_all_time()
+            self.health_in_some_period_analyzer.get_day_with_max_amount_of_drunk_water_for_all_time()
         )
 
     def get_day_with_max_hours_spent_on_sleep_for_all_time(self) -> HealthDaily:
         return (
-            self.health_analyzer_some_period.get_day_with_max_hours_spent_on_sleep_for_all_time()
+            self.health_in_some_period_analyzer.get_day_with_max_hours_spent_on_sleep_for_all_time()
         )
 
     def get_result_of_analyze_some_period(self) -> str:
@@ -145,7 +161,7 @@ class MainFacade:
             self.get_day_with_max_hours_spent_on_sleep_for_all_time()
         )
         return (
-            f"Statistics from {self.health_analyzer_some_period.start_data} to {self.health_analyzer_some_period.end_data}"
+            f"Statistics from {self.health_in_some_period_analyzer.start_data} to {self.health_in_some_period_analyzer.end_data}"
             f"Total time spent on activities {time_converter_minutes_in_hours(self.get_total_time_spent_on_activities_in_minutes_for_all_time())}"
             f"Total consumed calories {self.get_total_consumed_calories_for_all_time()}"
             f"Total burned calories {self.get_total_burned_calories_for_all_time()}"
@@ -166,13 +182,40 @@ class MainFacade:
         return [day for day in list_of_all_days if specification.is_satisfy_by(day)]
 
 
+def create_and_configure_facade_for_start(user: User) -> MainFacade:
+    first_day = HealthDaily(time.strftime("%Y-%m-%d", time.localtime()))
+    health_diary = HealthDiary()
+    user_body_info = UserBodyInfo()
+    user_body_daily_goals = UserBodyDailyGoals()
+    dairy_facade = DairyFacade()
+    health_daily_analyzer = HealthDailyAnalyzer()
+    health_in_some_period_analyzer = HealthInSomePeriodAnalyzer()
+
+    dairy_facade.set_health_daily(first_day)
+    dairy_facade.set_health_diary(health_diary)
+
+    health_daily_analyzer.set_user_body_daily_goals(user_body_daily_goals)
+    health_daily_analyzer.set_user_body_info(user_body_info)
+    health_daily_analyzer.set_day_that_need_to_analyze(first_day)
+    health_daily_analyzer.set_user_info(user)
+
+    health_diary.add_day(first_day)
+
+    health_in_some_period_analyzer.set_list_of_days(health_diary.get_history_of_days())
+
+    main_facade = MainFacade(
+        user,
+        first_day,
+        health_diary,
+        dairy_facade,
+        user_body_info,
+        user_body_daily_goals,
+        health_daily_analyzer,
+        health_in_some_period_analyzer,
+    )
+
+    return main_facade
+
+
 user = User('Vlad', 'Skyba', 19, 'male')
-facade = MainFacade(user)
-facade.add_weight(100)
-facade.add_height(100)
-facade.add_fat_percentage(200)
-print(facade.user_body_info.get_weight())
-print(facade.user_body_info.get_height())
-facade.add_weight(300)
-print(facade.user_body_info.get_weight())
-print(facade.dairy_facade.health_diary.get_history_of_days())
+facade = create_and_configure_facade_for_start(user)
