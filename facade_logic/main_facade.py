@@ -12,7 +12,7 @@ import time
 class MainFacade:
     def __init__(
         self,
-        user: User,
+        user_obj: User,
         health_daily: HealthDaily,
         health_diary: HealthDiary,
         health_diary_facade: DairyFacade,
@@ -21,7 +21,7 @@ class MainFacade:
         health_daily_analyzer: HealthDailyAnalyzer,
         health_in_some_period_analyzer: HealthInSomePeriodAnalyzer,
     ):
-        self.user = user
+        self.user = user_obj
         self.health_daily = health_daily
         self.health_diary = health_diary
         self.health_diary_facade = health_diary_facade
@@ -182,7 +182,7 @@ class MainFacade:
         return [day for day in list_of_all_days if specification.is_satisfy_by(day)]
 
 
-def create_and_configure_facade_for_start(user: User) -> MainFacade:
+def create_and_configure_facade_for_start(user_obj: User) -> MainFacade:
     first_day = HealthDaily(time.strftime("%Y-%m-%d", time.localtime()))
     health_diary = HealthDiary()
     user_body_info = UserBodyInfo()
@@ -204,7 +204,7 @@ def create_and_configure_facade_for_start(user: User) -> MainFacade:
     health_in_some_period_analyzer.set_list_of_days(health_diary.get_history_of_days())
 
     main_facade = MainFacade(
-        user,
+        user_obj,
         first_day,
         health_diary,
         dairy_facade,
@@ -219,3 +219,4 @@ def create_and_configure_facade_for_start(user: User) -> MainFacade:
 
 user = User('Vlad', 'Skyba', 19, 'male')
 facade = create_and_configure_facade_for_start(user)
+facade.add_weight(100, "2025-01-01")

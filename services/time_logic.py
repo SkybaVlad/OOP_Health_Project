@@ -74,7 +74,7 @@ def time_validator(date_of_activity: str, start_time: str, end_time: str):
         # need validate year value month value day value like day < 30 month < 12
 
 
-def time_converter_in_minutes(start_time_of_activity, end_time_of_activity):
+def calculate_duration_of_activity(start_time_of_activity, end_time_of_activity):
     """return time duration in minutes
     For example start_time = 17:30, end_time = 19:30
     Return 120 minutes

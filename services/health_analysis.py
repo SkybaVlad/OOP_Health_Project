@@ -1,4 +1,3 @@
-from services.activities.activity_type import ActivityCategory
 from services.body_metrics.body_metrics_calculator import (
     calculate_body_mass_index_metrics,
     calculate_lean_body_mass,
