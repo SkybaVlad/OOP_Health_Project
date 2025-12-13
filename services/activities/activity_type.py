@@ -1,5 +1,5 @@
 import enum
-from services.time_logic import TimeActivityManager
+from services.time_logic import calculate_duration_of_activity
 
 
 class ActivityType(enum.Enum):
@@ -51,9 +51,8 @@ class SpecificActivityType:
         self._activity_category = activity_category
         self._activity_name = activity_name
         self._burned_calories = burned_calories
-        self.time_manager = TimeActivityManager(
-            start_time_of_activity, end_time_of_activity
-        )
+        self._start_time_of_activity = start_time_of_activity
+        self._end_time_of_activity = end_time_of_activity
 
     def get_activity_category(self) -> str:
         return self._activity_category
@@ -65,10 +64,12 @@ class SpecificActivityType:
         return self._burned_calories
 
     def calculate_activity_duration_in_minutes(self) -> float:
-        return self.time_manager.calculate_activity_duration_in_minutes()
+        return calculate_duration_of_activity(
+            self._start_time_of_activity, self._end_time_of_activity
+        )
 
     def get_start_time_of_specific_activity(self) -> str:
-        return self.time_manager.start_time_of_activity
+        return self._start_time_of_activity
 
     def get_end_time_of_specific_activity(self) -> str:
-        return self.time_manager.end_time_of_activity
+        return self._end_time_of_activity
