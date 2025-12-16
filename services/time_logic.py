@@ -167,6 +167,5 @@ def calculate_duration_of_activity(start_time_of_activity, end_time_of_activity)
     result: list[int] = [0, 0]
     result[1] = math.fabs(end_time_of_activity[1] - start_time_of_activity[1])
     result[0] = end_time_of_activity[0] - start_time_of_activity[0]
-    print(result)
     res_in_minutes = result[0] * 60 + result[1]
     return res_in_minutes
