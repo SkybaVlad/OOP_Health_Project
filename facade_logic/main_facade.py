@@ -1,4 +1,10 @@
 from facade_logic.facade_dairy_manager import DairyFacade
+from services.nutrition.eating_mode import (
+    EatingModeType,
+    BalancingMode,
+    BulkingMode,
+    SlimmingMode,
+)
 from services.user.user_body_goals import UserBodyDailyGoals
 from services.user.user_info import User
 from services.user.user_body_info import UserBodyInfo
@@ -142,6 +148,19 @@ class MainFacade:
         return (
             self.health_in_some_period_analyzer.get_day_with_max_hours_spent_on_sleep_for_all_time()
         )
+
+    def choose_eating_mode(self, user, mode_type: EatingModeType):
+        if mode_type == EatingModeType.BALANCING:
+            user.set_eating_mode(BalancingMode())
+
+        elif mode_type == EatingModeType.BULKING:
+            user.set_eating_mode(BulkingMode())
+
+        elif mode_type == EatingModeType.SLIMMING:
+            user.set_eating_mode(SlimmingMode())
+
+        else:
+            raise ValueError("Unknown eating mode")
 
     def get_result_of_analyze_some_period(self) -> str:
         day_with_max_consumed_calories = (
