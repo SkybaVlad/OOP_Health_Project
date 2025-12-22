@@ -4,7 +4,7 @@ import datetime
 
 def time_in_period(start_time: str, end_time: str, current_time: str):
     """This function compare current time with start time and end time. Return True if current time located
-    in period between start and end time and Return False otherwise. The time vars have the next format YYYY-MM-DD
+    in period between start and the end time and Return False otherwise. The time variables have the next format YYYY-MM-DD
     """
     time_validator_format_yyyy_mm_dd(start_time)
     time_validator_format_yyyy_mm_dd(end_time)
