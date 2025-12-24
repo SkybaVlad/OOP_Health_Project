@@ -1,3 +1,11 @@
+from services.validation_user_input.user_info_validation import (
+    validate_age,
+    validate_user_name,
+    validate_sex,
+    validate_surname,
+)
+
+
 class User:
 
     __user_instance = None
@@ -8,6 +16,15 @@ class User:
         return cls.__user_instance
 
     def __init__(self, name, surname, age, sex):
+        try:
+            validate_user_name(name)
+            validate_surname(surname)
+            validate_age(age)
+            validate_sex(sex)
+        except ValueError as error:
+            pass
+        except TypeError as error:
+            pass
         if not hasattr(self, 'initialized'):
             self.__name = name
             self.__surname = surname
@@ -32,11 +49,3 @@ class User:
 
     def __repr__(self):
         return f"User(name={self.__name}, surname={self.__surname}, age={self.__age}, sex={self.__sex})"
-
-
-user = User("Vlad", "Skyba", 19, "male")
-user1 = User("Maks", "Gan", 18, "female")
-print(id(user))
-print(id(user1))
-print(user)
-print(user1)
