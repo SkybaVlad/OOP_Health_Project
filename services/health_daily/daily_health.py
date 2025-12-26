@@ -1,6 +1,7 @@
 from services.activities.activity_type import SpecificActivityType
 from services.nutrition.meal import Meal
-from services.time_logic import time_converter_in_minutes
+from services.time_logic import calculate_duration_of_activity
+from services.medication.medication import Medication
 
 
 class HealthDaily:
@@ -10,6 +11,7 @@ class HealthDaily:
         self.consumed_calories_for_day: float = 0.0
         self.list_of_activities_for_day: list[SpecificActivityType] = []
         self.list_of_meals_for_day: list = []
+        self.list_of_taken_medication: list[Medication] = []
         self.drunk_water: float = 0.0
         self.sleep_duration: float = 0.0
         self.count_of_steps_for_day: float = 0.0
@@ -21,7 +23,7 @@ class HealthDaily:
     def add_activity(self, activity_object: SpecificActivityType) -> None:
         self.list_of_activities_for_day.append(activity_object)
         self.burned_calories_for_day += activity_object.get_burned_calories()
-        self.total_time_spend_on_activities += time_converter_in_minutes(
+        self.total_time_spend_on_activities += calculate_duration_of_activity(
             activity_object.get_start_time_of_specific_activity(),
             activity_object.get_end_time_of_specific_activity(),
         )

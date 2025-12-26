@@ -36,13 +36,13 @@ def calculate_basal_metabolic_rate(
         raise ValueError('height must be positive')
     if type(user_sex) != str:
         raise ValueError("user sex must be str")
-    if user_sex != 'male' or user_sex != 'female':
-        raise ValueError("user sex should be 'male' or 'female'")
+    if user_sex != 'Male' or user_sex != 'Female':
+        raise ValueError("user sex should be 'Male' or 'Female'")
     if type(age) != int:
         raise ValueError("age must be int")
     if age < 0:
         raise ValueError('age must be positive')
-    if user_sex == 'male':
+    if user_sex == 'Male':
         return 10 * weight + 6.25 * height - 5 * age + 5
     else:
         return 10 * weight + 6.25 * height - 5 * age - 161

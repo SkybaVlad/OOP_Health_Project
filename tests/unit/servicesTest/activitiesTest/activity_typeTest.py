@@ -45,4 +45,4 @@ class TestSpecificActivityTypeClass(unittest.TestCase):
         )
 
     def test_calculate_count_of_burned_calories_method(self):
-        self.assertGreater(self.specific_activity_type.get_burned_calories(), 800)
+        self.assertEqual(self.specific_activity_type.get_burned_calories(), 800)

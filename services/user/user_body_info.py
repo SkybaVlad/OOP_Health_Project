@@ -1,13 +1,23 @@
 class UserBodyInfo:
+
+    __instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls.__instance is None:
+            return super().__new__(cls)
+        return cls.__instance
+
     def __init__(self):
-        self.__weight: float = 0.0
-        self.__height: float = 0.0
-        self.__fat_percentage: float = 0.0
-        self.__percentage_of_water_level: float = 0.0
-        self.__body_mass_index: float = 0.0
-        self.__basal_metabolic_rate: float = 0.0
-        self.__lean_body_mass: float = 0.0
-        self.__fat_mass: float = 0.0
+        if not hasattr(self, "initialize"):
+            self.__weight: float = 0.0
+            self.__height: float = 0.0
+            self.__fat_percentage: float = 0.0
+            self.__percentage_of_water_level: float = 0.0
+            self.__body_mass_index: float = 0.0
+            self.__basal_metabolic_rate: float = 0.0
+            self.__lean_body_mass: float = 0.0
+            self.__fat_mass: float = 0.0
+            self.initialize = True
 
     def get_weight(self) -> float:
         return self.__weight
