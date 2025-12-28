@@ -1,5 +1,3 @@
-import datetime
-
 from services.activities.activity_type import SpecificActivityType
 from services.medication.medication import (
     MedicationReceipt,
@@ -9,7 +7,7 @@ from services.nutrition.meal import Meal
 from data.health_diary_container import HealthDiary
 import time
 from services.specification_for_filter import *
-from services.time_logic import time_validator_format_yyyy_mm_dd, time_in_period
+from services.time_logic import time_in_period
 from services.medication.medication import (
     Medication,
     MedicationReceipt,
@@ -28,11 +26,17 @@ class DairyFacade:
             cls.__instance = object.__new__(cls)
         return cls.__instance
 
-    def __init__(self):
+    def __init__(
+        self,
+        health_diary: HealthDiary,
+        current_day: HealthDaily,
+        list_of_receipts: MedicationReceiptList,
+    ):
         if not hasattr(self, "initialize"):
-            self.health_diary: HealthDiary | None = None
-            self.current_day: HealthDaily | None = None
-            self.list_of_receipts: MedicationReceiptList | None = None
+            self.health_diary = health_diary
+            self.current_day = current_day
+            self.list_of_receipts = list_of_receipts
+            self.health_diary.add_day(current_day)
             self.initialize = True
 
     def set_health_diary(self, health_diary: HealthDiary):
@@ -47,42 +51,46 @@ class DairyFacade:
     def add_activity(
         self, activity_object: SpecificActivityType, provided_time_value
     ) -> None:
-        time_validator_format_yyyy_mm_dd(provided_time_value)
-        time_value = time.strftime("%Y-%m-%d", time.localtime())
-        if not self.is_current_day(time_value):
-            day = self.__create_new_health_daily(time_value)
-            self.current_day = day
-            self.health_diary.add_day(day)
 
+        # if actual date of day is changed -> need to update current_day attribute
+        if not self.is_current_day(str(date.today())):
+            self.update_curr_day()
+            self.health_diary.add_day(self.current_day)
+
+        # if provided_time from user not equal current date of day -> need find
+        # day with this date or create day object and add to list
         if provided_time_value != self.current_day.date_of_day:
             found_day = self.__find_daily_health_with_specific_data(provided_time_value)
+            # if day with this date exist in list of days objects
             if found_day:
                 found_day.add_activity(activity_object)
             else:
-                created_day = self.__create_new_health_daily(provided_time_value)
+                created_day = self.create_new_health_daily(provided_time_value)
                 created_day.add_activity(activity_object)
                 self.health_diary.add_day(created_day)
-            return
+            return None
 
+        # if provided_time_value == today date
         self.current_day.add_activity(activity_object)
+
+    def update_curr_day(self):
+        day = self.create_new_health_daily(str(date.today()))
+        self.current_day = day
 
     def __find_daily_health_with_specific_data(self, data: str) -> HealthDaily | None:
         return self.health_diary.find_day(data)
 
     def add_meal(self, meal: Meal, provided_time_value) -> None:
-        time_validator_format_yyyy_mm_dd(provided_time_value)
-        time_value = time.strftime("%Y-%m-%d", time.localtime())
-        if not self.is_current_day(time_value):
-            day = self.__create_new_health_daily(time_value)
-            self.current_day = day
-            self.health_diary.add_day(day)
+        if not self.is_current_day(str(date.today())):
+            self.update_curr_day()
+            self.health_diary.add_day(self.current_day)
 
         if provided_time_value != self.current_day.date_of_day:
             found_day = self.__find_daily_health_with_specific_data(provided_time_value)
             if found_day:
                 found_day.add_meals(meal)
             else:
-                created_day = self.__create_new_health_daily(provided_time_value)
+                created_day = self.create_new_health_daily(provided_time_value)
                 created_day.add_meals(meal)
                 self.health_diary.add_day(created_day)
             return
@@ -92,19 +100,16 @@ class DairyFacade:
     def add_amount_of_drunk_water(
         self, amount_of_drunk_water: float, provided_time_value
     ) -> None:
-        time_validator_format_yyyy_mm_dd(provided_time_value)
-        time_value = time.strftime("%Y-%m-%d", time.localtime())
-        if not self.is_current_day(time_value):
-            day = self.__create_new_health_daily(time_value)
-            self.current_day = day
-            self.health_diary.add_day(day)
+        if not self.is_current_day(str(date.today())):
+            self.update_curr_day()
+            self.health_diary.add_day(self.current_day)
 
         if provided_time_value != self.current_day.date_of_day:
             found_day = self.__find_daily_health_with_specific_data(provided_time_value)
             if found_day:
                 found_day.add_drunk(amount_of_drunk_water)
             else:
-                created_day = self.__create_new_health_daily(provided_time_value)
+                created_day = self.create_new_health_daily(provided_time_value)
                 created_day.add_drunk(amount_of_drunk_water)
                 self.health_diary.add_day(created_day)
             return
@@ -112,19 +117,16 @@ class DairyFacade:
         self.current_day.add_drunk(amount_of_drunk_water)
 
     def add_amount_of_sleep(self, amount_of_sleep: float, provided_time_value) -> None:
-        time_validator_format_yyyy_mm_dd(provided_time_value)
-        time_value = time.strftime("%Y-%m-%d", time.localtime())
-        if not self.is_current_day(time_value):
-            day = self.__create_new_health_daily(time_value)
-            self.current_day = day
-            self.health_diary.add_day(day)
+        if not self.is_current_day(str(date.today())):
+            self.update_curr_day()
+            self.health_diary.add_day(self.current_day)
 
         if provided_time_value != self.current_day.date_of_day:
             found_day = self.__find_daily_health_with_specific_data(provided_time_value)
             if found_day:
                 found_day.add_sleep(amount_of_sleep)
             else:
-                created_day = self.__create_new_health_daily(provided_time_value)
+                created_day = self.create_new_health_daily(provided_time_value)
                 created_day.add_sleep(amount_of_sleep)
                 self.health_diary.add_day(created_day)
             return
@@ -132,19 +134,16 @@ class DairyFacade:
         self.current_day.add_sleep(amount_of_sleep)
 
     def add_count_steps(self, count_of_steps: float, provided_time_value) -> None:
-        time_validator_format_yyyy_mm_dd(provided_time_value)
-        time_value = time.strftime("%Y-%m-%d", time.localtime())
-        if not self.is_current_day(time_value):
-            day = self.__create_new_health_daily(time_value)
-            self.current_day = day
-            self.health_diary.add_day(day)
+        if not self.is_current_day(str(date.today())):
+            self.update_curr_day()
+            self.health_diary.add_day(self.current_day)
 
         if provided_time_value != self.current_day.date_of_day:
             found_day = self.__find_daily_health_with_specific_data(provided_time_value)
             if found_day:
                 found_day.add_count_of_steps(count_of_steps)
             else:
-                created_day = self.__create_new_health_daily(provided_time_value)
+                created_day = self.create_new_health_daily(provided_time_value)
                 created_day.add_count_of_steps(count_of_steps)
                 self.health_diary.add_day(created_day)
             return
@@ -152,19 +151,16 @@ class DairyFacade:
         self.current_day.add_count_of_steps(count_of_steps)
 
     def set_weight(self, weight_value: float, provided_time_value) -> None:
-        time_validator_format_yyyy_mm_dd(provided_time_value)
-        time_value = time.strftime("%Y-%m-%d", time.localtime())
-        if not self.is_current_day(time_value):
-            day = self.__create_new_health_daily(time_value)
-            self.current_day = day
-            self.health_diary.add_day(day)
+        if not self.is_current_day(str(date.today())):
+            self.update_curr_day()
+            self.health_diary.add_day(self.current_day)
 
         if provided_time_value != self.current_day.date_of_day:
             found_day = self.__find_daily_health_with_specific_data(provided_time_value)
             if found_day:
                 found_day.set_weight(weight_value)
             else:
-                created_day = self.__create_new_health_daily(provided_time_value)
+                created_day = self.create_new_health_daily(provided_time_value)
                 created_day.set_weight(weight_value)
                 self.health_diary.add_day(created_day)
             return
@@ -172,19 +168,16 @@ class DairyFacade:
         self.current_day.set_weight(weight_value)
 
     def set_height(self, height_value: float, provided_time_value) -> None:
-        time_validator_format_yyyy_mm_dd(provided_time_value)
-        time_value = time.strftime("%Y-%m-%d", time.localtime())
-        if not self.is_current_day(time_value):
-            day = self.__create_new_health_daily(time_value)
-            self.current_day = day
-            self.health_diary.add_day(day)
+        if not self.is_current_day(str(date.today())):
+            self.update_curr_day()
+            self.health_diary.add_day(self.current_day)
 
         if provided_time_value != self.current_day.date_of_day:
             found_day = self.__find_daily_health_with_specific_data(provided_time_value)
             if found_day:
                 found_day.set_height(height_value)
             else:
-                created_day = self.__create_new_health_daily(provided_time_value)
+                created_day = self.create_new_health_daily(provided_time_value)
                 created_day.set_height(height_value)
                 self.health_diary.add_day(created_day)
             return
@@ -194,19 +187,16 @@ class DairyFacade:
     def set_fat_percentage(
         self, fat_percentage_value: float, provided_time_value
     ) -> None:
-        time_validator_format_yyyy_mm_dd(provided_time_value)
-        time_value = time.strftime("%Y-%m-%d", time.localtime())
-        if not self.is_current_day(time_value):
-            day = self.__create_new_health_daily(time_value)
-            self.current_day = day
-            self.health_diary.add_day(day)
+        if not self.is_current_day(str(date.today())):
+            self.update_curr_day()
+            self.health_diary.add_day(self.current_day)
 
         if provided_time_value != self.current_day.date_of_day:
             found_day = self.__find_daily_health_with_specific_data(provided_time_value)
             if found_day:
                 found_day.set_fat_percentage(fat_percentage_value)
             else:
-                created_day = self.__create_new_health_daily(provided_time_value)
+                created_day = self.create_new_health_daily(provided_time_value)
                 created_day.set_fat_percentage(fat_percentage_value)
                 self.health_diary.add_day(created_day)
             return
@@ -218,7 +208,7 @@ class DairyFacade:
             return True
         return False
 
-    def __create_new_health_daily(self, date_of_day) -> HealthDaily:
+    def create_new_health_daily(self, date_of_day) -> HealthDaily:
         day = HealthDaily(date_of_day)
         return day
 

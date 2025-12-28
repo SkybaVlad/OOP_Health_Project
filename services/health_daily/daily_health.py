@@ -49,3 +49,6 @@ class HealthDaily:
 
     def set_fat_percentage(self, percentage_value) -> None:
         self.fat_percentage = percentage_value
+
+    def __eq__(self, other) -> bool:
+        return self.date_of_day == other.date_of_day
