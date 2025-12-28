@@ -9,12 +9,12 @@ def time_in_period(start_time: str, end_time: str, current_time: str):
     """This function compare current time with start time and end time. Return True if current time located
     in period between start and the end time and Return False otherwise. The time variables have the next format YYYY-MM-DD
     """
-    time_validator_format_yyyy_mm_dd(start_time)
-    time_validator_format_yyyy_mm_dd(end_time)
-    time_validator_format_yyyy_mm_dd(current_time)
-    start_time = start_time.split("-")  # [YYYY,MM,DD]
-    end_time = end_time.split("-")
-    current_time = current_time.split("-")
+
+    start_time, end_time, current_time = (
+        start_time.split("-"),
+        end_time.split("-"),
+        current_time.split("-"),
+    )
 
     if current_time[0] == start_time[0] and current_time[0] == end_time[0]:
         if current_time[1] > start_time[1] and current_time[1] < end_time[1]:

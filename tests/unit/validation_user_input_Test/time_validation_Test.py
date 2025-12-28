@@ -1,4 +1,6 @@
+from datetime import date
 import unittest
+
 from services.validation_user_input.time_validator import (
     time_validator_format_hh_mm,
     time_validator_format_yyyy_mm_dd,
@@ -32,6 +34,8 @@ class TimeValidatorFormatYYYYMMDDTest(unittest.TestCase):
             ('2025-02-30', ValueError),
             ('2025-13-30', ValueError),
             ('2025-00-30', ValueError),
+            ('2026-12-12', ValueError),
+            ('2023-12-12', ValueError),
         ]
 
         for value, expected_error in test_cases:
