@@ -1,3 +1,4 @@
+from data.health_diary_container import HealthDiary
 from services.body_metrics.body_metrics_calculator import (
     calculate_body_mass_index_metrics,
     calculate_lean_body_mass,
@@ -9,6 +10,9 @@ from services.user.user_body_goals import UserBodyDailyGoals
 from services.user.user_body_info import UserBodyInfo
 from services.user.user_info import User
 from services.time_logic import time_converter_minutes_in_hours
+from services.medication.medication import MedicationReceiptList
+from services.medication.medication import MedicationReceipt
+from services.time_logic import get_list_of_all_dates_between_start_and_end
 
 
 class HealthDailyAnalyzer:
@@ -324,3 +328,36 @@ class HealthInSomePeriodAnalyzer:
             f"Day with max amount of drunk water {day_with_max_amount_of_drunk_water.date_of_day} - {day_with_max_amount_of_drunk_water.drunk_water}"
             f"Day with max hours of sleep {day_with_max_hours_of_sleep.date_of_day} - {day_with_max_hours_of_sleep.sleep_duration}"
         )
+
+
+class MedicationAnalyzer:
+    def __init__(self, health_diary: HealthDiary):
+        self.health_diary = health_diary
+        self.list_of_receipts: MedicationReceiptList | None = None
+
+    def set_list_of_receipts(self, list_of_receipts: MedicationReceiptList) -> None:
+        self.list_of_receipts = list_of_receipts
+
+    def receipt_is_completed(self, receipt_obj: MedicationReceipt) -> bool:
+        pass
+
+    def get_list_of_dates_where_receipt_should_exist(
+        self, receipt_obj: MedicationReceipt
+    ):
+        """This method return list of dates where receipt should exist. For example if receipt interval is
+        2025-12-28 and 2025-12-31 with frequency every day, this method must return
+        ["2025-12-28","2025-12-29","2025-12-30","2025-12-31"]"""
+        if (
+            receipt_obj.medication_object_characteristic_for_receipt.interval
+            == "forever"
+        ):
+            pass
+        if (
+            receipt_obj.medication_object_characteristic_for_receipt.interval
+            == "spec. period"
+        ):
+            lst = get_list_of_all_dates_between_start_and_end(
+                receipt_obj.medication_object_characteristic_for_receipt.start_time_of_interval,
+                receipt_obj.medication_object_characteristic_for_receipt.end_time_of_interval,
+            )
+        pass
