@@ -2,6 +2,7 @@ from services.activities.activity_type import SpecificActivityType
 from services.nutrition.meal import Meal
 from services.time_logic import calculate_duration_of_activity
 from services.medication.medication import Medication
+import datetime
 
 
 class HealthDaily:
@@ -19,6 +20,7 @@ class HealthDaily:
         self.height: float = 0.0
         self.fat_percentage: float = 0.0
         self.total_time_spend_on_activities: float = 0.0
+        self.name_of_day: str = self.generate_name_of_day()
 
     def add_activity(self, activity_object: SpecificActivityType) -> None:
         self.list_of_activities_for_day.append(activity_object)
@@ -49,6 +51,14 @@ class HealthDaily:
 
     def set_fat_percentage(self, percentage_value) -> None:
         self.fat_percentage = percentage_value
+
+    def add_medication_that_took_today(self, medication_obj) -> None:
+        self.list_of_taken_medication.append(medication_obj)
+
+    def generate_name_of_day(self):
+        lst = self.date_of_day.split("-")
+        date = datetime.date(int(lst[0]), int(lst[1]), int(lst[2]))
+        return date.strftime("%A")
 
     def __eq__(self, other) -> bool:
         return self.date_of_day == other.date_of_day

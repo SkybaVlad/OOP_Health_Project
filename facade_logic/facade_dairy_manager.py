@@ -1,17 +1,13 @@
 from services.activities.activity_type import SpecificActivityType
-from services.medication.medication import (
-    MedicationReceipt,
-    MedicationObjectReceiptCharacteristic,
-)
 from services.nutrition.meal import Meal
 from data.health_diary_container import HealthDiary
-import time
 from services.specification_for_filter import *
-from services.time_logic import time_in_period
 from services.medication.medication import (
     Medication,
     MedicationReceipt,
     MedicationReceiptList,
+    MedicationManager,
+    MedicationObjectReceiptCharacteristic,
 )
 from datetime import date
 
@@ -30,12 +26,12 @@ class DairyFacade:
         self,
         health_diary: HealthDiary,
         current_day: HealthDaily,
-        list_of_receipts: MedicationReceiptList,
+        medication_manager: MedicationManager,
     ):
         if not hasattr(self, "initialize"):
             self.health_diary = health_diary
             self.current_day = current_day
-            self.list_of_receipts = list_of_receipts
+            self.medication_manager = medication_manager
             self.health_diary.add_day(current_day)
             self.initialize = True
 
@@ -44,9 +40,6 @@ class DairyFacade:
 
     def set_health_daily(self, first_day: HealthDaily):
         self.current_day = first_day
-
-    def set_list_of_receipts(self, list_of_receipts: MedicationReceiptList):
-        self.list_of_receipts = list_of_receipts
 
     def add_activity(
         self, activity_object: SpecificActivityType, provided_time_value
@@ -215,66 +208,8 @@ class DairyFacade:
     def get_list_of_all_days_in_history(self):
         return self.health_diary.get_history_of_days()
 
-    def add_medication_receipt(self, receipt: MedicationReceipt):
-        self.list_of_receipts.add_receipt(receipt)
-
-    def get_list_of_all_receipts(self) -> list:
-        return self.list_of_receipts.receipts
-
-    def get_list_of_medications_that_need_to_take_today(self) -> list[Medication]:
-        """This function filter all meds objects (Medication class)
-        from list_of_receipts object if data of curr day enter in interval of take this medication
-        For example [{med_obj : characteristic}] if curr date in interval of characteristic (start_date: end_date)
-        and frequency (for example if frequency = list of days, we need to check the current day name) is fitting
-        """
-        today_date = str(date.today())
-        date_obj = date.fromisoformat(today_date)
-        number_of_day = date_obj.weekday()
-        today_day_name = dict_for_days[number_of_day]
-        lst_of_med_objs_that_need_to_take_today = []
-        for receipt in self.list_of_receipts.get_list_of_receipt():
-            for med_obj in receipt:
-                if (
-                    receipt[med_obj].frequency == "everyday"
-                    and receipt[med_obj].interval == "always"
-                    or time_in_period(
-                        receipt[med_obj].start_time_of_interval,
-                        receipt[med_obj].end_time_of_interval,
-                        today_date,
-                    )
-                ):
-                    lst_of_med_objs_that_need_to_take_today.append(med_obj)
-                elif (
-                    len(receipt[med_obj].list_of_days) != 0
-                    and receipt[med_obj].interval == "always"
-                    or time_in_period(
-                        receipt[med_obj].start_time_of_interval,
-                        receipt[med_obj].end_time_of_interval,
-                        today_date,
-                    )
-                ):
-                    if today_day_name in receipt[med_obj].list_of_days:
-                        lst_of_med_objs_that_need_to_take_today.append(med_obj)
-                elif receipt[med_obj].frequency == "arbitrary":
-                    lst_of_med_objs_that_need_to_take_today.append(med_obj)
-        return lst_of_med_objs_that_need_to_take_today
-
-    def took_medicine_receipt(self, medication_receipt: MedicationReceipt):
-        pass
-
-    def delete_receipts_if_interval_of_taking_is_end(self):
-        pass
-
-
-dict_for_days = {
-    1: "Monday",
-    2: "Tuesday",
-    3: "Wednesday",
-    4: "Thursday",
-    5: "Friday",
-    6: "Saturday",
-    7: "Sunday",
-}
+    def add_took_medication_object(self, medication_object: Medication):
+        self.current_day.add_medication_that_took_today(medication_object)
 
 
 if __name__ == "__main__":
