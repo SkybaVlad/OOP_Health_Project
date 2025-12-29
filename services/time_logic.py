@@ -2,45 +2,11 @@ import math
 from services.validation_user_input.time_validator import (
     time_validator_format_yyyy_mm_dd,
     time_validator_format_hh_mm,
+    is_source_time_less_than_target_time,
+    is_month_where_max_day_count_is_28,
+    is_month_where_max_day_count_is_30,
+    is_month_where_max_day_count_is_31,
 )
-
-
-def time_in_period(start_time: str, end_time: str, current_time: str):
-    """This function compare current time with start time and end time. Return True if current time located
-    in period between start and the end time and Return False otherwise. The time variables have the next format YYYY-MM-DD
-    """
-
-    start_time, end_time, current_time = (
-        start_time.split("-"),
-        end_time.split("-"),
-        current_time.split("-"),
-    )
-
-    if current_time[0] == start_time[0] and current_time[0] == end_time[0]:
-        if current_time[1] > start_time[1] and current_time[1] < end_time[1]:
-            return True
-        elif current_time[1] == start_time[1] and current_time[1] < end_time[1]:
-            if current_time[2] >= start_time[2]:
-                return True
-        elif current_time[1] > start_time[1] and current_time[1] == end_time[1]:
-            if current_time[2] <= end_time[2]:
-                return True
-        elif current_time[1] == start_time[1] and current_time[1] == end_time[1]:
-            if current_time[2] >= start_time[2] and current_time[2] <= end_time[2]:
-                return True
-    elif current_time[0] == start_time[0] and current_time[0] < end_time[0]:
-        if current_time[1] > start_time[1]:
-            return True
-        elif current_time[1] == start_time[1]:
-            if current_time[2] >= start_time[2]:
-                return True
-    elif current_time[0] > start_time[0] and current_time[0] == end_time[0]:
-        if current_time[1] < end_time[1]:
-            return True
-        elif current_time[1] == end_time[1]:
-            if current_time[2] <= end_time[2]:
-                return True
-    return False
 
 
 def convert_data_from_string_to_number_format_yyyy_mm_dd_in_numbers(date: str) -> int:
@@ -86,3 +52,112 @@ def calculate_duration_of_activity(start_time_of_activity, end_time_of_activity)
     result[0] = end_time_of_activity[0] - start_time_of_activity[0]
     res_in_minutes = result[0] * 60 + result[1]
     return res_in_minutes
+
+
+def plus_one_to_time(time: str) -> str:
+    """this function add 1 to time. For example time = 01 -> 02,
+    time = 09 -> 10, time = 9999 -> 10000."""
+
+    if len(time) == 2:
+        if time == "09":
+            return "10"
+        if time == "19":
+            return "20"
+        if time == "29":
+            return "30"
+        else:
+            tmp = ""
+            for ch in time:
+                tmp += ch  # -> tmp = "n n "
+                tmp += " "
+            array = tmp.rstrip(" ").split(" ")  # -> array = ["n","n"]
+            array_int = []
+            for i in array:
+                array_int.append(int(i))
+            # array_int = [n,n]
+            array_int[1] += 1
+            # array_int = [n,n+1]
+            res = []
+            for i in array_int:
+                res.append(str(i))
+            # res = ["n","n+1"]
+            return "".join(res)  # -> "nn+1"
+    else:
+        tmp = ""
+        for ch in time:
+            tmp += ch
+            tmp += " "
+        array = tmp.rstrip(" ").split(" ")
+        # array -> ["Y","Y","Y","Y"]
+        carry = False
+        rev_array = array[::-1]
+        for index, elem in enumerate(rev_array):
+            rev_array[index] = int(rev_array[index])
+
+        for index, elem in enumerate(rev_array):
+            if carry:
+                if index == len(array) - 1:
+                    rev_array[index] = 10
+                    for indx, i in enumerate(rev_array):
+                        rev_array[indx] = str(rev_array[indx])
+                    return "".join(rev_array[::-1])
+                else:
+                    rev_array[index] += 1
+                    carry = False
+            else:
+                rev_array[index] += 1
+            if rev_array[index] == 10:
+                rev_array[index] = 0
+                carry = True
+            else:
+                for indx, i in enumerate(rev_array):
+                    rev_array[indx] = str(rev_array[indx])
+                return "".join(rev_array[::-1])
+
+
+def increase_date_by_one_day(date: str) -> str:
+    # date -> YYYY-MM-DD
+    tmp = date.split("-")  # -> ["YYYY","MM","DD"]
+
+    if is_month_where_max_day_count_is_31(tmp[1]):
+        if tmp[2] == "31":
+            if tmp[1] == "12":
+                tmp[0] = plus_one_to_time(tmp[0])  # year
+                tmp[1] = "01"
+                tmp[2] = "01"
+            else:
+                tmp[1] = plus_one_to_time(tmp[1])  # month
+                tmp[2] = '01'
+        else:
+            tmp[2] = plus_one_to_time(tmp[2])  # day
+    elif is_month_where_max_day_count_is_30(tmp[1]):
+        if tmp[2] == "30":
+            if tmp[1] == "12":
+                tmp[0] = plus_one_to_time(tmp[0])
+                tmp[1] = '01'
+                tmp[2] = '01'
+            else:
+                tmp[1] = plus_one_to_time(tmp[1])
+                tmp[2] = '01'
+        else:
+            tmp[2] = plus_one_to_time(tmp[2])
+    elif is_month_where_max_day_count_is_28(tmp[1]):
+        if tmp[2] == "28":
+            if tmp[1] == "12":
+                tmp[0] = plus_one_to_time(tmp[0])
+                tmp[1] = '01'
+                tmp[2] = '01'
+            else:
+                tmp[1] = plus_one_to_time(tmp[1])
+                tmp[2] = '01'
+        else:
+            tmp[2] = plus_one_to_time(tmp[2])
+    return "-".join(tmp)
+
+
+def get_list_of_all_dates_between_start_and_end(start_time, end_time) -> list[str]:
+    lst = []
+    while is_source_time_less_than_target_time(start_time, end_time):
+        lst.append(start_time)
+        start_time = increase_date_by_one_day(start_time)
+    return lst
