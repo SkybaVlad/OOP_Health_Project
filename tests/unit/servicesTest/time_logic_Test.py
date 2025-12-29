@@ -1,56 +1,13 @@
 import unittest
-from services.validation_user_input.time_validator import (
-    time_validator_format_yyyy_mm_dd,
-    time_validator_format_hh_mm,
-)
-
-
 from services.time_logic import (
-    time_in_period,
     time_converter_minutes_in_hours,
     calculate_duration_of_activity,
     convert_data_from_string_to_number_format_yyyy_mm_dd_in_numbers,
+    get_list_of_all_dates_between_start_and_end,
 )
-
-
-class TimeInPeriodFunctionTest(unittest.TestCase):
-    """This class test time_in_period function that located in time_logic module
-    time_in_period function has the next format time_in_period(start_time, end_time, time_provided_by_user) -> bool
-    Time should have the next format YYYY-MM-DD"""
-
-    def test_time_in_period_valid_cases(self):
-        test_cases = [
-            ("2024-10-12", "2024-11-12", "2024-10-30"),
-            ("2025-05-13", "2025-06-14", "2025-05-29"),
-            ("2025-06-13", "2025-06-14", "2025-06-13"),
-            ("2025-06-13", "2025-06-14", "2025-06-14"),
-            ("2024-12-31", "2025-01-02", "2025-01-01"),
-            ("2024-12-31", "2024-12-31", "2024-12-31"),
-            ("2024-11-27", "2025-01-02", "2024-12-15"),
-        ]
-
-        for start_time, end_time, user_provided_time in test_cases:
-            with self.subTest(
-                start_time=start_time,
-                end_time=end_time,
-                user_provided_time=user_provided_time,
-            ):
-                self.assertTrue(
-                    time_in_period(start_time, end_time, user_provided_time)
-                )
-
-    def test_time_in_period_invalid_cases(self):
-        test_cases = [
-            ("2025-05-13", "2025-06-14", "2025-06-29"),
-            ("2025-05-13", "2025-06-14", "2025-05-12"),
-            ("2025-05-13", "2025-06-14", "2025-07-29"),
-            ("2025-05-13", "2025-06-14", "2025-04-29"),
-            ("2025-05-13", "2025-06-14", "2025-06-29"),
-            ("2025-05-13", "2025-06-14", "2025-05-12"),
-        ]
-
-        for start_time, end_time, user_provided_time in test_cases:
-            self.assertFalse(time_in_period(start_time, end_time, user_provided_time))
+from services.validation_user_input.time_validator import (
+    is_source_time_less_than_target_time,
+)
 
 
 class ConverterMinutesInHoursTest(unittest.TestCase):
@@ -125,4 +82,63 @@ class ConvertDataFromStringToNumberTest(unittest.TestCase):
                     convert_data_from_string_to_number_format_yyyy_mm_dd_in_numbers(
                         input_time
                     ),
+                )
+
+
+class TestIsStartLessThanEnd(unittest.TestCase):
+    def test_valid_cases(self):
+        test_cases = [
+            ("2025-12-11", "2025-12-12"),
+            ("2025-12-11", "2026-01-01"),
+            ("2024-11-11", "2024-12-11"),
+        ]
+        for start_time, end_time in test_cases:
+            with self.subTest(start_time=start_time, end_time=end_time):
+                self.assertTrue(
+                    is_source_time_less_than_target_time(start_time, end_time)
+                )
+
+    def test_invalid_cases(self):
+        test_cases = [
+            ("2025-12-11", "2025-12-10"),
+            ("2025-12-11", "2025-11-11"),
+            ("2026-01-01", "2025-01-01"),
+        ]
+        for start_time, end_time in test_cases:
+            with self.subTest(start_time=start_time, end_time=end_time):
+                self.assertFalse(
+                    is_source_time_less_than_target_time(start_time, end_time)
+                )
+
+
+class TestGetListOfAllDatesBetweenStartAndEndTest(unittest.TestCase):
+    def test_valid_cases(self):
+        test_cases = [
+            (
+                "2025-12-29",
+                "2026-01-02",
+                ["2025-12-29", "2025-12-30", "2025-12-31", "2026-01-01", "2026-01-02"],
+            ),
+            ("2025-11-11", "2025-11-13", ["2025-11-11", "2025-11-12", "2025-11-13"]),
+            (
+                "2025-02-27",
+                "2025-03-02",
+                ["2025-02-27", "2025-02-28", "2025-03-01", "2025-03-02"],
+            ),
+            (
+                "2025-11-29",
+                "2025-12-02",
+                ["2025-11-29", "2025-11-30", "2025-12-01", "2025-12-02"],
+            ),
+        ]
+
+        for start_time, end_time, expected_values in test_cases:
+            with self.subTest(
+                start_time=start_time,
+                end_time=end_time,
+                expected_values=expected_values,
+            ):
+                self.assertEqual(
+                    get_list_of_all_dates_between_start_and_end(start_time, end_time),
+                    expected_values,
                 )
