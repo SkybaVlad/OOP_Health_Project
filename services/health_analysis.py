@@ -10,9 +10,16 @@ from services.user.user_body_goals import UserBodyDailyGoals
 from services.user.user_body_info import UserBodyInfo
 from services.user.user_info import User
 from services.time_logic import time_converter_minutes_in_hours
-from services.medication.medication import MedicationReceiptList
-from services.medication.medication import MedicationReceipt
+from services.medication.medication_objects import (
+    MedicationReceiptList,
+    Medication,
+    MedicationObjectReceiptCharacteristic,
+)
+from services.medication.medication_objects import MedicationReceipt
 from services.time_logic import get_list_of_all_dates_between_start_and_end
+from services.validation_user_input.time_validator import (
+    time_in_period,
+)  # move this function
 
 
 class HealthDailyAnalyzer:
@@ -331,6 +338,10 @@ class HealthInSomePeriodAnalyzer:
 
 
 class MedicationAnalyzer:
+    """This class intended for analyze receipts amd medications object. Also this class implement methods
+    that manages a list of receipts. For example if concrete receipt is end, we need delete this receipt from
+    list of receipts"""
+
     def __init__(self, health_diary: HealthDiary):
         self.health_diary = health_diary
         self.list_of_receipts: MedicationReceiptList | None = None
@@ -338,26 +349,60 @@ class MedicationAnalyzer:
     def set_list_of_receipts(self, list_of_receipts: MedicationReceiptList) -> None:
         self.list_of_receipts = list_of_receipts
 
-    def receipt_is_completed(self, receipt_obj: MedicationReceipt) -> bool:
-        pass
+    def concrete_med_obj_in_receipt_is_completed(
+        self, med_obj: Medication, characteristic: MedicationObjectReceiptCharacteristic
+    ) -> bool:
+        """This method check if concrete med_obj is completed inside a dict {med_obj : characteristic, ... , med_obj : characteristic
+        if med_obj is completed -> delete this pair from receipt}"""
+        if characteristic.interval == "Forever":
+            return False
+        if characteristic.interval == "Choose specific interval":
+            if characteristic.frequency == "Every day":
+                for day in self.health_diary.get_history_of_days():
+                    if time_in_period(
+                        characteristic.start_time_of_interval,
+                        characteristic.end_time_of_interval,
+                        day.date_of_day,
+                    ):
+                        if med_obj not in day.list_of_taken_medication:
+                            return False
+            elif characteristic.frequency == "Specific days":
+                for day in self.health_diary.get_history_of_days():
+                    if day.name_of_day in characteristic.list_of_days:
+                        if time_in_period(
+                            characteristic.start_time_of_interval,
+                            characteristic.end_time_of_interval,
+                            day.date_of_day,
+                        ):
+                            if med_obj not in day.list_of_taken_medication:
+                                return False
+        return True
 
-    def get_list_of_dates_where_receipt_should_exist(
-        self, receipt_obj: MedicationReceipt
-    ):
-        """This method return list of dates where receipt should exist. For example if receipt interval is
-        2025-12-28 and 2025-12-31 with frequency every day, this method must return
-        ["2025-12-28","2025-12-29","2025-12-30","2025-12-31"]"""
-        if (
-            receipt_obj.medication_object_characteristic_for_receipt.interval
-            == "forever"
-        ):
-            pass
-        if (
-            receipt_obj.medication_object_characteristic_for_receipt.interval
-            == "spec. period"
-        ):
-            lst = get_list_of_all_dates_between_start_and_end(
-                receipt_obj.medication_object_characteristic_for_receipt.start_time_of_interval,
-                receipt_obj.medication_object_characteristic_for_receipt.end_time_of_interval,
-            )
-        pass
+    def receipt_is_completed(self, receipt_obj: MedicationReceipt) -> bool:
+        """This method checks if receipt (MedicationReceipt object) is completed."""
+        for med_obj in receipt_obj.dict_of_medications_in_receipt.keys():
+            characteristic = receipt_obj.dict_of_medications_in_receipt[med_obj]
+            if characteristic.interval == "Forever":
+                return False
+        for med_obj in receipt_obj.dict_of_medications_in_receipt.keys():
+            characteristic = receipt_obj.dict_of_medications_in_receipt[med_obj]
+            if characteristic.frequency == "Everyday":
+                for day in self.health_diary.get_history_of_days():
+                    if time_in_period(
+                        characteristic.start_time_of_interval,
+                        characteristic.end_time_of_interval,
+                        day.date_of_day,
+                    ):
+                        if med_obj not in day.list_of_taken_medication:
+                            return False
+            elif characteristic.frequency == "Specific days":
+                for day in self.health_diary.get_history_of_days():
+                    if day.name_of_day not in characteristic.list_of_days:
+                        if time_in_period(
+                            characteristic.start_time_of_interval,
+                            characteristic.end_time_of_interval,
+                            day.date_of_day,
+                        ):
+                            if med_obj not in day.list_of_taken_medication:
+                                return False
+        return True
