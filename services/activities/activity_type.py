@@ -1,34 +1,10 @@
-import enum
+from services.validation_user_input.activity_validation import (
+    validate_activity_name,
+    validate_activity_category,
+    validate_burned_calories,
+)
 from services.time_logic import calculate_duration_of_activity
-
-
-class ActivityType(enum.Enum):
-    Running = 'Running'
-    Walking = 'Walking'
-    Cycling = 'Cycling'
-    Swimming = 'Swimming'
-    Yoga = 'Yoga'
-    StrengthTraining = 'Strength Training'
-    Hiking = 'Hiking'
-    Dancing = 'Dancing'
-    Football = 'Football'
-    Basketball = 'Basketball'
-    Tennis = 'Tennis'
-    Volleyball = 'Volleyball'
-    Skiing = 'Skiing'
-    Snowboarding = 'Snowboarding'
-    Skating = 'Skating'
-    Rowing = 'Rowing'
-    Boxing = 'Boxing'
-    JumpRope = 'Jump Rope'
-    Stretching = 'Stretching'
-    Other = 'Other'
-
-
-class ActivityCategory(enum.Enum):
-    Cardio = 'Cardio'
-    Strength = 'Strength'
-    Sport = 'Sport'
+from services.validation_user_input.time_validator import time_validator_format_hh_mm
 
 
 class SpecificActivityType:
@@ -44,10 +20,21 @@ class SpecificActivityType:
         self,
         activity_category: str,
         activity_name: str,
-        burned_calories: float,
+        burned_calories: int,
         start_time_of_activity: str,
         end_time_of_activity: str,
     ):
+        try:
+            validate_activity_category(activity_category)
+            validate_activity_name(activity_name)
+            validate_burned_calories(burned_calories)
+            time_validator_format_hh_mm(start_time_of_activity)
+            time_validator_format_hh_mm(end_time_of_activity)
+        except TypeError as e:
+            pass
+        except ValueError as e:
+            pass
+
         self._activity_category = activity_category
         self._activity_name = activity_name
         self._burned_calories = burned_calories
