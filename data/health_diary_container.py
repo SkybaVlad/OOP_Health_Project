@@ -22,7 +22,7 @@ class HealthDiary:
     def add_day(self, specific_day: HealthDaily):
         day = self.find_day(specific_day.date_of_day)
         if day is not None:
-            return day
+            return None
         else:
             self.history_of_all_days.append(specific_day)
             return None

@@ -2,14 +2,14 @@ from services.activities.activity_type import SpecificActivityType
 from services.nutrition.meal import Meal
 from data.health_diary_container import HealthDiary
 from services.specification_for_filter import *
-from services.medication.medication import (
+from services.medication.medication_objects import (
     Medication,
     MedicationReceipt,
     MedicationReceiptList,
-    MedicationManager,
     MedicationObjectReceiptCharacteristic,
 )
 from datetime import date
+from services.medication.medication_manager import MedicationManager
 
 
 class DairyFacade:
