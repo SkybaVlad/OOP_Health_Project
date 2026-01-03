@@ -1,7 +1,7 @@
 from services.activities.activity_type import SpecificActivityType
 from services.nutrition.meal import Meal
 from services.time_logic import calculate_duration_of_activity
-from services.medication.medication import Medication
+from services.medication.medication_objects import Medication
 import datetime
 
 

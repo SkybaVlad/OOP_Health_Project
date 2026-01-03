@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from services.health_daily.daily_health import HealthDaily
-from services.time_logic import time_in_period
+from services.validation_user_input.time_validator import time_in_period
 
 """In this file describes a pattern called Specification that can be used as condition for 
 complex filtration of data."""

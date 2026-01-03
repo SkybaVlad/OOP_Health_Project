@@ -1,4 +1,3 @@
-import unittest
 from unittest import TestCase
 from services.user.user_info import User
 
@@ -25,7 +24,7 @@ class TestUser(TestCase):
     def test_get_sex(self):
         self.assertEqual(self.user_female.get_sex(), "male")
 
-    def test_singelton(self):
+    def test_singleton(self):
         self.assertEqual(id(self.user_male), id(self.user_female))
         self.assertEqual(self.user_female.get_name(), "Vlad")
         self.assertEqual(self.user_female.get_surname(), "Skyba")

@@ -18,3 +18,24 @@ def validate_medication_name(name: str) -> bool:
             if name == line.strip('\n'):
                 return True
     raise ValueError("Medication with this name does not exist")
+
+
+def validate_dosage(dosage: int) -> bool:
+    if not isinstance(dosage, int):
+        raise TypeError('Dosage must be an integer')
+    if dosage < 0:
+        raise ValueError('Dosage must be a positive integer')
+    return True
+
+
+def validate_form_medication(form_medication: str) -> bool:
+    if not isinstance(form_medication, str):
+        raise TypeError('FormMedication must be a string')
+    with open(
+        'C:/Users/user/PycharmProjects/OOP_Health_Project/services/medication/medication_form_list.txt',
+        'r',
+    ) as file:
+        for line in file:
+            if form_medication == line.rstrip('\n').rstrip(','):
+                return True
+    raise ValueError('Medication with this form does not exist')
