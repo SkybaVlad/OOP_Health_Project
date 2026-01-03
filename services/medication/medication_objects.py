@@ -1,11 +1,10 @@
+import datetime
 from abc import ABC, abstractmethod
-from datetime import date
+from typing import Self
 
 from services.validation_user_input.time_validator import (
     time_validator_format_yyyy_mm_dd,
-    time_in_period,
 )
-from services import health_analysis
 from services.validation_user_input.time_validator import (
     is_source_time_less_than_target_time,
 )
@@ -13,6 +12,17 @@ from services.validation_user_input.medication_validation import (
     validate_dosage,
     validate_medication_name,
 )
+from enum import Enum
+
+
+class Frequency(Enum):
+    SpecificDays = "Choose specific days"
+    Every_day = "Every day"
+
+
+class Interval(Enum):
+    SpecificInterval = "Choose specific interval"
+    Forever = "Forever"
 
 
 class Medication:
@@ -24,9 +34,29 @@ class Medication:
     list of available forms and units."""
 
     def __init__(self, name: str, form, unit_of_measurements):
+        try:
+            validate_medication_name(name)
+        except ValueError as e:
+            pass
+        except TypeError as e:
+            pass
         self.name = name
         self.form = form
         self.unit_of_measurements = unit_of_measurements
+
+    def __eq__(self, other: Self) -> bool:
+        if not isinstance(other, Medication):
+            return False
+        if self.name != other.name:
+            return False
+        if self.form != other.form:
+            return False
+        if self.unit_of_measurements != other.unit_of_measurements:
+            return False
+        return True
+
+    def __hash__(self):
+        return hash((self.name, self.form, self.unit_of_measurements))
 
     def __str__(self):
         return f"{self.name} {self.form} {self.unit_of_measurements}"
@@ -36,7 +66,8 @@ class Medication:
 
 
 class MedicationObjectReceiptCharacteristic:
-    """This class describes a characteristics of specific medication object in receipt. One medication object in receipt
+    """
+    This class describes a characteristics of specific medication object in receipt. One medication object in receipt
     can have a different characteristics.
     This object consist of such fields like dosage of medication per one take, frequency of take medication, list of days
     when need to take medication, interval of taking medication, start_time of interval (YYYY-MM-DD format) and
@@ -78,6 +109,42 @@ class MedicationObjectReceiptCharacteristic:
         self.end_time_of_interval = time_validator_format_yyyy_mm_dd(end_time)
         self.end_time_of_interval = end_time
 
+    def interval_is_end(self) -> bool:
+        date_obj_of_end_time_of_interval = datetime.date.fromisoformat(
+            self.end_time_of_interval
+        )
+        if self.interval == Interval.Forever.value:
+            return False
+        if datetime.date.today() <= date_obj_of_end_time_of_interval:
+            return False
+        return True
+
+    def __eq__(self, other: Self) -> bool:
+        if not isinstance(other, MedicationObjectReceiptCharacteristic):
+            return False
+        if (
+            self.medication_dosage_per_one_take == other.medication_dosage_per_one_take
+            and self.frequency == other.frequency
+            and self.list_of_days == other.list_of_days
+            and self.interval == other.interval
+            and self.start_time_of_interval == other.start_time_of_interval
+            and self.end_time_of_interval == other.end_time_of_interval
+        ):
+            return True
+        return False
+
+    def __hash__(self):
+        return hash(
+            (
+                self.medication_dosage_per_one_take,
+                self.frequency,
+                self.list_of_days,
+                self.interval,
+                self.start_time_of_interval,
+                self.end_time_of_interval,
+            )
+        )
+
     def __str__(self):
         return (
             f"Characteristic of concrete medication object with such property like "
@@ -107,60 +174,68 @@ class MedicationReceipt:
         self.dict_of_medications_in_receipt: dict[
             Medication, MedicationObjectReceiptCharacteristic
         ] = {}
-        self.last_added_med_obj_characteristic_for_receipt: (
-            MedicationObjectReceiptCharacteristic | None
-        ) = None
 
-    def add_medication_that_adjust_for_receipt(
-        self, name: str, form: str, unit_of_measurements: str
+    def add_pair_to_receipt(
+        self,
+        medication_obj: Medication,
+        medication_chars: MedicationObjectReceiptCharacteristic,
     ):
-        medication_obj = Medication(name, form, unit_of_measurements)
-        self.last_added_med_obj_characteristic_for_receipt = (
-            MedicationObjectReceiptCharacteristic()
-        )
-        self.dict_of_medications_in_receipt[medication_obj] = (
-            self.last_added_med_obj_characteristic_for_receipt
-        )
+        if medication_obj not in self.dict_of_medications_in_receipt:
+            self.dict_of_medications_in_receipt[medication_obj] = medication_chars
+        else:
+            self.dict_of_medications_in_receipt[medication_obj] = medication_chars
 
-    def set_medication_dosage_per_one_take_to_specific_medication(
-        self, medication_dosage: int
-    ) -> None:
-        self.last_added_med_obj_characteristic_for_receipt.set_medication_dosage_per_one_take(
-            medication_dosage
-        )
+    def find_medication_chars(
+        self, medication_obj: Medication
+    ) -> MedicationObjectReceiptCharacteristic | None:
+        for med_obj in self.dict_of_medications_in_receipt:
+            if medication_obj == med_obj:
+                return self.dict_of_medications_in_receipt[med_obj]
+        return None
 
-    def set_frequency(self, frequency: str) -> None:
-        self.last_added_med_obj_characteristic_for_receipt.set_frequency(frequency)
+    def remove_pair(self, medication_obj: Medication):
+        """This method remove medication and appropriate medication_chars from receipt"""
+        if self.is_empty():
+            del self
+            return
+        if self.is_exist_med_obj(medication_obj):
+            self.dict_of_medications_in_receipt.pop(medication_obj)
 
-    def set_list_of_days(self, list_of_days: list) -> None:
-        self.last_added_med_obj_characteristic_for_receipt.set_list_of_days(
-            list_of_days
-        )
+    def is_exist_med_obj(self, _med_obj: Medication) -> bool:
+        for med_obj in self.dict_of_medications_in_receipt.keys():
+            if med_obj == _med_obj:
+                return True
+        return False
 
-    def set_interval(self, interval: str) -> None:
-        self.last_added_med_obj_characteristic_for_receipt.set_interval(interval)
+    def is_empty(self) -> bool:
+        if len(self.dict_of_medications_in_receipt) == 0:
+            return True
+        return False
 
-    def set_start_time(self, start_time: str) -> None:
-        time_validator_format_yyyy_mm_dd(start_time)
-        self.last_added_med_obj_characteristic_for_receipt.set_start_time(start_time)
+    def __eq__(self, other: Self) -> bool:
+        if not isinstance(other, MedicationReceipt):
+            return False
+        if len(self.dict_of_medications_in_receipt) != len(
+            other.dict_of_medications_in_receipt
+        ):
+            return False
 
-    def set_end_time(self, end_time: str) -> None:
-        time_validator_format_yyyy_mm_dd(end_time)
-        self.last_added_med_obj_characteristic_for_receipt.set_end_time(end_time)
+        if self.dict_of_medications_in_receipt != other.dict_of_medications_in_receipt:
+            return False
+        return True
+
+    def __hash__(self) -> int:
+        raise NotImplementedError()
 
     def __str__(self):
-        return f""
+        raise NotImplementedError()
 
     def __repr__(self):
-        pass
+        raise NotImplementedError()
 
 
-class ReceiptBuilderInterface(ABC):
-    """This is the Interface class for all receipt builders"""
-
-    @abstractmethod
-    def set_medication_object(self, name: str, form: str, unit_of_measurements: str):
-        pass
+class MedicationCharacteristicBuilderInterface(ABC):
+    """This is the Interface class for all medication characteristic builders."""
 
     @abstractmethod
     def set_medication_dosage_per_one_take(self, medication_dosage: int) -> None:
@@ -175,71 +250,72 @@ class ReceiptBuilderInterface(ABC):
         pass
 
 
-class ReceiptBuilder(ReceiptBuilderInterface):
-    """This is a builder class that responsible for building receipt. The receipt object has the next format
-    [{med_obj_1: characteristics_1},...,{med_obj_n: characteristics_n}].
-    So one receipt object has a different meds_objects and
-    concrete meds_objects has own characteristic
-    (characteristic is about how to take med, in which time and period like doctor said)
-    where type(med_objs) is Medication class and type(characteristics) is MedicationReceipt class
-    """
+class MedicationCharacteristicBuilder(MedicationCharacteristicBuilderInterface):
+    """This is a builder class that responsible for building characteristic of medication.
+    As each medication object has different characteristic (different days , different interval) - we
+    need to provide an elasticity way to create characteristic of medication. For example if
+    frequency = "Every day" -> we do not need to provide a list_of_days"""
 
     def __init__(self):
-        self.receipt = MedicationReceipt()
+        self.med_chars: MedicationObjectReceiptCharacteristic = (
+            MedicationObjectReceiptCharacteristic()
+        )
 
-    def set_medication_object(
-        self, medication_name: str, form: str, unit_of_measurements: str
-    ) -> None:
-        """we don't need to validate "form" param because user can't input this param manually only can choose from
-        existing list of available values. It's also concern a unit_of_measurements param
-        """
+    def reset(self) -> Self:
+        self.med_chars = MedicationObjectReceiptCharacteristic()
+        return self
+
+    def set_medication_dosage_per_one_take(self, dosage: int) -> Self:
         try:
-            validate_medication_name(medication_name)
+            validate_dosage(dosage)
+        except ValueError as e:
+            pass
+        except TypeError as e:
+            pass
+        self.med_chars.set_medication_dosage_per_one_take(dosage)
+        return self
+
+    def set_frequency(self, frequency: str) -> Self:
+        self.med_chars.set_frequency(frequency)
+        return self
+
+    def set_list_of_days(self, list_of_days: list) -> Self:
+        self.med_chars.set_list_of_days(list_of_days)
+        return self
+
+    def set_interval(self, interval: str) -> Self:
+        self.med_chars.set_interval(interval)
+        return self
+
+    def set_start_time(self, start_time: str) -> Self:
+        try:
+            time_validator_format_yyyy_mm_dd(start_time)
         except TypeError:
             pass
         except ValueError:
             pass
-        self.receipt.add_medication_that_adjust_for_receipt(
-            medication_name, form, unit_of_measurements
-        )
+        self.med_chars.set_start_time(start_time)
+        return self
 
-    def set_medication_dosage_per_one_take(self, medication_dosage: int) -> None:
+    def set_end_time(self, end_time: str) -> Self:
         try:
-            validate_dosage(medication_dosage)
+            time_validator_format_yyyy_mm_dd(end_time)
         except TypeError:
             pass
         except ValueError:
             pass
-        self.receipt.set_medication_dosage_per_one_take_to_specific_medication(
-            medication_dosage
-        )
-
-    def set_frequency(self, frequency: str) -> None:
-        self.receipt.set_frequency(frequency)
-
-    def set_list_of_days(self, list_of_days: list) -> None:
-        self.receipt.set_list_of_days(list_of_days)
-
-    def set_interval(self, interval: str) -> None:
-        self.receipt.set_interval(interval)
-
-    def set_start_time(self, start_time: str) -> None:
-        time_validator_format_yyyy_mm_dd(start_time)
-        self.receipt.set_start_time(start_time)
-
-    def set_end_time(self, end_time: str) -> None:
-        time_validator_format_yyyy_mm_dd(end_time)
         if not is_source_time_less_than_target_time(
-            self.receipt.last_added_med_obj_characteristic_for_receipt.start_time_of_interval,
+            self.med_chars.start_time_of_interval,
             end_time,
         ):
             raise ValueError(
                 "Start time of taking receipt can not be less than end time"
             )
-        self.receipt.set_end_time(end_time)
+        self.med_chars.set_end_time(end_time)
+        return self
 
-    def get_result(self) -> MedicationReceipt:
-        return self.receipt
+    def get_result(self) -> MedicationObjectReceiptCharacteristic:
+        return self.med_chars
 
 
 class MedicationReceiptList:
@@ -260,13 +336,36 @@ class MedicationReceiptList:
             self.receipts: list[MedicationReceipt] = []
             self.initialize = True
 
+    def is_exist_receipt(self, receipt: MedicationReceipt) -> bool:
+        """This method check whether receipt exists in receipt list"""
+        for _receipt in self.receipts:
+            if _receipt == receipt:
+                return True
+        return False
+
     def add_receipt(self, _receipt: MedicationReceipt):
+        """This method add receipt to receipt list"""
         self.receipts.append(_receipt)
 
-    def delete_receipt(self):
-        pass
+    def delete_receipt(self, receipt_obj: MedicationReceipt):
+        """This method delete receipt from receipt list"""
+        if self.is_exist_receipt(receipt_obj):
+            self.receipts.remove(receipt_obj)
+
+    def find_receipt_with_appropriate_med_obj(
+        self, _med_obj: Medication
+    ) -> MedicationReceipt | None:
+        """This method find receipt with concrete med_object as key in dict and
+        return receipt object from list of receipts"""
+        for _receipt in self.receipts:
+            if _med_obj in _receipt.dict_of_medications_in_receipt:
+                return _receipt
+        return None
 
     def get_list_of_all_available_receipts(
         self,
     ) -> list[MedicationReceipt]:
+        """This method return list of all available receipts. Available means
+        that either interval of receipt is end or not all medication inside receipt is taken
+        """
         return self.receipts
