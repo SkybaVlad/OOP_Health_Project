@@ -1,9 +1,9 @@
 import unittest
-from services.activities.activity_type import (
-    SpecificActivityType,
-    ActivityType,
-    ActivityCategory,
-)
+from sys import path
+
+path.append('C:\\Users\\user\\PycharmProjects\\OOP_Health_Project')
+
+from services.activities.activity_type import SpecificActivityType
 from parameterized import parameterized
 
 
@@ -46,3 +46,12 @@ class TestSpecificActivityTypeClass(unittest.TestCase):
 
     def test_calculate_count_of_burned_calories_method(self):
         self.assertEqual(self.specific_activity_type.get_burned_calories(), 800)
+
+
+if __name__ == '__main__':
+    print('exec as script')
+    loader = unittest.TestLoader()
+    suite1 = loader.loadTestsFromTestCase(TestSpecificActivityTypeClass)
+
+    runner = unittest.TextTestRunner()
+    runner.run(suite1)

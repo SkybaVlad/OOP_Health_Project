@@ -60,3 +60,9 @@ class SpecificActivityType:
 
     def get_end_time_of_specific_activity(self) -> str:
         return self._end_time_of_activity
+
+    def __str__(self):
+        return f"Specific Activity Type: {self._activity_category} - {self._activity_name}, with {self._burned_calories} calories burned and {self.calculate_activity_duration_in_minutes()} minutes duration of activity"
+
+    def __repr__(self):
+        return f"SpecificActivityType(activity_category={self._activity_category},activity_name={self._activity_name}, burned_calories={self._burned_calories}, start_time_of_activity={self._start_time_of_activity}, end_time_of_activity={self._end_time_of_activity})"
