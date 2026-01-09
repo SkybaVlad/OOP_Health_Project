@@ -19,15 +19,17 @@ from core.daily_health import HealthDaily
 
 
 medication_manager: MedicationManager | None = None
+health_diary: HealthDiary | None = None
 
 
 def setUpModule():
     global medication_manager
+    global health_diary
     first_day = HealthDaily("2026-01-03")
     health_diary = HealthDiary()
     list_of_receipts = MedicationReceiptList()
     medication_analyzer = MedicationAnalyzer(health_diary, list_of_receipts)
-    medication_manager = MedicationManager(list_of_receipts, health_diary)
+    medication_manager = MedicationManager(list_of_receipts)
     medication_manager.set_medication_analyzer(medication_analyzer)
     facade_dairy = DairyFacade(health_diary, first_day, medication_manager)
 
@@ -142,12 +144,18 @@ class TestMedicationFunctionality(unittest.TestCase):
         return_value=True,
     )
     def test_took_medication(self, mocked_method):
-        medication_manager.took_medication_object(self.med_obj_3_rec_2)
+        _receipt = medication_manager.find_receipt_with_appropriate_med_obj(
+            self.med_obj_3_rec_2
+        )
+        medication_manager.took_medication_object(self.med_obj_3_rec_2, _receipt)
 
         self.assertEqual(len(self.receipt_2.dict_of_medications_in_receipt), 0)
         self.assertEqual(len(medication_manager.list_of_receipts.receipts), 2)
 
-        medication_manager.took_medication_object(self.med_obj_1_rec_1)
+        _receipt = medication_manager.find_receipt_with_appropriate_med_obj(
+            self.med_obj_1_rec_1
+        )
+        medication_manager.took_medication_object(self.med_obj_1_rec_1, _receipt)
 
         self.assertEqual(len(self.receipt_1.dict_of_medications_in_receipt), 1)
         self.assertNotIn(
@@ -161,10 +169,10 @@ class TestMedicationFunctionality(unittest.TestCase):
         day_5: HealthDaily = HealthDaily("2026-01-05")
         # create and add day object to list of object for test
         # whether no_took_medication working correctly
-        medication_manager.health_diary.add_day(day_2)
-        medication_manager.health_diary.add_day(day_3)
-        medication_manager.health_diary.add_day(day_4)
-        medication_manager.health_diary.add_day(day_5)
+        health_diary.add_day(day_2)
+        health_diary.add_day(day_3)
+        health_diary.add_day(day_4)
+        health_diary.add_day(day_5)
 
         lst = medication_manager.get_list_of_all_medication_that_user_not_take()
         self.assertEqual(len(lst), 11)
