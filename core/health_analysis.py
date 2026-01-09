@@ -1,25 +1,29 @@
-from data.health_diary_container import HealthDiary
-from services.body_metrics.body_metrics_calculator import (
+from datetime import date
+
+from core.health_diary_container import HealthDiary
+from core.body_metrics_calculator import (
     calculate_body_mass_index_metrics,
     calculate_lean_body_mass,
     calculate_fat_mass,
     calculate_basal_metabolic_rate,
 )
-from services.health_daily.daily_health import HealthDaily
-from services.user.user_body_goals import UserBodyDailyGoals
-from services.user.user_body_info import UserBodyInfo
-from services.user.user_info import User
-from services.time_logic import time_converter_minutes_in_hours
-from services.medication.medication_objects import (
+from core.daily_health import HealthDaily
+from core.user.user_body_goals import UserBodyDailyGoals
+from core.user.user_body_info import UserBodyInfo
+from core.user.user_info import User
+from core.time_logic import time_converter_minutes_in_hours
+from core.medication.medication_objects import (
     MedicationReceiptList,
     Medication,
     MedicationObjectReceiptCharacteristic,
+    Interval,
+    Frequency,
 )
-from services.medication.medication_objects import MedicationReceipt
-from services.time_logic import get_list_of_all_dates_between_start_and_end
-from services.validation_user_input.time_validator import (
+from core.medication.medication_objects import MedicationReceipt
+from core.validation_user_input.time_validator import (
     time_in_period,
 )  # move this function
+from core.activity.activity_type import SpecificActivityType
 
 
 class HealthDailyAnalyzer:
@@ -78,6 +82,12 @@ class HealthDailyAnalyzer:
 
     def get_count_of_steps_for_day(self) -> float:
         return self.health_daily.count_of_steps_for_day
+
+    def get_list_of_activities(self) -> list[SpecificActivityType]:
+        return [
+            activity_obj
+            for activity_obj in self.health_daily.list_of_activities_for_day
+        ]
 
     def calculate_body_mass_index(self):
         if self.health_daily.weight is None and self.health_daily.height is not None:
@@ -158,23 +168,35 @@ class HealthDailyAnalyzer:
             )
         return calculate_fat_mass(self.health_daily.weight, lean_body_mass_value)
 
-    def get_daily_result(self):
-        return (
-            f"Daily result {self.health_daily.date_of_day}"
-            f"Total time spent on activities - {self.get_total_time_spent_on_activities_in_minutes_current_day()}"
-            f"Total amount of steps - {self.get_count_of_steps_for_day()}"
-            f"Total hours of sleep - {self.get_sleep_duration()}"
-            f"Total consumed calories - {self.get_consumed_calories()}"
-            f"Total consumed water - {self.get_consumed_water()}"
-            f"Total burned calories - {self.get_burned_calories()}"
-            f"Remaining water - {self.get_remaining_water()}"
-            f"Remaining burned calories - {self.get_remaining_of_burned_calories()}"
-            f"Remaining consumed calories - {self.get_remaining_of_consumed_calories()}"
-            f"Body Mass Metrics - {self.calculate_body_mass_index}"
-            f"Basal Metabolic Rate - {self.calculate_basal_metabolic_rate}"
-            f"Lean Body Mass Index - {self.calculate_lean_body_mass_index}"
-            f"Fat Mass - {self.calculate_fat_mass}"
-        )
+    def get_list_of_meals(self):
+        return [meal for meal in self.health_daily.list_of_meals_for_day]
+
+    def get_list_of_medication(self):
+        return [med_obj for med_obj in self.health_daily.list_of_taken_medication]
+
+    def get_daily_result(self) -> dict:
+        # need also activity , medication and meals to return
+
+        return {
+            "date": self.health_daily.date_of_day,
+            "burned_calories": self.get_burned_calories(),
+            "consumed_calories": self.get_consumed_calories(),
+            "activity": self.get_list_of_activities(),
+            "meal": self.get_list_of_meals(),
+            "medication": self.get_list_of_medication(),
+            "water": self.get_consumed_water(),
+            "sleep_duration": self.get_sleep_duration(),
+            "steps": self.get_count_of_steps_for_day(),
+            "weight": self.health_daily.weight,
+            "height": self.health_daily.height,
+            "fat_percentage": self.health_daily.fat_percentage,
+            "activity_time": self.get_total_time_spent_on_activities_in_minutes_current_day(),
+            "name_of_day": self.health_daily.name_of_day,
+            "body_mass_index": self.calculate_body_mass_index(),
+            "basal_metabolic_rate": self.calculate_basal_metabolic_rate(),
+            "lean_body_mass_index": self.calculate_lean_body_mass_index(),
+            "fat_mass": self.calculate_fat_mass(),
+        }
 
 
 class HealthInSomePeriodAnalyzer:
@@ -195,8 +217,8 @@ class HealthInSomePeriodAnalyzer:
         self.start_data = start_time_of_period
         self.end_data = end_time_of_period
 
-    def get_total_time_spent_on_activities_in_minutes_for_all_time(self) -> float:
-        total_time_spent = 0.0
+    def get_total_time_spent_on_activities_in_minutes_for_all_time(self) -> int:
+        total_time_spent = 0
         for day in self.list_health_diary:
             for activity in day.list_of_activities_for_day:
                 total_time_spent += activity.calculate_activity_duration_in_minutes()
@@ -233,8 +255,6 @@ class HealthInSomePeriodAnalyzer:
         return total_time_spent
 
     def get_day_with_max_consumed_calories_for_all_time(self) -> HealthDaily | float:
-        if len(self.list_health_diary) == 0:
-            return 0.0
         day_with_max_consumed_calories = self.list_health_diary[0]
         for day in self.list_health_diary:
             if day.consumed_calories_for_day > day_with_max_consumed_calories:
@@ -242,8 +262,6 @@ class HealthInSomePeriodAnalyzer:
         return day_with_max_consumed_calories
 
     def get_day_with_max_burned_calories_for_all_time(self) -> HealthDaily | float:
-        if len(self.list_health_diary) == 0:
-            return 0.0
         day_with_max_burned_calories = self.list_health_diary[0]
         for day in self.list_health_diary:
             if day.burned_calories_for_day > day_with_max_burned_calories:
@@ -251,8 +269,6 @@ class HealthInSomePeriodAnalyzer:
         return day_with_max_burned_calories
 
     def get_day_with_max_steps_for_all_time(self) -> HealthDaily | float:
-        if len(self.list_health_diary) == 0:
-            return 0.0
         day_with_max_steps = self.list_health_diary[0]
         for day in self.list_health_diary:
             if day.count_of_steps_for_day > day_with_max_steps:
@@ -262,32 +278,21 @@ class HealthInSomePeriodAnalyzer:
     def get_day_with_max_time_spent_on_activities_for_all_time(
         self,
     ) -> HealthDaily | float:
-        if len(self.list_health_diary) == 0:
-            return 0.0
+
         day_with_max_time_spent_on_activities = self.list_health_diary[0]
-        max_total_time_spent_on_activities = 0.0
-        for (
-            activity
-        ) in day_with_max_time_spent_on_activities.list_of_activities_for_day:
-            max_total_time_spent_on_activities += (
-                activity.calculate_activity_duration_in_minutes()
-            )
-        total_time_spent_on_activities = 0.0
+        max_total_time_spent_on_activities = (
+            day_with_max_time_spent_on_activities.total_time_spend_on_activities
+        )
+
         for day in self.list_health_diary:
-            for activity in day.list_of_activities_for_day:
-                total_time_spent_on_activities += (
-                    activity.calculate_activity_duration_in_minutes()
-                )
-            if total_time_spent_on_activities > max_total_time_spent_on_activities:
-                max_total_time_spent_on_activities = total_time_spent_on_activities
+            if day.total_time_spent_on_activities > max_total_time_spent_on_activities:
+                max_total_time_spent_on_activities = day.total_time_spent_on_activities
                 day_with_max_time_spent_on_activities = day
         return day_with_max_time_spent_on_activities
 
     def get_day_with_max_amount_of_drunk_water_for_all_time(
         self,
     ) -> HealthDaily | float:
-        if len(self.list_health_diary) == 0:
-            return 0.0
         day_with_max_amount_of_drunk_water = self.list_health_diary[0]
         for day in self.list_health_diary:
             if day.drunk_water > day_with_max_amount_of_drunk_water.drunk_water:
@@ -295,8 +300,6 @@ class HealthInSomePeriodAnalyzer:
         return day_with_max_amount_of_drunk_water
 
     def get_day_with_max_hours_spent_on_sleep_for_all_time(self):
-        if len(self.list_health_diary) == 0:
-            return 0.0
         day_with_max_hours_of_sleep = self.list_health_diary[0]
         for day in self.list_health_diary:
             if day.sleep_duration > day_with_max_hours_of_sleep.sleep_duration:
@@ -342,23 +345,31 @@ class MedicationAnalyzer:
     that manages a list of receipts. For example if concrete receipt is end, we need delete this receipt from
     list of receipts"""
 
-    def __init__(self, health_diary: HealthDiary):
+    def __init__(
+        self, health_diary: HealthDiary, list_of_receipts: MedicationReceiptList
+    ):
         self.health_diary = health_diary
-        self.list_of_receipts: MedicationReceiptList | None = None
-
-    def set_list_of_receipts(self, list_of_receipts: MedicationReceiptList) -> None:
-        self.list_of_receipts = list_of_receipts
+        self.list_of_receipts: MedicationReceiptList | None = list_of_receipts
 
     def concrete_med_obj_in_receipt_is_completed(
         self, med_obj: Medication, characteristic: MedicationObjectReceiptCharacteristic
     ) -> bool:
         """This method check if concrete med_obj is completed inside a dict {med_obj : characteristic, ... , med_obj : characteristic
         if med_obj is completed -> delete this pair from receipt}"""
-        if characteristic.interval == "Forever":
+        if characteristic.interval == Interval.Forever.value:
             return False
-        if characteristic.interval == "Choose specific interval":
-            if characteristic.frequency == "Every day":
-                for day in self.health_diary.get_history_of_days():
+        if characteristic.frequency == Frequency.Every_day.value:
+            for day in self.health_diary.get_history_of_days():
+                if time_in_period(
+                    characteristic.start_time_of_interval,
+                    characteristic.end_time_of_interval,
+                    day.date_of_day,
+                ):
+                    if med_obj not in day.list_of_taken_medication:
+                        return False
+        elif characteristic.frequency == Frequency.SpecificDays.value:
+            for day in self.health_diary.get_history_of_days():
+                if day.name_of_day in characteristic.list_of_days:
                     if time_in_period(
                         characteristic.start_time_of_interval,
                         characteristic.end_time_of_interval,
@@ -366,27 +377,23 @@ class MedicationAnalyzer:
                     ):
                         if med_obj not in day.list_of_taken_medication:
                             return False
-            elif characteristic.frequency == "Specific days":
-                for day in self.health_diary.get_history_of_days():
-                    if day.name_of_day in characteristic.list_of_days:
-                        if time_in_period(
-                            characteristic.start_time_of_interval,
-                            characteristic.end_time_of_interval,
-                            day.date_of_day,
-                        ):
-                            if med_obj not in day.list_of_taken_medication:
-                                return False
         return True
 
     def receipt_is_completed(self, receipt_obj: MedicationReceipt) -> bool:
-        """This method checks if receipt (MedicationReceipt object) is completed."""
+        """This method checks if receipt (MedicationReceipt object) is completed. Is completed
+        means that interval of all subreceipts is end and all medication inside subreceipts is taken in one time. Subreceipt means one pair
+        (key (Medication): value (MedicationObjectReceiptCharacteristic)) inside receipt obj in dict_of_medications_in_receipt attribute.
+        Subreceipts that has MedicationObjectReceiptCharacteristic object with interval = "Forever" never will end.
+        """
         for med_obj in receipt_obj.dict_of_medications_in_receipt.keys():
             characteristic = receipt_obj.dict_of_medications_in_receipt[med_obj]
-            if characteristic.interval == "Forever":
+            if characteristic.interval == Interval.Forever.value:
                 return False
         for med_obj in receipt_obj.dict_of_medications_in_receipt.keys():
             characteristic = receipt_obj.dict_of_medications_in_receipt[med_obj]
-            if characteristic.frequency == "Everyday":
+            if not characteristic.interval_is_end():
+                return False
+            if characteristic.frequency == Frequency.Every_day.value:
                 for day in self.health_diary.get_history_of_days():
                     if time_in_period(
                         characteristic.start_time_of_interval,
@@ -395,7 +402,7 @@ class MedicationAnalyzer:
                     ):
                         if med_obj not in day.list_of_taken_medication:
                             return False
-            elif characteristic.frequency == "Specific days":
+            elif characteristic.frequency == Frequency.SpecificDays.value:
                 for day in self.health_diary.get_history_of_days():
                     if day.name_of_day not in characteristic.list_of_days:
                         if time_in_period(
@@ -406,3 +413,62 @@ class MedicationAnalyzer:
                             if med_obj not in day.list_of_taken_medication:
                                 return False
         return True
+
+    def get_list_of_medications_that_need_to_take_today(self) -> list[Medication]:
+        """This method filter all meds objects (Medication class)
+        from list_of_receipts object if data of curr day enter in interval of take this medication
+        For example [{med_obj : characteristic}] if curr date in interval of characteristic (start_date: end_date)
+        and frequency (for example if frequency = list of days, we need to check the current day name) is fitting
+        """
+        lst_of_med_objs_that_need_to_take_today = []
+        for (
+            medication_receipt_obj
+        ) in self.list_of_receipts.get_list_of_all_available_receipts():
+            for med_obj in medication_receipt_obj.dict_of_medications_in_receipt.keys():
+                if not medication_receipt_obj.dict_of_medications_in_receipt[
+                    med_obj
+                ].interval_is_end():
+                    if (
+                        medication_receipt_obj.dict_of_medications_in_receipt[
+                            med_obj
+                        ].frequency
+                        == Frequency.Every_day.value
+                    ):
+                        lst_of_med_objs_that_need_to_take_today.append(med_obj)
+                    else:
+                        if medication_receipt_obj.dict_of_medications_in_receipt[
+                            med_obj
+                        ].day_in_list_of_days(date.today().strftime("%A")):
+                            lst_of_med_objs_that_need_to_take_today.append(med_obj)
+        return lst_of_med_objs_that_need_to_take_today
+
+    def get_list_of_all_medication_that_user_not_take(
+        self,
+    ) -> list[tuple[Medication, str]]:
+        """This method return list of tuples, where each tuple is contains with medication
+        object and data when this medication object user do not take."""
+        lst: list[tuple[Medication, str]] = []
+        for receipt in self.list_of_receipts.receipts:
+            for med_obj in receipt.dict_of_medications_in_receipt:
+                for day in self.health_diary.get_history_of_days():
+                    date_of_day = date.fromisoformat(day.date_of_day)
+                    name_of_day = date_of_day.strftime("%A")
+                    if (
+                        receipt.dict_of_medications_in_receipt[med_obj].frequency
+                        == Frequency.Every_day.value
+                        and med_obj not in day.list_of_taken_medication
+                    ):
+                        lst.append((med_obj, day.date_of_day))
+                    elif (
+                        receipt.dict_of_medications_in_receipt[med_obj].frequency
+                        == Frequency.SpecificDays.value
+                    ):
+                        if (
+                            name_of_day
+                            in receipt.dict_of_medications_in_receipt[
+                                med_obj
+                            ].list_of_days
+                            and med_obj not in day.list_of_taken_medication
+                        ):
+                            lst.append((med_obj, day.date_of_day))
+        return lst
