@@ -69,9 +69,6 @@ class MedicationManager:
             if self.receipt_is_completed(receipt_obj):
                 self.delete_receipt(receipt_obj)
 
-    def no_took_medication(self, medication_object: Medication) -> None:
-        pass
-
     def get_list_of_all_medication_that_user_not_take(
         self,
     ) -> list[tuple[Medication, str]]:
