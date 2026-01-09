@@ -17,11 +17,14 @@ from core.health_analysis import MedicationAnalyzer
 from core.medication.medication_manager import (
     convert_list_of_medication_to_dict_with_status,
 )
-from core.exceptions import LimitCallsError, DateOfDayIsGreaterThanTodayError
+from core.exceptions import (
+    LimitCallsError,
+    DateOfDayIsGreaterThanTodayError,
+    NotExistingReceiptWithAppropriateMedicationObjectError,
+)
 from core.dto_objects import (
     DailyObjectDTO,
     MedicationDTO,
-    ActivityTypeDTO,
     convert_list_of_medications_into_list_of_medication_dto,
     generate_daily_dto_object,
 )
@@ -104,6 +107,7 @@ class MainFacade:
         self.health_diary_facade.add_burned_calories(burned_calories, _date)
 
     def change_age(self, age: int) -> None:
+        # validate value of age , if < 15 or > 100 error or if less than curr age
         self.user.set_age(age)
 
     def add_burned_calories_goal_on_day(self, calories: int):
@@ -209,10 +213,20 @@ class MainFacade:
     ) -> list[HealthDaily]:
         return [day for day in list_of_all_days if specification.is_satisfy_by(day)]
 
-    def took_medication_object(self, medication_object: Medication):
+    def took_medication_object(self, medication_obj: Medication):
         """When user tap "Take" for specific medication object this method is called."""
-        self.health_diary_facade.add_took_medication_object(medication_object)
-        self.medication_manager.took_medication_object(medication_object)
+        if (
+            self.medication_manager.list_of_receipts.find_receipt_with_appropriate_med_obj(
+                medication_obj
+            )
+            is None
+        ):
+            raise NotExistingReceiptWithAppropriateMedicationObjectError(
+                f"{medication_obj.__repr__()} does not exist in list of receipts"
+            )
+
+        self.health_diary_facade.add_took_medication_object(medication_obj)
+        self.medication_manager.took_medication_object(medication_obj)
 
     def took_medication_object_with_no_today_date(
         self, medication_obj: Medication, date_of_taken: str
@@ -220,6 +234,17 @@ class MainFacade:
         """This method need for provide scalability way of taken medication object.
         If user forgot mark in app that he took the med_obj he can mark this in any day.
         """
+
+        if (
+            self.medication_manager.list_of_receipts.find_receipt_with_appropriate_med_obj(
+                medication_obj
+            )
+            is None
+        ):
+            raise NotExistingReceiptWithAppropriateMedicationObjectError(
+                f"{medication_obj.__repr__()} does not exist in list of receipts"
+            )
+
         self.health_diary_facade.add_took_medication_object_with_no_today_date(
             medication_obj, date_of_taken
         )
