@@ -3,5 +3,10 @@ class LimitCallsError(Exception):
 
     pass
 
+
 class DateOfDayIsGreaterThanTodayError(Exception):
+    pass
+
+
+class NotExistingReceiptWithAppropriateMedicationObjectError(Exception):
     pass
