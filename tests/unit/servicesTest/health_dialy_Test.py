@@ -1,10 +1,9 @@
 import unittest
 from datetime import date
-from parameterized import parameterized
-from services.nutrition.meal import Meal, MealType
-from services.activities.activity_type import SpecificActivityType
-from services.medication.medication import Medication
-from services.health_daily.daily_health import HealthDaily
+from core.nutrition.meal import Meal, MealType
+from core.activity.activity_type import SpecificActivityType
+from core.medication.medication_objects import Medication
+from core.daily_health import HealthDaily
 
 
 class HealthDailyTest(unittest.TestCase):
