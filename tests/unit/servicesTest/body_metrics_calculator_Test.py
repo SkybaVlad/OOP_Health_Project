@@ -1,10 +1,8 @@
 import unittest
 
-from services.body_metrics.body_metrics_calculator import (
+from core.body_metrics_calculator import (
     calculate_lean_body_mass,
-    calculate_fat_mass,
     calculate_body_mass_index_metrics,
-    calculate_basal_metabolic_rate,
 )
 
 
