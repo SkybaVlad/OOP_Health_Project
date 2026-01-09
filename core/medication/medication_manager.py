@@ -1,6 +1,7 @@
-from data.health_diary_container import HealthDiary
-from services.health_analysis import MedicationAnalyzer
-from services.medication.medication_objects import (
+from core.dto_objects import MedicationDTO
+from core.health_diary_container import HealthDiary
+from core.health_analysis import MedicationAnalyzer
+from core.medication.medication_objects import (
     MedicationReceiptList,
     MedicationReceipt,
     Medication,
@@ -8,8 +9,8 @@ from services.medication.medication_objects import (
 
 
 def convert_list_of_medication_to_dict_with_status(
-    list_of_medications: list[Medication],
-) -> dict[Medication, bool]:
+    list_of_medications: list[MedicationDTO],
+) -> dict[MedicationDTO, bool]:
     """This functions convert list of Medication objects to dict with status. Status == False means that user don't
     take medication. Status == True means that user take medication. On start of day
     all medication objects has STATUS == False"""
@@ -25,21 +26,12 @@ class MedicationManager:
     This class has a list_of_receipts attribute of MedicationReceiptList type and
     medication_analyzer attribute of MedicationAnalyzer type"""
 
-    __instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if cls.__instance is None:
-            cls.__instance = super().__new__(cls)
-        return cls.__instance
-
     def __init__(
         self, list_of_receipts: MedicationReceiptList, health_diary: HealthDiary
     ):
-        if not hasattr(self, "initialize"):
-            self.list_of_receipts: MedicationReceiptList = list_of_receipts
-            self.medication_analyzer: MedicationAnalyzer | None = None
-            self.health_diary: HealthDiary = health_diary
-            self.initialize = True
+        self.list_of_receipts: MedicationReceiptList = list_of_receipts
+        self.medication_analyzer: MedicationAnalyzer | None = None
+        self.health_diary: HealthDiary = health_diary
 
     def add_medication_receipt(self, receipt: MedicationReceipt):
         """This method adds receipt object to list of receipts"""
@@ -84,6 +76,28 @@ class MedicationManager:
         self,
     ) -> list[tuple[Medication, str]]:
         return self.medication_analyzer.get_list_of_all_medication_that_user_not_take()
+
+    def took_medication_object_with_no_today_date(self, medication_obj: Medication):
+        receipt_ = self.list_of_receipts.find_receipt_with_appropriate_med_obj(
+            medication_obj
+        )
+        if receipt_ is not None:
+            if self.medication_obj_inside_receipt_is_completed(medication_obj):
+                self.delete_med_obj_inside_receipt(medication_obj)
+            if self.receipt_is_completed(receipt_):
+                self.delete_receipt(receipt_)
+
+    def medication_obj_inside_receipt_is_completed(
+        self, medication_obj: Medication
+    ) -> bool:
+        receipt_ = self.list_of_receipts.find_receipt_with_appropriate_med_obj(
+            medication_obj
+        )
+        if receipt_ is not None:
+            return self.medication_analyzer.concrete_med_obj_in_receipt_is_completed(
+                medication_obj, receipt_.dict_of_medications_in_receipt[medication_obj]
+            )
+        return False
 
     def receipt_is_completed(self, receipt_obj: MedicationReceipt) -> bool:
         """This method return result of MedicationAnalyzer.receipt_is_completed method"""
