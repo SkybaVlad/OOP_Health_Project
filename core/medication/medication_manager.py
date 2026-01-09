@@ -1,5 +1,4 @@
 from core.dto_objects import MedicationDTO
-from core.health_diary_container import HealthDiary
 from core.health_analysis import MedicationAnalyzer
 from core.medication.medication_objects import (
     MedicationReceiptList,
@@ -26,12 +25,9 @@ class MedicationManager:
     This class has a list_of_receipts attribute of MedicationReceiptList type and
     medication_analyzer attribute of MedicationAnalyzer type"""
 
-    def __init__(
-        self, list_of_receipts: MedicationReceiptList, health_diary: HealthDiary
-    ):
+    def __init__(self, list_of_receipts: MedicationReceiptList):
         self.list_of_receipts: MedicationReceiptList = list_of_receipts
         self.medication_analyzer: MedicationAnalyzer | None = None
-        self.health_diary: HealthDiary = health_diary
 
     def add_medication_receipt(self, receipt: MedicationReceipt):
         """This method adds receipt object to list of receipts"""
@@ -52,49 +48,40 @@ class MedicationManager:
             self.medication_analyzer.get_list_of_medications_that_need_to_take_today()
         )
 
-    def took_medication_object(self, medication_object: Medication) -> None:
+    def took_medication_object(
+        self, medication_object: Medication, _receipt_with_med_obj: MedicationReceipt
+    ) -> None:
         """This method accept medication object that user is took and check that
         receipt is end. If yes - need delete receipt or if concrete interval of take some medication
         is end - need to delete this inside a receipt"""
-        receipt_obj = self.list_of_receipts.find_receipt_with_appropriate_med_obj(
-            medication_object
-        )
-        ...
-        if receipt_obj is not None:
-            if self.medication_analyzer.concrete_med_obj_in_receipt_is_completed(
-                medication_object,
-                receipt_obj.dict_of_medications_in_receipt[medication_object],
-            ):
-                self.delete_med_obj_inside_receipt(medication_object)
-            if self.receipt_is_completed(receipt_obj):
-                self.delete_receipt(receipt_obj)
+        if self.medication_obj_inside_receipt_is_completed(
+            medication_object, _receipt_with_med_obj
+        ):
+            self.delete_med_obj_inside_receipt(medication_object)
+        if self.receipt_is_completed(_receipt_with_med_obj):
+            self.delete_receipt(_receipt_with_med_obj)
 
     def get_list_of_all_medication_that_user_not_take(
         self,
     ) -> list[tuple[Medication, str]]:
         return self.medication_analyzer.get_list_of_all_medication_that_user_not_take()
 
-    def took_medication_object_with_no_today_date(self, medication_obj: Medication):
-        receipt_ = self.list_of_receipts.find_receipt_with_appropriate_med_obj(
-            medication_obj
-        )
-        if receipt_ is not None:
-            if self.medication_obj_inside_receipt_is_completed(medication_obj):
-                self.delete_med_obj_inside_receipt(medication_obj)
-            if self.receipt_is_completed(receipt_):
-                self.delete_receipt(receipt_)
+    def took_medication_object_with_no_today_date(
+        self, medication_obj: Medication, _receipt_with_med_obj: MedicationReceipt
+    ):
+        if self.medication_obj_inside_receipt_is_completed(
+            medication_obj, _receipt_with_med_obj
+        ):
+            self.delete_med_obj_inside_receipt(medication_obj)
+        if self.receipt_is_completed(_receipt_with_med_obj):
+            self.delete_receipt(_receipt_with_med_obj)
 
     def medication_obj_inside_receipt_is_completed(
-        self, medication_obj: Medication
+        self, medication_obj: Medication, receipt_: MedicationReceipt
     ) -> bool:
-        receipt_ = self.list_of_receipts.find_receipt_with_appropriate_med_obj(
-            medication_obj
+        return self.medication_analyzer.concrete_med_obj_in_receipt_is_completed(
+            medication_obj, receipt_.dict_of_medications_in_receipt[medication_obj]
         )
-        if receipt_ is not None:
-            return self.medication_analyzer.concrete_med_obj_in_receipt_is_completed(
-                medication_obj, receipt_.dict_of_medications_in_receipt[medication_obj]
-            )
-        return False
 
     def receipt_is_completed(self, receipt_obj: MedicationReceipt) -> bool:
         """This method return result of MedicationAnalyzer.receipt_is_completed method"""
@@ -104,7 +91,12 @@ class MedicationManager:
         self.list_of_receipts.delete_receipt(_receipt_obj)
 
     def delete_med_obj_inside_receipt(self, medication_obj: Medication):
-        receipt = self.list_of_receipts.find_receipt_with_appropriate_med_obj(
+        receipt = self.find_receipt_with_appropriate_med_obj(medication_obj)
+        receipt.remove_pair(medication_obj)
+
+    def find_receipt_with_appropriate_med_obj(
+        self, medication_obj: Medication
+    ) -> MedicationReceipt:
+        return self.list_of_receipts.find_receipt_with_appropriate_med_obj(
             medication_obj
         )
-        receipt.remove_pair(medication_obj)

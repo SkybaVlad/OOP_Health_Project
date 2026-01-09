@@ -215,18 +215,20 @@ class MainFacade:
 
     def took_medication_object(self, medication_obj: Medication):
         """When user tap "Take" for specific medication object this method is called."""
-        if (
-            self.medication_manager.list_of_receipts.find_receipt_with_appropriate_med_obj(
-                medication_obj
-            )
-            is None
-        ):
+
+        _receipt_with_med_obj = self.medication_manager.list_of_receipts.find_receipt_with_appropriate_med_obj(
+            medication_obj
+        )
+
+        if _receipt_with_med_obj is None:
             raise NotExistingReceiptWithAppropriateMedicationObjectError(
                 f"{medication_obj.__repr__()} does not exist in list of receipts"
             )
-
-        self.health_diary_facade.add_took_medication_object(medication_obj)
-        self.medication_manager.took_medication_object(medication_obj)
+        else:
+            self.health_diary_facade.add_took_medication_object(medication_obj)
+            self.medication_manager.took_medication_object(
+                medication_obj, _receipt_with_med_obj
+            )
 
     def took_medication_object_with_no_today_date(
         self, medication_obj: Medication, date_of_taken: str
@@ -235,22 +237,21 @@ class MainFacade:
         If user forgot mark in app that he took the med_obj he can mark this in any day.
         """
 
-        if (
-            self.medication_manager.list_of_receipts.find_receipt_with_appropriate_med_obj(
-                medication_obj
-            )
-            is None
-        ):
+        _receipt_with_med_obj = self.medication_manager.list_of_receipts.find_receipt_with_appropriate_med_obj(
+            medication_obj
+        )
+
+        if _receipt_with_med_obj is None:
             raise NotExistingReceiptWithAppropriateMedicationObjectError(
                 f"{medication_obj.__repr__()} does not exist in list of receipts"
             )
-
-        self.health_diary_facade.add_took_medication_object_with_no_today_date(
-            medication_obj, date_of_taken
-        )
-        self.medication_manager.took_medication_object_with_no_today_date(
-            medication_obj
-        )
+        else:
+            self.health_diary_facade.add_took_medication_object_with_no_today_date(
+                medication_obj, date_of_taken
+            )
+            self.medication_manager.took_medication_object_with_no_today_date(
+                medication_obj, _receipt_with_med_obj
+            )
 
     def get_medications_that_need_to_take_today(self) -> dict[MedicationDTO, bool]:
         """This method return dict that contains a medication object as key and False as value.
@@ -303,7 +304,7 @@ def create_and_configure_facade_for_start(user_obj: User) -> MainFacade:
     user_body_info = UserBodyInfo()
     med_receipt_list = MedicationReceiptList()
     user_body_daily_goals = UserBodyDailyGoals()
-    medication_manager = MedicationManager(med_receipt_list, health_diary)
+    medication_manager = MedicationManager(med_receipt_list)
     medication_analyzer = MedicationAnalyzer(health_diary, med_receipt_list)
     dairy_facade = DairyFacade(health_diary, first_day, medication_manager)
     health_daily_analyzer = HealthDailyAnalyzer()
