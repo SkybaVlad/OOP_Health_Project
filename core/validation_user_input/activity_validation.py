@@ -9,7 +9,7 @@ def validate_activity_name(name: str):
         if not ch.isalpha():
             raise ValueError('Activity name must contain only letters')
     with open(
-        "C:/Users/user/PycharmProjects/OOP_Health_Project/services/activities/activity_names.txt",
+        "C:/Users/user/PycharmProjects/OOP_Health_Project/core/activity/activity_names.txt",
         "r",
     ) as file:
         for line in file:

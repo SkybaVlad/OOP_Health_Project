@@ -1,14 +1,14 @@
-import datetime
+from datetime import date
 from abc import ABC, abstractmethod
 from typing import Self
 
-from services.validation_user_input.time_validator import (
+from core.validation_user_input.time_validator import (
     time_validator_format_yyyy_mm_dd,
 )
-from services.validation_user_input.time_validator import (
+from core.validation_user_input.time_validator import (
     is_source_time_less_than_target_time,
 )
-from services.validation_user_input.medication_validation import (
+from core.validation_user_input.medication_validation import (
     validate_dosage,
     validate_medication_name,
 )
@@ -109,13 +109,18 @@ class MedicationObjectReceiptCharacteristic:
         self.end_time_of_interval = time_validator_format_yyyy_mm_dd(end_time)
         self.end_time_of_interval = end_time
 
+    def day_in_list_of_days(self, name_of_day: str) -> bool:
+        if self.list_of_days is None:
+            return False
+        if name_of_day in self.list_of_days:
+            return True
+        return False
+
     def interval_is_end(self) -> bool:
-        date_obj_of_end_time_of_interval = datetime.date.fromisoformat(
-            self.end_time_of_interval
-        )
         if self.interval == Interval.Forever.value:
             return False
-        if datetime.date.today() <= date_obj_of_end_time_of_interval:
+        date_obj_of_end_time_of_interval = date.fromisoformat(self.end_time_of_interval)
+        if date.today() <= date_obj_of_end_time_of_interval:
             return False
         return True
 
@@ -324,17 +329,8 @@ class MedicationReceiptList:
     List of receipts have the next format [{Medication_obj: MedicationObjectReceiptCharacteristic}, ..., ]
     """
 
-    __instance = None
-
-    def __new__(cls):
-        if cls.__instance is None:
-            cls.__instance = super().__new__(cls)
-        return cls.__instance
-
     def __init__(self):
-        if not hasattr(self, "initialize"):
-            self.receipts: list[MedicationReceipt] = []
-            self.initialize = True
+        self.receipts: list[MedicationReceipt] = []
 
     def is_exist_receipt(self, receipt: MedicationReceipt) -> bool:
         """This method check whether receipt exists in receipt list"""

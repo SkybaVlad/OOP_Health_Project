@@ -1,10 +1,10 @@
-from services.validation_user_input.activity_validation import (
+from core.validation_user_input.activity_validation import (
     validate_activity_name,
     validate_activity_category,
     validate_burned_calories,
 )
-from services.time_logic import calculate_duration_of_activity
-from services.validation_user_input.time_validator import time_validator_format_hh_mm
+from core.time_logic import calculate_duration_of_activity
+from core.validation_user_input.time_validator import time_validator_format_hh_mm
 
 
 class SpecificActivityType:
@@ -35,34 +35,34 @@ class SpecificActivityType:
         except ValueError as e:
             pass
 
-        self._activity_category = activity_category
-        self._activity_name = activity_name
-        self._burned_calories = burned_calories
-        self._start_time_of_activity = start_time_of_activity
-        self._end_time_of_activity = end_time_of_activity
+        self.activity_category = activity_category
+        self.activity_name = activity_name
+        self.burned_calories = burned_calories
+        self.start_time_of_activity = start_time_of_activity
+        self.end_time_of_activity = end_time_of_activity
 
     def get_activity_category(self) -> str:
-        return self._activity_category
+        return self.activity_category
 
     def get_name_of_specific_activity(self) -> str:
-        return self._activity_name
+        return self.activity_name
 
     def get_burned_calories(self) -> float:
-        return self._burned_calories
+        return self.burned_calories
 
     def calculate_activity_duration_in_minutes(self) -> float:
         return calculate_duration_of_activity(
-            self._start_time_of_activity, self._end_time_of_activity
+            self.start_time_of_activity, self.end_time_of_activity
         )
 
     def get_start_time_of_specific_activity(self) -> str:
-        return self._start_time_of_activity
+        return self.start_time_of_activity
 
     def get_end_time_of_specific_activity(self) -> str:
-        return self._end_time_of_activity
+        return self.end_time_of_activity
 
     def __str__(self):
-        return f"Specific Activity Type: {self._activity_category} - {self._activity_name}, with {self._burned_calories} calories burned and {self.calculate_activity_duration_in_minutes()} minutes duration of activity"
+        return f"Specific Activity Type: {self.activity_category} - {self.activity_name}, with {self.burned_calories} calories burned and {self.calculate_activity_duration_in_minutes()} minutes duration of activity"
 
     def __repr__(self):
-        return f"SpecificActivityType(activity_category={self._activity_category},activity_name={self._activity_name}, burned_calories={self._burned_calories}, start_time_of_activity={self._start_time_of_activity}, end_time_of_activity={self._end_time_of_activity})"
+        return f"SpecificActivityType(activity_category={self.activity_category},activity_name={self.activity_name}, burned_calories={self.burned_calories}, start_time_of_activity={self.start_time_of_activity}, end_time_of_activity={self.end_time_of_activity})"

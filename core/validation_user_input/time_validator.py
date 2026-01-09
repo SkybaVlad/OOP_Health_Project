@@ -60,25 +60,14 @@ def is_source_time_less_than_target_time(source_time: str, target_time: str) -> 
     """This function checks if source time is less than target time
     For example 2025-12-12 is less than 2025-12-13 and 2025-12-12 is also less (in period) than 2025-12-12
     """
-    list_vals_source_time, list_vals_target_time = source_time.split(
-        "-"
-    ), target_time.split("-")
-    if list_vals_source_time[0] > list_vals_target_time[0]:
-        return False
-    if (
-        list_vals_source_time[0] == list_vals_target_time[0]
-        and list_vals_source_time[1] > list_vals_target_time[1]
-    ):
-        return False
-    if (
-        list_vals_source_time[0] == list_vals_target_time[0]
-        and list_vals_source_time[1] == list_vals_target_time[1]
-        and list_vals_source_time[2] > list_vals_target_time[2]
-    ):
-        return False
-    return True
+    date_obj_source = datetime.date.fromisoformat(source_time)
+    date_obj_target = datetime.date.fromisoformat(target_time)
+    if date_obj_source <= date_obj_target:
+        return True
+    return False
 
 
+# all of this can replace by simple creation of datetime.date obj
 def time_validator_format_yyyy_mm_dd(time: str):
     """Time format must have the following format: YYYY-MM-DD"""
     if type(time) != str:

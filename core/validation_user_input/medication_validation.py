@@ -32,7 +32,7 @@ def validate_form_medication(form_medication: str) -> bool:
     if not isinstance(form_medication, str):
         raise TypeError('FormMedication must be a string')
     with open(
-        'C:/Users/user/PycharmProjects/OOP_Health_Project/services/medication/medication_form_list.txt',
+        '/core/medication/medication_form_list.txt',
         'r',
     ) as file:
         for line in file:

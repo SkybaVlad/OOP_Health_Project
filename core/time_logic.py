@@ -1,8 +1,7 @@
 import datetime
 import math
-from services.validation_user_input.time_validator import (
+from core.validation_user_input.time_validator import (
     time_validator_format_yyyy_mm_dd,
-    time_validator_format_hh_mm,
     is_source_time_less_than_target_time,
 )
 import time
@@ -30,15 +29,24 @@ def time_converter_minutes_in_hours(time_in_minutes: int):
 
 def calculate_duration_of_activity(
     start_time_of_activity: str, end_time_of_activity: str
-) -> int:
+) -> float:
     """return time duration in minutes
     For example start_time = 17:30, end_time = 19:30
     Return 120 minutes
     start_time_of_activity and end_time_of_activity are both strings
     and should have the next format HH:MM"""
-    raise NotImplementedError()
-    time_obj_source = datetime.time.fromisoformat(start_time_of_activity)
-    time_obj_target = datetime.time.fromisoformat(end_time_of_activity)
+
+    start = datetime.timedelta(
+        hours=int(start_time_of_activity.split(":")[0]),
+        minutes=int(start_time_of_activity.split(":")[1]),
+    )
+    end = datetime.timedelta(
+        hours=int(end_time_of_activity.split(":")[0]),
+        minutes=int(end_time_of_activity.split(":")[1]),
+    )
+
+    res = (end - start).seconds
+    return res / 60
 
     # start_time_of_activity = start_time_of_activity.split(':')
     # end_time_of_activity = end_time_of_activity.split(':')

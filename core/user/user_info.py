@@ -1,4 +1,4 @@
-from services.validation_user_input.user_info_validation import (
+from core.validation_user_input.user_info_validation import (
     validate_age,
     validate_user_name,
     validate_sex,
@@ -8,14 +8,7 @@ from services.validation_user_input.user_info_validation import (
 
 class User:
 
-    __user_instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if cls.__user_instance is None:
-            cls.__user_instance = super().__new__(cls)
-        return cls.__user_instance
-
-    def __init__(self, name, surname, age, sex):
+    def __init__(self, name: str, surname: str, age: int, sex: str):
         try:
             validate_user_name(name)
             validate_surname(surname)
@@ -25,26 +18,24 @@ class User:
             pass
         except TypeError as error:
             pass
-        if not hasattr(self, 'initialized'):
-            self.__name = name
-            self.__surname = surname
-            self.__age = age
-            self.__sex = sex
-            self.initialized = True
+        self.__name = name
+        self.__surname = surname
+        self.__age = age
+        self.__sex = sex
 
-    def get_name(self):
+    def get_name(self) -> str:
         return self.__name
 
-    def get_surname(self):
+    def get_surname(self) -> str:
         return self.__surname
 
-    def get_age(self):
+    def get_age(self) -> int:
         return self.__age
 
     def set_age(self, age):
         self.__age = age
 
-    def get_sex(self):
+    def get_sex(self) -> str:
         return self.__sex
 
     def __repr__(self):

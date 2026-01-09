@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from services.nutrition.meal import Meal
+from core.nutrition.meal import Meal
 from enum import Enum
 
 
