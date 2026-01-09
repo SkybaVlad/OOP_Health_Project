@@ -2,10 +2,9 @@ import unittest
 from sys import path
 
 path.append("C:/Users/user/PycharmProjects/OOP_Health_Project")
-from services.validation_user_input.activity_validation import (
+from core.validation_user_input.activity_validation import (
     validate_burned_calories,
     validate_activity_name,
-    validate_activity_category,
 )
 
 

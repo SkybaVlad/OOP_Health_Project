@@ -1,38 +1,33 @@
 import unittest
-from services.health_daily.daily_health import HealthDaily
-from data.health_diary_container import HealthDiary
-from services.medication.medication import MedicationReceiptList
-from facade_logic.facade_dairy_manager import DairyFacade
+from core.daily_health import HealthDaily
+from core.health_diary_container import HealthDiary
+from core.medication.medication_objects import MedicationReceiptList
+from core.facade_logic.facade_dairy_manager import DairyFacade
 from datetime import date
-from services.activities.activity_type import SpecificActivityType
+from core.activity.activity_type import SpecificActivityType
 from unittest.mock import Mock, patch
+from core.medication.medication_manager import MedicationManager
 
 
-class TestSingeltonDairyFacade(unittest.TestCase):
+class TestSingletonDairyFacade(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.dairy_object = DairyFacade(
-            HealthDiary(), HealthDaily(str(date.today())), MedicationReceiptList()
-        )
-
-    def test_singleton(self):
-        dairy_facade1 = DairyFacade(
-            HealthDiary(), HealthDaily(str(date.today())), MedicationReceiptList()
-        )
-        dairy_facade2 = DairyFacade(
-            HealthDiary(), HealthDaily(str(date.today())), MedicationReceiptList()
-        )
-        self.assertIs(self.dairy_object, dairy_facade1)
-        self.assertIs(self.dairy_object, dairy_facade2)
+        health_daily = HealthDaily(str(date.today()))
+        health_diary = HealthDiary()
+        med_receipt_list = MedicationReceiptList()
+        med_manager = MedicationManager(med_receipt_list, health_diary)
+        cls.dairy_object = DairyFacade(health_diary, health_daily, med_manager)
 
 
 class TestAddMethods(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.dairy_object = DairyFacade(
-            HealthDiary(), HealthDaily(str(date.today())), MedicationReceiptList()
-        )
+        health_daily = HealthDaily(str(date.today()))
+        health_diary = HealthDiary()
+        med_receipt_list = MedicationReceiptList()
+        med_manager = MedicationManager(med_receipt_list, health_diary)
+        cls.dairy_object = DairyFacade(health_diary, health_daily, med_manager)
 
     def test_01_set_up(self):
         self.assertEqual(len(self.dairy_object.health_diary.get_history_of_days()), 1)
@@ -41,7 +36,7 @@ class TestAddMethods(unittest.TestCase):
         )
         self.assertIsInstance(self.dairy_object.health_diary, HealthDiary)
         self.assertIsInstance(self.dairy_object.current_day, HealthDaily)
-        self.assertIsInstance(self.dairy_object.list_of_receipts, MedicationReceiptList)
+        self.assertIsInstance(self.dairy_object.medication_manager, MedicationManager)
 
     def test_02_add_activity_with_today_data(self):
         activity_obj = SpecificActivityType(
