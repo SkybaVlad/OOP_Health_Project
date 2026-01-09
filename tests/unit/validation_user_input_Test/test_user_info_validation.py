@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from services.validation_user_input.user_info_validation import (
+from core.validation_user_input.user_info_validation import (
     validate_user_name,
     validate_surname,
     validate_age,

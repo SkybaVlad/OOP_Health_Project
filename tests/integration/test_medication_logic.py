@@ -1,21 +1,21 @@
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 import unittest
 import datetime
 from sys import path
 
-path.append('C:/Users/user/PycharmProjects/OOP_Health_Project')
-from services.medication.medication_objects import (
+path.append('/')
+from core.medication.medication_objects import (
     MedicationReceipt,
     Medication,
     MedicationReceiptList,
     MedicationCharacteristicBuilder,
 )
-from facade_logic.facade_dairy_manager import DairyFacade
-from services.medication.medication_manager import MedicationManager
-from services.health_analysis import MedicationAnalyzer
-from data.health_diary_container import HealthDiary
+from core.facade_logic.facade_dairy_manager import DairyFacade
+from core.medication.medication_manager import MedicationManager
+from core.health_analysis import MedicationAnalyzer
+from core.health_diary_container import HealthDiary
 from datetime import date as real_date
-from services.health_daily.daily_health import HealthDaily
+from core.daily_health import HealthDaily
 
 
 medication_manager: MedicationManager | None = None
@@ -23,7 +23,7 @@ medication_manager: MedicationManager | None = None
 
 def setUpModule():
     global medication_manager
-    first_day = HealthDaily(str(datetime.date.today()))
+    first_day = HealthDaily("2026-01-03")
     health_diary = HealthDiary()
     list_of_receipts = MedicationReceiptList()
     medication_analyzer = MedicationAnalyzer(health_diary, list_of_receipts)
@@ -43,7 +43,7 @@ class TestMedicationFunctionality(unittest.TestCase):
             .set_frequency("Every day")
             .set_interval("Choose specific interval")
             .set_start_time("2026-01-01")
-            .set_end_time("2026-01-07")
+            .set_end_time(str(datetime.date.today()))
             .get_result()
         )
 
@@ -81,7 +81,7 @@ class TestMedicationFunctionality(unittest.TestCase):
             .set_list_of_days(["Tuesday", "Friday"])
             .set_interval("Choose specific interval")
             .set_start_time("2026-01-01")
-            .set_end_time("2026-01-04")
+            .set_end_time(str(datetime.date.today()))
             .get_result()
         )
 
@@ -130,7 +130,7 @@ class TestMedicationFunctionality(unittest.TestCase):
         )
 
     def test_get_list_of_med_objs_that_need_to_take_today_functionality(self):
-        with patch("services.health_analysis.date") as mock_date:
+        with patch("core.health_analysis.date") as mock_date:
             mock_date.today.return_value = real_date(2026, 1, 2)
             self.assertEqual(
                 medication_manager.get_list_of_medications_that_need_to_take_today(),
@@ -138,7 +138,7 @@ class TestMedicationFunctionality(unittest.TestCase):
             )
 
     @patch(
-        'services.health_analysis.MedicationAnalyzer.concrete_med_obj_in_receipt_is_completed',
+        'core.health_analysis.MedicationAnalyzer.concrete_med_obj_in_receipt_is_completed',
         return_value=True,
     )
     def test_took_medication(self, mocked_method):
