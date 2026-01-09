@@ -1,5 +1,5 @@
-from services.health_daily.daily_health import HealthDaily
-from services.time_logic import (
+from core.daily_health import HealthDaily
+from core.time_logic import (
     convert_data_from_string_to_number_format_yyyy_mm_dd_in_numbers,
 )
 
@@ -7,17 +7,8 @@ from services.time_logic import (
 class HealthDiary:
     """This class is a container for HealthDiary objects"""
 
-    __instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if not cls.__instance:
-            cls.__instance = super().__new__(cls)
-        return cls.__instance
-
     def __init__(self):
-        if not hasattr(self, "initialize"):
-            self.history_of_all_days: list[HealthDaily] = []
-            self.initialize = True
+        self.history_of_all_days: list[HealthDaily] = []
 
     def add_day(self, specific_day: HealthDaily):
         day = self.find_day(specific_day.date_of_day)

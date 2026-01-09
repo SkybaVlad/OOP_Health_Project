@@ -1,5 +1,5 @@
 from unittest import TestCase
-from services.user.user_info import User
+from core.user.user_info import User
 
 
 class TestUser(TestCase):
