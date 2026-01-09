@@ -3,8 +3,7 @@ from sys import path
 
 path.append('C:\\Users\\user\\PycharmProjects\\OOP_Health_Project')
 
-from services.activities.activity_type import SpecificActivityType
-from parameterized import parameterized
+from core.activity.activity_type import SpecificActivityType
 
 
 class TestSpecificActivityTypeClass(unittest.TestCase):
