@@ -1,11 +1,11 @@
 import unittest
-from services.time_logic import (
+from core.time_logic import (
     time_converter_minutes_in_hours,
     calculate_duration_of_activity,
     convert_data_from_string_to_number_format_yyyy_mm_dd_in_numbers,
     get_list_of_all_dates_between_start_and_end,
 )
-from services.validation_user_input.time_validator import (
+from core.validation_user_input.time_validator import (
     is_source_time_less_than_target_time,
 )
 

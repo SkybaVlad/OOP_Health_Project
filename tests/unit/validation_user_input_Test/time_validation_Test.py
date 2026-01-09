@@ -1,6 +1,6 @@
 import unittest
 
-from services.validation_user_input.time_validator import (
+from core.validation_user_input.time_validator import (
     time_validator_format_hh_mm,
     time_validator_format_yyyy_mm_dd,
     time_in_period,
