@@ -21,6 +21,7 @@ from core.exceptions import (
     LimitCallsError,
     DateOfDayIsGreaterThanTodayError,
     NotExistingReceiptWithAppropriateMedicationObjectError,
+    NotExistingDayInListOfDaysWithThisDateError,
 )
 from core.dto_objects import (
     DailyObjectDTO,
@@ -31,6 +32,8 @@ from core.dto_objects import (
 
 
 class MainFacade:
+    """MainFacade class is a class that provide API for interacting with complex
+    health system."""
 
     def __init__(
         self,
@@ -64,60 +67,97 @@ class MainFacade:
     def add_activity(
         self, activity: SpecificActivityType, date_of_activity: str
     ) -> None:
+        """This method add activity object to day with "date_of_activity" date. If day with
+        "date_of_activity" date does not exist in list of days, this will be created.
+        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised."""
         if self.__is_date_of_activity_greater_than_today(date_of_activity):
             raise DateOfDayIsGreaterThanTodayError()
         self.health_diary_facade.add_activity(activity, date_of_activity)
 
     def add_weight(self, weight_value: float, _date: str) -> None:
+        """This method set weight value in UserBodyInfo class ((if _date == str(datetime.date.today())))
+        and in Health Daily class with _date date.
+        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised."""
         if self.__is_date_of_activity_greater_than_today(_date):
             raise DateOfDayIsGreaterThanTodayError()
-        self.user_body_info.set_weight(weight_value)
+        if _date == str(date.today()):  # also need allow if its first add
+            self.user_body_info.set_weight(weight_value)
         self.health_diary_facade.set_weight(weight_value, _date)
 
     def add_height(self, height_value: float, _date: str) -> None:
+        """This method set height value in UserBodyInfo class ((if _date == str(datetime.date.today())))
+        and in Health Daily class with _date date.
+        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised."""
         if self.__is_date_of_activity_greater_than_today(_date):
             raise DateOfDayIsGreaterThanTodayError()
-        self.user_body_info.set_height(height_value)
+        if _date == str(date.today()):  # also need allow if its first add
+            self.user_body_info.set_height(height_value)
         self.health_diary_facade.set_height(height_value, _date)
 
     def add_fat_percentage(self, fat_percentage_value: float, _date: str) -> None:
+        """This method set fat percentage value in UserBodyInfo class (if _date == str(datetime.date.today()))
+        and in Health Daily class with _date date.
+        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised."""
         if self.__is_date_of_activity_greater_than_today(_date):
             raise DateOfDayIsGreaterThanTodayError()
-        self.user_body_info.set_fat_percentage(fat_percentage_value)
+        if _date == str(date.today()):  # also need allow if its first add
+            self.user_body_info.set_fat_percentage(fat_percentage_value)
         self.health_diary_facade.set_fat_percentage(fat_percentage_value, _date)
 
     def add_water(self, drunk_water: float, _date: str) -> None:
+        """This method add count of drunk litres of water to Health Daily object with _date date.
+        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised."""
         if self.__is_date_of_activity_greater_than_today(_date):
             raise DateOfDayIsGreaterThanTodayError()
         self.health_diary_facade.add_amount_of_drunk_water(drunk_water, _date)
 
     def add_sleep(self, count_hours_to_sleep: float, _date: str) -> None:
+        """This method add count of sleep hours to Health Daily object with _date date.
+        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised."""
         if self.__is_date_of_activity_greater_than_today(_date):
             raise DateOfDayIsGreaterThanTodayError()
         self.health_diary_facade.add_amount_of_sleep(count_hours_to_sleep, _date)
 
     def add_count_of_steps(self, count_of_steps: int, _date: str) -> None:
+        """This method add count of steps to Health Daily object with _date date.
+        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised."""
         if self.__is_date_of_activity_greater_than_today(_date):
             raise DateOfDayIsGreaterThanTodayError()
         self.health_diary_facade.add_count_steps(count_of_steps, _date)
 
     def add_burned_calories(self, burned_calories: float, _date: str) -> None:
+        """This method add count of burned calories to Health Daily object with _date date.
+        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised."""
         if self.__is_date_of_activity_greater_than_today(_date):
             raise DateOfDayIsGreaterThanTodayError()
         self.health_diary_facade.add_burned_calories(burned_calories, _date)
 
     def change_age(self, age: int) -> None:
+        """This method change user age in User class"""
         # validate value of age , if < 15 or > 100 error or if less than curr age
         self.user.set_age(age)
 
-    def add_burned_calories_goal_on_day(self, calories: int):
+    def add_burned_calories_goal(self, calories: int):
+        """This method set user-defined value of burned calories goal. This
+        value will be used in daily analyzer class to analyze daily result"""
         self.user_body_daily_goals.set_burned_calories_goal(calories)
 
-    def add_water_goal_on_day(self, water: float):
+    def add_water_goal(self, water: float):
+        """This method set user-defined value of water goal. This
+        value will be used in daily analyzer class to analyze daily result.
+        Water goal means count of litres that user need to drink every day."""
         self.user_body_daily_goals.set_water_goal(water)
 
-    def add_calories_goal_on_day(self, calories: int):
+    def add_calories_goal(self, calories: int):
+        """This method set user-defined value of burned calories goal. This
+        value will be used in daily analyzer class to analyze daily result.
+        Calories goal means how much calories user need to eat every day."""
         self.user_body_daily_goals.set_calories_goal(calories)
+
+    def add_step_goal(self, step_goal: float):
+        """This method set user-defined value of burned calories goal. This
+        value will be used in daily analyzer class to analyze daily result"""
+        self.user_body_daily_goals.set_step_goal(step_goal)
 
     def get_total_time_spent_on_activities_in_minutes_current_day(self) -> float:
         return (
@@ -149,6 +189,21 @@ class MainFacade:
         return self.health_daily_analyzer.get_count_of_steps_for_day()
 
     def get_daily_results(self) -> DailyObjectDTO:
+        """This method responsible for analyze metrics of current day (current day that in DairyFacade class).
+        If current day != str(datetime.date.today()) day in DairyFacade class will be updated otherwise it will
+        be analyzed and DailyObjectDTO will be returned."""
+        if self.health_diary_facade.current_day.date_of_day != str(date.today()):
+            self.health_diary_facade.update_curr_day()
+            self.health_daily_analyzer.set_day_that_need_to_analyze(
+                self.health_diary_facade.current_day
+            )
+        elif (
+            self.health_daily_analyzer.health_daily
+            != self.health_diary_facade.current_day
+        ):
+            self.health_daily_analyzer.set_day_that_need_to_analyze(
+                self.health_diary_facade.current_day
+            )
         dict_of_res = self.health_daily_analyzer.get_daily_result()
         return generate_daily_dto_object(dict_of_res)
 
@@ -208,13 +263,31 @@ class MainFacade:
     def get_result_of_analyze_some_period(self) -> str:
         return self.health_in_some_period_analyzer.get_result_of_analyze_some_period()
 
+    def get_result_of_another_day(self, date_of_day: str) -> DailyObjectDTO:
+        """This method responsible for analyze metrics of any date with "date_of_day" date.
+        If "date_of_day" is greater than str(datetime.date.today()) the
+        NotExistingDayInListOfDaysWithThisDateError() will be raised otherwise DailyObjectDTO object will
+        be returned."""
+        day = self.health_diary_facade.health_diary.find_day(date_of_day)
+        if day is None:
+            raise NotExistingDayInListOfDaysWithThisDateError(
+                f"Day with {date_of_day} does not exist"
+            )
+        self.health_daily_analyzer.set_day_that_need_to_analyze(day)
+        dict_of_res = self.health_daily_analyzer.get_daily_result()
+        return generate_daily_dto_object(dict_of_res)
+
     def filter(
         self, specification: Specification, list_of_all_days: list[HealthDaily]
     ) -> list[HealthDaily]:
         return [day for day in list_of_all_days if specification.is_satisfy_by(day)]
 
     def took_medication_object(self, medication_obj: Medication):
-        """When user tap "Take" for specific medication object this method is called."""
+        """When user tap "Take" for specific medication object this method is called.
+        This method responsible for process medication object. If receipt with appropriate
+        medication object does not exist "NotExistingReceiptWithAppropriateMedicationObjectError()" will be raised.
+        Under hood this medication object added to list of taken medications in current day. Also
+        in MedicationManager class відбувається перевірка ...."""
 
         _receipt_with_med_obj = self.medication_manager.list_of_receipts.find_receipt_with_appropriate_med_obj(
             medication_obj
@@ -235,6 +308,9 @@ class MainFacade:
     ):
         """This method need for provide scalability way of taken medication object.
         If user forgot mark in app that he took the med_obj he can mark this in any day.
+        Under hood this medication object added to list of taken medications in day with "date_of_taken" date.
+        If receipt with appropriate medication object does not exist, the
+        "NotExistingReceiptWithAppropriateMedicationObjectError()" will be raised."
         """
 
         _receipt_with_med_obj = self.medication_manager.list_of_receipts.find_receipt_with_appropriate_med_obj(
@@ -254,7 +330,7 @@ class MainFacade:
             )
 
     def get_medications_that_need_to_take_today(self) -> dict[MedicationDTO, bool]:
-        """This method return dict that contains a medication object as key and False as value.
+        """This method return dict that contains a MedicationDTO object as key and False as value.
         This dict contains only medication objects that need to take today."""
         return convert_list_of_medication_to_dict_with_status(
             convert_list_of_medications_into_list_of_medication_dto(
@@ -267,7 +343,8 @@ class MainFacade:
         return self.medication_manager.get_list_of_all_available_receipts()
 
     def get_list_of_skipped_medication(self) -> list[tuple[Medication, str]]:
-        """This method return list of skipped day when concrete medication object needed to be taken"""
+        """This method return list of skipped day when user do not take appropriates medications.
+        Returned value has the next format [(MedicationDTO, date_when_skipped),...,...]"""
         return self.medication_manager.get_list_of_all_medication_that_user_not_take()
 
     def add_receipt(self, receipt: MedicationReceipt):
@@ -279,6 +356,9 @@ class MainFacade:
             return self.health_diary_facade.current_day
         self.health_diary_facade.update_curr_day()
         return self.health_diary_facade.current_day
+
+    def __is_first_add(self):
+        pass
 
 
 def limit_calls(limit: int):
@@ -299,6 +379,9 @@ def limit_calls(limit: int):
 
 # @limit_calls(1)
 def create_and_configure_facade_for_start(user_obj: User) -> MainFacade:
+    """This function need to be called if you want to interact with health system,
+    because this function responsible for configure all settings needed to correctly
+    working system."""
     first_day = HealthDaily(str(date.today()))
     health_diary = HealthDiary()
     user_body_info = UserBodyInfo()
