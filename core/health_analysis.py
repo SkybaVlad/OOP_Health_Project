@@ -8,7 +8,7 @@ from core.body_metrics_calculator import (
     calculate_basal_metabolic_rate,
 )
 from core.daily_health import HealthDaily
-from core.user.user_body_goals import UserBodyDailyGoals
+from core.user.user_body_goals import UserBodyDailyGoals, DefaultUserBodyGoals
 from core.user.user_body_info import UserBodyInfo
 from core.user.user_info import User
 from core.time_logic import time_converter_minutes_in_hours
@@ -52,20 +52,43 @@ class HealthDailyAnalyzer:
         return self.health_daily.total_time_spend_on_activities
 
     def get_remaining_of_consumed_calories(self) -> float:
+        if self.user_body_daily_goals.consumed_calories_goal == 0.0:
+            return (
+                DefaultUserBodyGoals.consumed_calories
+                - self.health_daily.consumed_calories_for_day
+            )
         return (
             self.user_body_daily_goals.get_consumed_calories_goal()
             - self.health_daily.consumed_calories_for_day
         )
 
     def get_remaining_of_burned_calories(self) -> float:
+        if self.user_body_daily_goals.burned_calories_goal == 0.0:
+            return (
+                DefaultUserBodyGoals.burned_calories
+                - self.health_daily.burned_calories_for_day
+            )
         return (
             self.user_body_daily_goals.get_burned_calories_goal()
             - self.health_daily.burned_calories_for_day
         )
 
     def get_remaining_water(self) -> float:
+        if self.user_body_daily_goals.water_goal == 0.0:
+            return DefaultUserBodyGoals.water - self.health_daily.drunk_water
         return (
             self.user_body_daily_goals.get_water_goal() - self.health_daily.drunk_water
+        )
+
+    def get_remaining_steps(self) -> float:
+        if self.user_body_daily_goals.step_goal == 0.0:
+            return (
+                DefaultUserBodyGoals.count_of_steps
+                - self.health_daily.count_of_steps_for_day
+            )
+        return (
+            self.user_body_daily_goals.step_goal
+            - self.health_daily.count_of_steps_for_day
         )
 
     def get_consumed_calories(self) -> float:
@@ -89,84 +112,48 @@ class HealthDailyAnalyzer:
             for activity_obj in self.health_daily.list_of_activities_for_day
         ]
 
-    def calculate_body_mass_index(self):
-        if self.health_daily.weight is None and self.health_daily.height is not None:
-            return calculate_body_mass_index_metrics(
-                self.user_body_info.get_weight(), self.health_daily.height
-            )
-        if self.health_daily.weight is not None and self.health_daily.height is None:
-            return calculate_body_mass_index_metrics(
-                self.health_daily.weight, self.user_body_info.get_height()
-            )
-        if self.health_daily.weight is None and self.health_daily.height is None:
-            return calculate_body_mass_index_metrics(
-                self.user_body_info.get_weight(), self.user_body_info.get_height()
-            )
+    def calculate_body_mass_index(self) -> float | None:
+        if (
+            self.user_body_info.get_weight() == 0.0
+            or self.user_body_info.get_height() == 0
+        ):
+            return None
+
         return calculate_body_mass_index_metrics(
-            self.health_daily.weight, self.health_daily.height
+            self.user_body_info.get_weight(), self.user_body_info.get_height()
         )
 
     def calculate_basal_metabolic_rate(self):
-        if self.health_daily.weight is None and self.health_daily.height is not None:
-            return calculate_basal_metabolic_rate(
-                self.user.get_sex(),
-                self.user_body_info.get_weight(),
-                self.health_daily.height,
-                self.user.get_age(),
-            )
-        if self.health_daily.weight is not None and self.health_daily.height is None:
-            return calculate_basal_metabolic_rate(
-                self.user.get_sex(),
-                self.health_daily.weight,
-                self.user_body_info.get_height(),
-                self.user.get_age(),
-            )
-        if self.health_daily.weight is None and self.health_daily.height is None:
-            return calculate_basal_metabolic_rate(
-                self.user.get_sex(),
-                self.user_body_info.get_weight(),
-                self.user_body_info.get_height(),
-                self.user.get_age(),
-            )
+        if (
+            self.user_body_info.get_weight() == 0.0
+            or self.user_body_info.get_height() == 0
+        ):
+            return None
         return calculate_basal_metabolic_rate(
             self.user.get_sex(),
-            self.health_daily.weight,
-            self.health_daily.height,
+            self.user_body_info.get_weight(),
+            self.user_body_info.get_height(),
             self.user.get_age(),
         )
 
     def calculate_lean_body_mass_index(self):
         if (
-            self.health_daily.weight is None
-            and self.health_daily.fat_percentage is not None
+            self.user_body_info.get_weight() == 0.0
+            or self.user_body_info.get_fat_percentage() == 0
         ):
-            return calculate_lean_body_mass(
-                self.user_body_info.get_weight(),
-                self.user_body_info.get_fat_percentage(),
-            )
-        if self.health_daily.weight is not None and self.health_daily.height is None:
-            return calculate_lean_body_mass(
-                self.health_daily.weight, self.user_body_info.get_fat_percentage()
-            )
-        if (
-            self.health_daily.weight is None
-            and self.health_daily.fat_percentage is None
-        ):
-            return calculate_lean_body_mass(
-                self.user_body_info.get_weight(),
-                self.user_body_info.get_fat_percentage(),
-            )
+            return None
         return calculate_lean_body_mass(
-            self.health_daily.weight, self.health_daily.fat_percentage
+            self.user_body_info.get_weight(),
+            self.user_body_info.get_fat_percentage(),
         )
 
     def calculate_fat_mass(self):
         lean_body_mass_value = self.calculate_lean_body_mass_index()
-        if self.health_daily.weight is None:
-            return calculate_fat_mass(
-                self.user_body_info.get_weight(), lean_body_mass_value
-            )
-        return calculate_fat_mass(self.health_daily.weight, lean_body_mass_value)
+        if lean_body_mass_value is None or self.user_body_info.get_weight() == 0.0:
+            return None
+        return calculate_fat_mass(
+            self.user_body_info.get_weight(), lean_body_mass_value
+        )
 
     def get_list_of_meals(self):
         return [meal for meal in self.health_daily.list_of_meals_for_day]
