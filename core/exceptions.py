@@ -10,3 +10,7 @@ class DateOfDayIsGreaterThanTodayError(Exception):
 
 class NotExistingReceiptWithAppropriateMedicationObjectError(Exception):
     pass
+
+
+class NotExistingDayInListOfDaysWithThisDateError(Exception):
+    pass
