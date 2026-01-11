@@ -1,10 +1,14 @@
 import datetime
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 import core
 from core.activity.activity_type import SpecificActivityType
-from core.dto_objects import MedicationDTO
+from core.dto_objects import (
+    MedicationDTO,
+    ActivityTypeDTO,
+    convert_activity_obj_into_activity_dto,
+)
 from core.exceptions import DateOfDayIsGreaterThanTodayError
 from core.facade_logic import facade_dairy_manager
 from core.facade_logic import facade_api
@@ -131,6 +135,13 @@ class TestFacadeAPIAddAndGetFunctionality(unittest.TestCase):
             1,
         )
         self.assertEqual(self.facade_obj.user.get_sex(), "Male")
+
+    def test_00_get_daily_result_when_nothing_is_add(self):
+        day_dto = self.facade_obj.get_daily_results()
+        self.assertEqual(day_dto.date, "2026-01-04")
+        self.assertEqual(day_dto.body_mass_index, None)
+        self.assertEqual(day_dto.lean_body_mass_index, None)
+        self.assertEqual(day_dto.basal_metabolic_rate, None)
 
     def test_01_add_activity_other_date(self):
         facade_api.date.fromisoformat = Mock(
@@ -392,6 +403,33 @@ class TestFacadeAPIAddAndGetFunctionality(unittest.TestCase):
         self.assertEqual(dto_obj.lean_body_mass_index, 86.5)
         self.assertEqual(dto_obj.steps, 0)
         self.assertEqual(dto_obj.date, "2026-01-04")
+
+    def test_17_get_result_of_another_day(self):
+        day = self.facade_obj.get_result_of_another_day("2026-01-03")
+        self.assertEqual(day.height, 185.5)
+        self.assertEqual(day.weight, 101.0)
+        self.assertEqual(day.burned_calories, 300)
+        self.assertEqual(len(day.activity), 1)
+        self.assertIsInstance(day.activity[0], ActivityTypeDTO)
+
+    def test_18_get_daily_res_after_get_res_with_another_day(self):
+        self.test_16_get_daily_result()
+
+    @patch("facade_api.date.today")
+    @patch("facade_api.date")  # -> test_func = patch(param) -> object of _patch class
+    def test_19_get_daily_res_with_update_curr_day(
+        self, mock_1_facade_api_date, mock_2_facade_api_date_today
+    ):
+
+        facade_dairy_manager.date = Mock()
+        facade_dairy_manager.date.today = Mock(return_value=datetime.date(2026, 1, 5))
+        mock_2_facade_api_date_today.return_value = datetime.date(2026, 1, 5)
+
+        day = self.facade_obj.get_daily_results()
+        self.assertEqual(day.date, "2026-01-05")
+        self.assertAlmostEqual(day.body_mass_index, 27.411, places=2)
+        self.assertAlmostEqual(day.basal_metabolic_rate, 2098.75, places=2)
+        self.assertEqual(day.lean_body_mass_index, 86.5)
 
 
 if __name__ == '__main__':
