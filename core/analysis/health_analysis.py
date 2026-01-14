@@ -1,4 +1,6 @@
+from abc import ABC, abstractmethod
 from datetime import date
+from typing import Any
 
 from core.health_diary_container import HealthDiary
 from core.body_metrics_calculator import (
@@ -11,7 +13,6 @@ from core.daily_health import HealthDaily
 from core.user.user_body_goals import UserBodyDailyGoals, DefaultUserBodyGoals
 from core.user.user_body_info import UserBodyInfo
 from core.user.user_info import User
-from core.time_logic import time_converter_minutes_in_hours
 from core.medication.medication_objects import (
     MedicationReceiptList,
     Medication,
@@ -26,8 +27,23 @@ from core.validation_user_input.time_validator import (
 from core.activity.activity_type import SpecificActivityType
 
 
+def get_list_of_days_is_some_period_and_not_empty_on_actvities(
+    start_time: str, end_time: str, list_of_days: list[HealthDaily]
+) -> list[HealthDaily]:
+    lst_of_days = []
+    for day in list_of_days:
+        if (
+            time_in_period(start_time, end_time, day.date_of_day)
+            and len(day.list_of_activities_for_day) != 0
+        ):
+            lst_of_days.append(day)
+    return lst_of_days
+
+
 class HealthDailyAnalyzer:
-    """This class responsible for analyze daily health. This class analyze a health_daily object and
+    """
+
+    This class analyze a health_daily object and
     user_body_daily_goals and provide methods that return results of analysis"""
 
     def __init__(self):
@@ -187,9 +203,9 @@ class HealthDailyAnalyzer:
 
 
 class HealthInSomePeriodAnalyzer:
-    """This class responsible for analyze a statistics on some period of time. This class analyze list of health_daily objects.
-    Constructor accepts a list of health_daily objects and start_data, end_data. Start_data and end_data have next
-    the str format YYYY-MM-DD
+    """This class responsible for analyze your metrics in some period that you define.
+    Under hood this class iterate through a list of HealthDaily objects and analyze each object.
+    This class provide a wide range of methods.
     """
 
     def __init__(self):
@@ -293,38 +309,15 @@ class HealthInSomePeriodAnalyzer:
                 day_with_max_hours_of_sleep = day
         return day_with_max_hours_of_sleep
 
-    def get_result_of_analyze_some_period(self) -> str:
-        day_with_max_consumed_calories = (
-            self.get_day_with_max_consumed_calories_for_all_time()
-        )
-        day_with_max_burned_calories = (
-            self.get_day_with_max_burned_calories_for_all_time()
-        )
-        day_with_max_steps = self.get_day_with_max_steps_for_all_time()
-        day_with_max_time_spent_on_activities = (
-            self.get_day_with_max_time_spent_on_activities_for_all_time()
-        )
-        day_with_max_amount_of_drunk_water = (
-            self.get_day_with_max_amount_of_drunk_water_for_all_time()
-        )
-        day_with_max_hours_of_sleep = (
-            self.get_day_with_max_hours_spent_on_sleep_for_all_time()
-        )
-        return (
-            f"Statistics from {self.start_data} to {self.end_data}"
-            f"Total time spent on activities {time_converter_minutes_in_hours(self.get_total_time_spent_on_activities_in_minutes_for_all_time())}"
-            f"Total consumed calories {self.get_total_consumed_calories_for_all_time()}"
-            f"Total burned calories {self.get_total_burned_calories_for_all_time()}"
-            f"Total steps {self.get_total_steps_for_all_time()}"
-            f"Total time spent on Cardio activity {self.get_total_time_spent_on_specific_category_of_activities_for_all_time("Cardio")}"
-            f"Total time spent on Sport activity {self.get_total_time_spent_on_specific_category_of_activities_for_all_time("Sport")}"
-            f"Day with max consumed calories {day_with_max_consumed_calories.date_of_day} - {day_with_max_consumed_calories.consumed_calories_for_day}"
-            f"Day with max burned calories {day_with_max_burned_calories.date_of_day} - {day_with_max_burned_calories.burned_calories_for_day}"
-            f"Day with max amount of steps {day_with_max_steps.date_of_day} - {day_with_max_steps.count_of_steps_for_day}"
-            f"Day with max time spent on activities {day_with_max_time_spent_on_activities.date_of_day} - {day_with_max_time_spent_on_activities.total_time_spend_on_activities}"
-            f"Day with max amount of drunk water {day_with_max_amount_of_drunk_water.date_of_day} - {day_with_max_amount_of_drunk_water.drunk_water}"
-            f"Day with max hours of sleep {day_with_max_hours_of_sleep.date_of_day} - {day_with_max_hours_of_sleep.sleep_duration}"
-        )
+    def get_result_of_analyze_some_period(self) -> dict[str, Any]:
+        return {
+            "start_date": self.start_data,
+            "end_date": self.end_data,
+            "total_activity_time": self.get_total_time_spent_on_activities_in_minutes_for_all_time(),
+            "total_consumed_calories": self.get_total_consumed_calories_for_all_time(),
+            "total_burned_calories": self.get_total_burned_calories_for_all_time(),
+            "total_steps": self.get_total_steps_for_all_time(),
+        }
 
 
 class MedicationAnalyzer:
@@ -459,3 +452,77 @@ class MedicationAnalyzer:
                         ):
                             lst.append((med_obj, day.date_of_day))
         return lst
+
+
+class ActivityAnalyzer:
+    """This class responsible for analyze general metrics about activity
+    in some period of time."""
+
+    def __init__(self, start_time: str, end_time: str, list_of_days: list[HealthDaily]):
+        self.start_time = start_time
+        self.end_time = end_time
+        self.list_of_days = get_list_of_days_is_some_period_and_not_empty_on_actvities(
+            start_time, end_time, list_of_days
+        )
+
+    def set_period_of_time(self, start_period: str, end_period: str):
+        self.start_time = start_period
+        self.end_time = end_period
+
+    def get_total_spend_on_activity(self) -> float:
+        total_time = 0.0
+        for day in self.list_of_days:
+            for activity in day.list_of_activities_for_day:
+                total_time += activity.calculate_activity_duration_in_minutes()
+        return total_time
+
+    def get_total_burned_calories_with_activity(self):
+        total_burned_calories = 0.0
+        for day in self.list_of_days:
+            for activity in day.list_of_activities_for_day:
+                total_burned_calories += activity.burned_calories
+        return total_burned_calories
+
+
+class ActivityTypeAnalyzer(ActivityAnalyzer):
+    def __init__(self, start_time: str, end_time: str, list_of_days: list[HealthDaily]):
+        super().__init__(
+            start_time, end_time, list_of_days
+        )  # super(ActivityTypeAnalyzer, self).init(...)
+
+    def get_list_of_activities_names_that_exist_in_period(self) -> list[str]:
+        lst_of_activities_names = []
+        for day in self.list_of_days:
+            for activity in day.list_of_activities_for_day:
+                lst_of_activities_names.append(activity.activity_name)
+        return lst_of_activities_names
+
+    def get_list_of_activities_categories_that_exist_in_period(self) -> list[str]:
+        lst_of_activities_categories = []
+        for day in self.list_of_days:
+            for activity in day.list_of_activities_for_day:
+                lst_of_activities_categories.append(activity.activity_name)
+        return lst_of_activities_categories
+
+    def get_time_spend_on_activities_categories(self):
+        dict_of_activities_categories = {}
+        for day in self.list_of_days:
+            for activity in day.list_of_activities_for_day:
+                if (
+                    dict_of_activities_categories.get(activity.activity_category, None)
+                    is None
+                ):
+                    dict_of_activities_categories[activity.activity_category] = (
+                        activity.calculate_activity_duration_in_minutes()
+                    )
+                else:
+                    dict_of_activities_categories[
+                        activity.activity_category
+                    ] += activity.calculate_activity_duration_in_minutes()
+        return dict_of_activities_categories
+
+    def get_most_popular_activity_category_and_time_spend_on_this_activity(self):
+        pass
+
+    def get_most_popular_activity_name_and_time_spend_on_this_category(self):
+        pass
