@@ -7,7 +7,6 @@ from core.activity.activity_type import SpecificActivityType
 from core.dto_objects import (
     MedicationDTO,
     ActivityTypeDTO,
-    convert_activity_obj_into_activity_dto,
 )
 from core.exceptions import DateOfDayIsGreaterThanTodayError
 from core.facade_logic import facade_dairy_manager
@@ -17,7 +16,7 @@ from core.medication.medication_objects import (
     Medication,
     MedicationCharacteristicBuilder,
 )
-from core import health_analysis
+from core.analysis import health_analysis
 from core.medication import medication_objects
 
 """This test module tests the API. That means in the tests you can see 

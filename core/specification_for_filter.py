@@ -18,7 +18,7 @@ class SpecificDaySpecification(Specification):
     """This class provide a condition that find a specific day using a date condition.
     The date attribute has the next format YYYY-MM-DD and string type"""
 
-    def __init__(self, date):
+    def __init__(self, date: str):
         self.date = date
 
     def is_satisfy_by(self, day: HealthDaily) -> bool:

@@ -42,6 +42,10 @@ class DailyObjectDTO:
     fat_mass: float
 
 
+class SomePeriodAnalyzer:
+    pass
+
+
 def transfer_medication_obj_into_dict(medication_obj) -> dict:
     return {name: medication_obj.__dict__[name] for name in medication_obj.__dict__}
 

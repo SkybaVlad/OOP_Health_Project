@@ -1,19 +1,22 @@
 import functools
-from typing import Callable
+from typing import Callable, Any
 from datetime import date
 
 from core.facade_logic.facade_dairy_manager import DairyFacade
 from core.user.user_body_goals import UserBodyDailyGoals
 from core.user.user_info import User
 from core.user.user_body_info import UserBodyInfo
-from core.health_analysis import HealthDailyAnalyzer, HealthInSomePeriodAnalyzer
+from core.analysis.health_analysis import (
+    HealthDailyAnalyzer,
+    HealthInSomePeriodAnalyzer,
+)
 from core.specification_for_filter import *
 from core.health_diary_container import HealthDiary
 from core.medication.medication_objects import MedicationReceipt, Medication
 from core.medication.medication_manager import MedicationManager
 from core.medication.medication_objects import MedicationReceiptList
 from core.activity.activity_type import SpecificActivityType
-from core.health_analysis import MedicationAnalyzer
+from core.analysis.health_analysis import MedicationAnalyzer
 from core.medication.medication_manager import (
     convert_list_of_medication_to_dict_with_status,
 )
@@ -69,7 +72,8 @@ class MainFacade:
     ) -> None:
         """This method add activity object to day with "date_of_activity" date. If day with
         "date_of_activity" date does not exist in list of days, this will be created.
-        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised."""
+        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised.
+        """
         if self.__is_date_of_activity_greater_than_today(date_of_activity):
             raise DateOfDayIsGreaterThanTodayError()
         self.health_diary_facade.add_activity(activity, date_of_activity)
@@ -77,7 +81,8 @@ class MainFacade:
     def add_weight(self, weight_value: float, _date: str) -> None:
         """This method set weight value in UserBodyInfo class ((if _date == str(datetime.date.today())))
         and in Health Daily class with _date date.
-        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised."""
+        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised.
+        """
         if self.__is_date_of_activity_greater_than_today(_date):
             raise DateOfDayIsGreaterThanTodayError()
         if _date == str(date.today()):  # also need allow if its first add
@@ -87,7 +92,8 @@ class MainFacade:
     def add_height(self, height_value: float, _date: str) -> None:
         """This method set height value in UserBodyInfo class ((if _date == str(datetime.date.today())))
         and in Health Daily class with _date date.
-        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised."""
+        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised.
+        """
         if self.__is_date_of_activity_greater_than_today(_date):
             raise DateOfDayIsGreaterThanTodayError()
         if _date == str(date.today()):  # also need allow if its first add
@@ -97,7 +103,8 @@ class MainFacade:
     def add_fat_percentage(self, fat_percentage_value: float, _date: str) -> None:
         """This method set fat percentage value in UserBodyInfo class (if _date == str(datetime.date.today()))
         and in Health Daily class with _date date.
-        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised."""
+        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised.
+        """
         if self.__is_date_of_activity_greater_than_today(_date):
             raise DateOfDayIsGreaterThanTodayError()
         if _date == str(date.today()):  # also need allow if its first add
@@ -106,28 +113,32 @@ class MainFacade:
 
     def add_water(self, drunk_water: float, _date: str) -> None:
         """This method add count of drunk litres of water to Health Daily object with _date date.
-        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised."""
+        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised.
+        """
         if self.__is_date_of_activity_greater_than_today(_date):
             raise DateOfDayIsGreaterThanTodayError()
         self.health_diary_facade.add_amount_of_drunk_water(drunk_water, _date)
 
     def add_sleep(self, count_hours_to_sleep: float, _date: str) -> None:
         """This method add count of sleep hours to Health Daily object with _date date.
-        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised."""
+        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised.
+        """
         if self.__is_date_of_activity_greater_than_today(_date):
             raise DateOfDayIsGreaterThanTodayError()
         self.health_diary_facade.add_amount_of_sleep(count_hours_to_sleep, _date)
 
     def add_count_of_steps(self, count_of_steps: int, _date: str) -> None:
         """This method add count of steps to Health Daily object with _date date.
-        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised."""
+        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised.
+        """
         if self.__is_date_of_activity_greater_than_today(_date):
             raise DateOfDayIsGreaterThanTodayError()
         self.health_diary_facade.add_count_steps(count_of_steps, _date)
 
     def add_burned_calories(self, burned_calories: float, _date: str) -> None:
         """This method add count of burned calories to Health Daily object with _date date.
-        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised."""
+        If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised.
+        """
         if self.__is_date_of_activity_greater_than_today(_date):
             raise DateOfDayIsGreaterThanTodayError()
         self.health_diary_facade.add_burned_calories(burned_calories, _date)
@@ -159,35 +170,6 @@ class MainFacade:
         value will be used in daily analyzer class to analyze daily result"""
         self.user_body_daily_goals.set_step_goal(step_goal)
 
-    def get_total_time_spent_on_activities_in_minutes_current_day(self) -> float:
-        return (
-            self.health_daily_analyzer.get_total_time_spent_on_activities_in_minutes_current_day()
-        )
-
-    def get_remaining_of_consumed_calories_current_day(self) -> float:
-        return self.health_daily_analyzer.get_remaining_of_consumed_calories()
-
-    def get_remaining_of_burned_calories_current_day(self) -> float:
-        return self.health_daily_analyzer.get_remaining_of_burned_calories()
-
-    def get_remaining_water_current_day(self) -> float:
-        return self.health_daily_analyzer.get_remaining_water()
-
-    def get_total_consumed_calories_current_day(self) -> float:
-        return self.health_daily_analyzer.get_consumed_calories()
-
-    def get_total_burned_calories_current_day(self) -> float:
-        return self.health_daily_analyzer.get_burned_calories()
-
-    def get_total_consumed_water_current_day(self) -> float:
-        return self.health_daily_analyzer.get_consumed_water()
-
-    def get_total_sleep_duration_current_day(self) -> float:
-        return self.health_daily_analyzer.get_sleep_duration()
-
-    def get_total_steps_current_day(self) -> float:
-        return self.health_daily_analyzer.get_count_of_steps_for_day()
-
     def get_daily_results(self) -> DailyObjectDTO:
         """This method responsible for analyze metrics of current day (current day that in DairyFacade class).
         If current day != str(datetime.date.today()) day in DairyFacade class will be updated otherwise it will
@@ -207,60 +189,10 @@ class MainFacade:
         dict_of_res = self.health_daily_analyzer.get_daily_result()
         return generate_daily_dto_object(dict_of_res)
 
-    def get_total_time_spent_on_activities_in_minutes_for_all_time(self) -> float:
-        return (
-            self.health_in_some_period_analyzer.get_total_time_spent_on_activities_in_minutes_for_all_time()
-        )
-
-    def get_total_consumed_calories_for_all_time(self) -> float:
-        return (
-            self.health_in_some_period_analyzer.get_total_consumed_calories_for_all_time()
-        )
-
-    def get_total_burned_calories_for_all_time(self) -> float:
-        return (
-            self.health_in_some_period_analyzer.get_total_burned_calories_for_all_time()
-        )
-
-    def get_total_steps_for_all_time(self) -> float:
-        return self.get_total_steps_for_all_time()
-
-    def get_total_time_spent_on_specific_category_of_activities_for_all_time(
-        self, activity_category
-    ) -> float:
-        return self.health_in_some_period_analyzer.get_total_time_spent_on_specific_category_of_activities_for_all_time(
-            activity_category
-        )
-
-    def get_day_with_max_consumed_calories_for_all_time(self) -> HealthDaily:
-        return (
-            self.health_in_some_period_analyzer.get_day_with_max_consumed_calories_for_all_time()
-        )
-
-    def get_day_with_max_burned_calories_for_all_time(self) -> HealthDaily:
-        return (
-            self.health_in_some_period_analyzer.get_day_with_max_burned_calories_for_all_time()
-        )
-
-    def get_day_with_max_steps_for_all_time(self) -> HealthDaily:
-        return self.health_in_some_period_analyzer.get_day_with_max_steps_for_all_time()
-
-    def get_day_with_max_time_spent_on_activities_for_all_time(self) -> HealthDaily:
-        return (
-            self.health_in_some_period_analyzer.get_day_with_max_time_spent_on_activities_for_all_time()
-        )
-
-    def get_day_with_max_amount_of_drunk_water_for_all_time(self) -> HealthDaily:
-        return (
-            self.health_in_some_period_analyzer.get_day_with_max_amount_of_drunk_water_for_all_time()
-        )
-
-    def get_day_with_max_hours_spent_on_sleep_for_all_time(self) -> HealthDaily:
-        return (
-            self.health_in_some_period_analyzer.get_day_with_max_hours_spent_on_sleep_for_all_time()
-        )
-
-    def get_result_of_analyze_some_period(self) -> str:
+    def get_result_of_analyze_some_period(
+        self, start_period: str, end_period: str
+    ) -> dict[str, Any]:
+        self.health_in_some_period_analyzer.set_period_of_time(start_period, end_period)
         return self.health_in_some_period_analyzer.get_result_of_analyze_some_period()
 
     def get_result_of_another_day(self, date_of_day: str) -> DailyObjectDTO:
@@ -344,7 +276,8 @@ class MainFacade:
 
     def get_list_of_skipped_medication(self) -> list[tuple[Medication, str]]:
         """This method return list of skipped day when user do not take appropriates medications.
-        Returned value has the next format [(MedicationDTO, date_when_skipped),...,...]"""
+        Returned value has the next format [(MedicationDTO, date_when_skipped),...,...]
+        """
         return self.medication_manager.get_list_of_all_medication_that_user_not_take()
 
     def add_receipt(self, receipt: MedicationReceipt):

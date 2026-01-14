@@ -1,5 +1,5 @@
 from core.dto_objects import MedicationDTO
-from core.health_analysis import MedicationAnalyzer
+from core.analysis.health_analysis import MedicationAnalyzer
 from core.medication.medication_objects import (
     MedicationReceiptList,
     MedicationReceipt,
