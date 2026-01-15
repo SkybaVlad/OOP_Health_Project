@@ -12,7 +12,7 @@ from core.medication.medication_objects import (
 )
 from core.facade_logic.facade_dairy_manager import DairyFacade
 from core.medication.medication_manager import MedicationManager
-from core.analysis.health_analysis import MedicationAnalyzer
+from core.analysis.some_period_analysis import MedicationAnalyzer
 from core.health_diary_container import HealthDiary
 from datetime import date as real_date
 from core.daily_health import HealthDaily

@@ -20,7 +20,7 @@ class UserBodyDailyGoals:
     def get_water_goal(self):
         return self.water_goal
 
-    def set_calories_goal(self, calories_goal: float):
+    def set_consumed_calories_goal(self, calories_goal: float):
         self.consumed_calories_goal = calories_goal
 
     def get_consumed_calories_goal(self):

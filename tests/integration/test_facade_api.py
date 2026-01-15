@@ -1,7 +1,6 @@
 import datetime
 import unittest
 from unittest.mock import Mock, patch
-
 import core
 from core.activity.activity_type import SpecificActivityType
 from core.dto_objects import (
@@ -10,13 +9,14 @@ from core.dto_objects import (
 )
 from core.exceptions import DateOfDayIsGreaterThanTodayError
 from core.facade_logic import facade_dairy_manager
+from core.analysis import medication_analysis
 from core.facade_logic import facade_api
+from core.facade_logic import facade_analysis
 from core.medication.medication_objects import (
     MedicationReceipt,
     Medication,
     MedicationCharacteristicBuilder,
 )
-from core.analysis import health_analysis
 from core.medication import medication_objects
 
 """This test module tests the API. That means in the tests you can see 
@@ -58,16 +58,16 @@ class TestFacadeAPIConfiguration(unittest.TestCase):
             self.facade_obj.health_daily, core.facade_logic.facade_api.HealthDaily
         )
         self.assertIsInstance(
-            self.facade_obj.health_daily_analyzer,
-            core.facade_logic.facade_api.HealthDailyAnalyzer,
+            self.facade_obj.facade_analysis.daily_analyzer,
+            core.facade_logic.facade_analysis.HealthDailyAnalyzer,
         )
         self.assertIsInstance(
-            self.facade_obj.health_in_some_period_analyzer,
-            core.facade_logic.facade_api.HealthInSomePeriodAnalyzer,
+            self.facade_obj.facade_analysis.some_period_analyzer,
+            core.facade_logic.facade_analysis.HealthInSomePeriodAnalyzer,
         )
         self.assertIsInstance(
             self.facade_obj.medication_manager.medication_analyzer,
-            core.facade_logic.facade_api.MedicationAnalyzer,
+            core.facade_logic.facade_analysis.MedicationAnalyzer,
         )
         self.assertIsInstance(
             self.facade_obj.medication_manager.list_of_receipts,
@@ -136,7 +136,7 @@ class TestFacadeAPIAddAndGetFunctionality(unittest.TestCase):
         self.assertEqual(self.facade_obj.user.get_sex(), "Male")
 
     def test_00_get_daily_result_when_nothing_is_add(self):
-        day_dto = self.facade_obj.get_daily_results()
+        day_dto = self.facade_obj.get_today_results()
         self.assertEqual(day_dto.date, "2026-01-04")
         self.assertEqual(day_dto.body_mass_index, None)
         self.assertEqual(day_dto.lean_body_mass_index, None)
@@ -314,8 +314,8 @@ class TestFacadeAPIAddAndGetFunctionality(unittest.TestCase):
         )
 
     def test_13_get_list_of_medication_on_today(self):
-        health_analysis.date = Mock()
-        health_analysis.date.today = Mock(return_value=datetime.date(2026, 1, 4))
+        medication_analysis.date = Mock()
+        medication_analysis.date.today = Mock(return_value=datetime.date(2026, 1, 4))
 
         medication_objects.date = Mock(return_value=datetime.date(2026, 1, 4))
         medication_objects.date.today = Mock(return_value=datetime.date(2026, 1, 4))
@@ -363,7 +363,7 @@ class TestFacadeAPIAddAndGetFunctionality(unittest.TestCase):
             self.facade_obj.get_list_of_skipped_medication(),
         )
 
-    def test_took_med_obj_with_no_today_date(self):
+    def test_16_took_med_obj_with_no_today_date(self):
         # in test_14 we took medication object No-Spa and this obj deleted from receipt and as receipt has only this med_obj -> receipt also deleted
         # so we have only 1 receipt in list (Aspirin med_obj in list)
 
@@ -392,7 +392,7 @@ class TestFacadeAPIAddAndGetFunctionality(unittest.TestCase):
         self.assertEqual(len(self.facade_obj.get_list_of_skipped_medication()), 0)
 
     def test_16_get_daily_result(self):
-        dto_obj = self.facade_obj.get_daily_results()
+        dto_obj = self.facade_obj.get_today_results()
         self.assertEqual(dto_obj.height, 191.0)
         self.assertEqual(dto_obj.burned_calories, 500)
         self.assertEqual(dto_obj.weight, 100.0)
@@ -424,11 +424,19 @@ class TestFacadeAPIAddAndGetFunctionality(unittest.TestCase):
         facade_dairy_manager.date.today = Mock(return_value=datetime.date(2026, 1, 5))
         mock_2_facade_api_date_today.return_value = datetime.date(2026, 1, 5)
 
-        day = self.facade_obj.get_daily_results()
+        day = self.facade_obj.get_today_results()
         self.assertEqual(day.date, "2026-01-05")
         self.assertAlmostEqual(day.body_mass_index, 27.411, places=2)
         self.assertAlmostEqual(day.basal_metabolic_rate, 2098.75, places=2)
         self.assertEqual(day.lean_body_mass_index, 86.5)
+        self.assertEqual(day.consumed_calories_goal, 2000.0)
+        self.assertEqual(day.burned_calories_goal, 400.0)
+        self.assertEqual(day.water_goal, 2.0)
+        self.assertEqual(day.step_goal, 7000.0)
+        self.assertEqual(
+            len(self.facade_obj.health_diary_facade.health_diary.get_history_of_days()),
+            5,
+        )
 
 
 if __name__ == '__main__':
