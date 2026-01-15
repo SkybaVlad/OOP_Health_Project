@@ -40,6 +40,10 @@ class DailyObjectDTO:
     basal_metabolic_rate: float
     lean_body_mass_index: float
     fat_mass: float
+    water_goal: float
+    step_goal: float
+    burned_calories_goal: float
+    consumed_calories_goal: float
 
 
 class SomePeriodAnalyzer:
