@@ -1,3 +1,4 @@
+from core import User
 from core.activity.activity_type import SpecificActivityType
 from core.nutrition.meal import Meal
 from core.health_diary_container import HealthDiary
@@ -7,27 +8,43 @@ from core.medication.medication_objects import (
 )
 from datetime import date
 from core.medication.medication_manager import MedicationManager
+from core.user.user_body_goals import UserBodyDailyGoals
 
 
 class DairyFacade:
-    """This facade class provide a wide range of methods that works with diary of days and days objects"""
+    """This facade class provide a wide range of methods
+    that works with diary of days and days objects"""
 
-    def __init__(
+    def __init__(self):
+        self.health_diary: HealthDiary | None = None
+        self.current_day: HealthDaily | None = None
+        self.medication_manager: MedicationManager | None = None
+        self.user_body_daily_goals: UserBodyDailyGoals | None = None
+        self.user: User | None = None
+
+    def initialize(
         self,
         health_diary: HealthDiary,
         current_day: HealthDaily,
         medication_manager: MedicationManager,
+        user_body_daily_goals: UserBodyDailyGoals,
+        user: User,
     ):
         self.health_diary = health_diary
         self.current_day = current_day
         self.medication_manager = medication_manager
         self.health_diary.add_day(current_day)
+        self.user_body_daily_goals = user_body_daily_goals
+        self.user = user
 
     def set_health_diary(self, health_diary: HealthDiary):
         self.health_diary = health_diary
 
     def set_health_daily(self, first_day: HealthDaily):
         self.current_day = first_day
+
+    def set_user_body_daily_goals(self, user_body_daily_goals: UserBodyDailyGoals):
+        self.user_body_daily_goals = user_body_daily_goals
 
     def add_activity(
         self, activity_object: SpecificActivityType, provided_time_value: str
@@ -36,7 +53,6 @@ class DairyFacade:
         # if actual date of day is changed -> need to update current_day attribute
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
-            self.health_diary.add_day(self.current_day)
 
         # if provided_time from user not equal current date of day -> need find
         # day with this date or create day object and add to list
@@ -56,7 +72,9 @@ class DairyFacade:
 
     def update_curr_day(self):
         day = self.create_new_health_daily(str(date.today()))
+        self.load_goals_on_day(day)
         self.current_day = day
+        self.health_diary.add_day(self.current_day)
 
     def __find_daily_health_with_specific_data(self, data: str) -> HealthDaily | None:
         return self.health_diary.find_day(data)
@@ -64,7 +82,6 @@ class DairyFacade:
     def add_meal(self, meal: Meal, provided_time_value: str) -> None:
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
-            self.health_diary.add_day(self.current_day)
 
         if provided_time_value != self.current_day.date_of_day:
             found_day = self.__find_daily_health_with_specific_data(provided_time_value)
@@ -83,7 +100,6 @@ class DairyFacade:
     ) -> None:
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
-            self.health_diary.add_day(self.current_day)
 
         if provided_time_value != self.current_day.date_of_day:
             found_day = self.__find_daily_health_with_specific_data(provided_time_value)
@@ -102,7 +118,6 @@ class DairyFacade:
     ) -> None:
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
-            self.health_diary.add_day(self.current_day)
 
         if provided_time_value != self.current_day.date_of_day:
             found_day = self.__find_daily_health_with_specific_data(provided_time_value)
@@ -119,7 +134,6 @@ class DairyFacade:
     def add_count_steps(self, count_of_steps: int, provided_time_value: str) -> None:
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
-            self.health_diary.add_day(self.current_day)
 
         if provided_time_value != self.current_day.date_of_day:
             found_day = self.__find_daily_health_with_specific_data(provided_time_value)
@@ -136,7 +150,6 @@ class DairyFacade:
     def set_weight(self, weight_value: float, provided_time_value: str) -> None:
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
-            self.health_diary.add_day(self.current_day)
 
         if provided_time_value != self.current_day.date_of_day:
             found_day = self.__find_daily_health_with_specific_data(provided_time_value)
@@ -153,7 +166,6 @@ class DairyFacade:
     def set_height(self, height_value: float, provided_time_value: str) -> None:
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
-            self.health_diary.add_day(self.current_day)
 
         if provided_time_value != self.current_day.date_of_day:
             found_day = self.__find_daily_health_with_specific_data(provided_time_value)
@@ -172,7 +184,6 @@ class DairyFacade:
     ) -> None:
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
-            self.health_diary.add_day(self.current_day)
 
         if provided_time_value != self.current_day.date_of_day:
             found_day = self.__find_daily_health_with_specific_data(provided_time_value)
@@ -191,7 +202,6 @@ class DairyFacade:
     ) -> None:
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
-            self.health_diary.add_day(self.current_day)
 
         if provided_time_value != self.current_day.date_of_day:
             found_day = self.__find_daily_health_with_specific_data(provided_time_value)
@@ -230,6 +240,50 @@ class DairyFacade:
             created_day.list_of_taken_medication.append(medication_obj)
         else:
             day.list_of_taken_medication.append(medication_obj)
+
+    def load_goals_on_day(self, day: HealthDaily):
+        if self.user_body_daily_goals.step_goal == 0:
+            if self.user.get_age() >= 65:
+                day.set_step_goal_on_day(5500)
+            elif 18 <= self.user.get_age() < 65:
+                day.set_step_goal_on_day(7000)
+            elif 10 <= self.user.get_age() < 18:
+                day.set_step_goal_on_day(9000)
+        else:
+            day.set_step_goal_on_day(self.user_body_daily_goals.step_goal)
+
+        if self.user_body_daily_goals.water_goal == 0:
+            if self.user.get_age() >= 65:
+                day.set_water_goal_on_day(1.8)
+            elif 18 <= self.user.get_age() < 65:
+                day.set_water_goal_on_day(2.0)
+            elif 10 <= self.user.get_age() < 18:
+                day.set_water_goal_on_day(1.8)
+        else:
+            day.set_water_goal_on_day(self.user_body_daily_goals.water_goal)
+
+        if self.user_body_daily_goals.burned_calories_goal == 0:
+            if self.user.get_age() >= 65:
+                day.set_burned_calories_goal_on_day(300.0)
+            elif 18 <= self.user.get_age() < 65:
+                day.set_burned_calories_goal_on_day(400.0)
+            elif 10 <= self.user.get_age() < 18:
+                day.set_burned_calories_goal_on_day(350.0)
+        else:
+            day.set_burned_calories_goal_on_day(
+                self.user_body_daily_goals.burned_calories_goal
+            )
+        if self.user_body_daily_goals.consumed_calories_goal == 0:
+            if self.user.get_age() >= 65:
+                day.set_consumed_calories_goal_on_day(1800.0)
+            elif 18 <= self.user.get_age() < 65:
+                day.set_consumed_calories_goal_on_day(2000.0)
+            elif 10 <= self.user.get_age() < 18:
+                day.set_consumed_calories_goal_on_day(2000.0)
+        else:
+            day.set_consumed_calories_goal_on_day(
+                self.user_body_daily_goals.consumed_calories_goal
+            )
 
 
 if __name__ == "__main__":
