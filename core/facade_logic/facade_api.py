@@ -6,17 +6,12 @@ from core.facade_logic.facade_dairy_manager import DairyFacade
 from core.user.user_body_goals import UserBodyDailyGoals
 from core.user.user_info import User
 from core.user.user_body_info import UserBodyInfo
-from core.analysis.health_analysis import (
-    HealthDailyAnalyzer,
-    HealthInSomePeriodAnalyzer,
-)
 from core.specification_for_filter import *
 from core.health_diary_container import HealthDiary
 from core.medication.medication_objects import MedicationReceipt, Medication
 from core.medication.medication_manager import MedicationManager
 from core.medication.medication_objects import MedicationReceiptList
 from core.activity.activity_type import SpecificActivityType
-from core.analysis.health_analysis import MedicationAnalyzer
 from core.medication.medication_manager import (
     convert_list_of_medication_to_dict_with_status,
 )
@@ -24,7 +19,6 @@ from core.exceptions import (
     LimitCallsError,
     DateOfDayIsGreaterThanTodayError,
     NotExistingReceiptWithAppropriateMedicationObjectError,
-    NotExistingDayInListOfDaysWithThisDateError,
 )
 from core.dto_objects import (
     DailyObjectDTO,
@@ -32,6 +26,7 @@ from core.dto_objects import (
     convert_list_of_medications_into_list_of_medication_dto,
     generate_daily_dto_object,
 )
+from core.facade_logic.facade_analysis import FacadeAnalysis
 
 
 class MainFacade:
@@ -46,8 +41,7 @@ class MainFacade:
         health_diary_facade: DairyFacade,
         user_body_info: UserBodyInfo,
         user_body_daily_goals: UserBodyDailyGoals,
-        health_daily_analyzer: HealthDailyAnalyzer,
-        health_in_some_period_analyzer: HealthInSomePeriodAnalyzer,
+        facade_analysis: FacadeAnalysis,
         medication_manager: MedicationManager,
     ):
         self.user = user_obj
@@ -56,8 +50,7 @@ class MainFacade:
         self.health_diary_facade = health_diary_facade
         self.user_body_info = user_body_info
         self.user_body_daily_goals = user_body_daily_goals
-        self.health_daily_analyzer = health_daily_analyzer
-        self.health_in_some_period_analyzer = health_in_some_period_analyzer
+        self.facade_analysis = facade_analysis
         self.medication_manager = medication_manager
 
     def __is_date_of_activity_greater_than_today(self, _date: str) -> bool:
@@ -148,65 +141,57 @@ class MainFacade:
         # validate value of age , if < 15 or > 100 error or if less than curr age
         self.user.set_age(age)
 
-    def add_burned_calories_goal(self, calories: int):
+    def set_burned_calories_goal(self, calories: int):
         """This method set user-defined value of burned calories goal. This
         value will be used in daily analyzer class to analyze daily result"""
         self.user_body_daily_goals.set_burned_calories_goal(calories)
+        self.health_diary_facade.current_day.set_burned_calories_goal_on_day(calories)
 
-    def add_water_goal(self, water: float):
+    def set_water_goal(self, water: float):
         """This method set user-defined value of water goal. This
         value will be used in daily analyzer class to analyze daily result.
         Water goal means count of litres that user need to drink every day."""
         self.user_body_daily_goals.set_water_goal(water)
+        self.health_diary_facade.current_day.set_water_goal_on_day(water)
 
-    def add_calories_goal(self, calories: int):
-        """This method set user-defined value of burned calories goal. This
+    def set_consumed_calories_goal(self, calories: int):
+        """This method set user-defined value of burned goal. This
         value will be used in daily analyzer class to analyze daily result.
         Calories goal means how much calories user need to eat every day."""
-        self.user_body_daily_goals.set_calories_goal(calories)
+        self.user_body_daily_goals.set_consumed_calories_goal(calories)
+        self.health_diary_facade.current_day.set_consumed_calories_goal_on_day(calories)
 
     def add_step_goal(self, step_goal: float):
         """This method set user-defined value of burned calories goal. This
         value will be used in daily analyzer class to analyze daily result"""
         self.user_body_daily_goals.set_step_goal(step_goal)
+        self.health_diary_facade.current_day.set_step_goal_on_day(step_goal)
 
-    def get_daily_results(self) -> DailyObjectDTO:
+    def get_today_results(self) -> DailyObjectDTO:
         """This method responsible for analyze metrics of current day (current day that in DairyFacade class).
         If current day != str(datetime.date.today()) day in DairyFacade class will be updated otherwise it will
         be analyzed and DailyObjectDTO will be returned."""
-        if self.health_diary_facade.current_day.date_of_day != str(date.today()):
+        if not self.health_diary_facade.is_current_day(str(date.today())):
             self.health_diary_facade.update_curr_day()
-            self.health_daily_analyzer.set_day_that_need_to_analyze(
-                self.health_diary_facade.current_day
-            )
-        elif (
-            self.health_daily_analyzer.health_daily
-            != self.health_diary_facade.current_day
-        ):
-            self.health_daily_analyzer.set_day_that_need_to_analyze(
-                self.health_diary_facade.current_day
-            )
-        dict_of_res = self.health_daily_analyzer.get_daily_result()
+        self.facade_analysis.set_day_that_need_to_analyze_for_daily_results(
+            self.health_diary_facade.current_day
+        )
+        dict_of_res = self.facade_analysis.get_daily_results()
         return generate_daily_dto_object(dict_of_res)
 
     def get_result_of_analyze_some_period(
         self, start_period: str, end_period: str
     ) -> dict[str, Any]:
-        self.health_in_some_period_analyzer.set_period_of_time(start_period, end_period)
-        return self.health_in_some_period_analyzer.get_result_of_analyze_some_period()
+        return self.facade_analysis.get_result_of_analyze_some_period(
+            start_period, end_period
+        )
 
     def get_result_of_another_day(self, date_of_day: str) -> DailyObjectDTO:
         """This method responsible for analyze metrics of any date with "date_of_day" date.
         If "date_of_day" is greater than str(datetime.date.today()) the
         NotExistingDayInListOfDaysWithThisDateError() will be raised otherwise DailyObjectDTO object will
         be returned."""
-        day = self.health_diary_facade.health_diary.find_day(date_of_day)
-        if day is None:
-            raise NotExistingDayInListOfDaysWithThisDateError(
-                f"Day with {date_of_day} does not exist"
-            )
-        self.health_daily_analyzer.set_day_that_need_to_analyze(day)
-        dict_of_res = self.health_daily_analyzer.get_daily_result()
+        dict_of_res = self.facade_analysis.get_daily_result_of_another_day(date_of_day)
         return generate_daily_dto_object(dict_of_res)
 
     def filter(
@@ -245,21 +230,12 @@ class MainFacade:
         "NotExistingReceiptWithAppropriateMedicationObjectError()" will be raised."
         """
 
-        _receipt_with_med_obj = self.medication_manager.list_of_receipts.find_receipt_with_appropriate_med_obj(
+        self.medication_manager.took_medication_object_with_no_today_date(
             medication_obj
         )
-
-        if _receipt_with_med_obj is None:
-            raise NotExistingReceiptWithAppropriateMedicationObjectError(
-                f"{medication_obj.__repr__()} does not exist in list of receipts"
-            )
-        else:
-            self.health_diary_facade.add_took_medication_object_with_no_today_date(
-                medication_obj, date_of_taken
-            )
-            self.medication_manager.took_medication_object_with_no_today_date(
-                medication_obj, _receipt_with_med_obj
-            )
+        self.health_diary_facade.add_took_medication_object_with_no_today_date(
+            medication_obj, date_of_taken
+        )
 
     def get_medications_that_need_to_take_today(self) -> dict[MedicationDTO, bool]:
         """This method return dict that contains a MedicationDTO object as key and False as value.
@@ -316,33 +292,47 @@ def create_and_configure_facade_for_start(user_obj: User) -> MainFacade:
     because this function responsible for configure all settings needed to correctly
     working system."""
     first_day = HealthDaily(str(date.today()))
-    health_diary = HealthDiary()
-    user_body_info = UserBodyInfo()
+    container_of_days = HealthDiary()
+
     med_receipt_list = MedicationReceiptList()
-    user_body_daily_goals = UserBodyDailyGoals()
     medication_manager = MedicationManager(med_receipt_list)
-    medication_analyzer = MedicationAnalyzer(health_diary, med_receipt_list)
-    dairy_facade = DairyFacade(health_diary, first_day, medication_manager)
-    health_daily_analyzer = HealthDailyAnalyzer()
-    health_in_some_period_analyzer = HealthInSomePeriodAnalyzer()
-    medication_manager.set_medication_analyzer(medication_analyzer)
 
-    health_daily_analyzer.set_user_body_daily_goals(user_body_daily_goals)
-    health_daily_analyzer.set_user_body_info(user_body_info)
-    health_daily_analyzer.set_day_that_need_to_analyze(first_day)
-    health_daily_analyzer.set_user_info(user_obj)
+    user_body_info = UserBodyInfo()
+    user_body_daily_goals = UserBodyDailyGoals()
 
-    health_in_some_period_analyzer.set_list_of_days(health_diary.get_history_of_days())
+    dairy_facade = DairyFacade()
+    dairy_facade.initialize(
+        container_of_days,
+        first_day,
+        medication_manager,
+        user_body_daily_goals,
+        user_obj,
+    )
+    dairy_facade.load_goals_on_day(first_day)
+
+    facade_analysis = FacadeAnalysis()
+    facade_analysis.initialize(
+        str(date.today()),
+        str(date.today()),
+        dairy_facade.health_diary.history_of_all_days,
+        first_day,
+        med_receipt_list,
+        user_body_daily_goals,
+        user_body_info,
+        user_obj,
+        container_of_days,
+    )
+
+    medication_manager.set_medication_analyzer(facade_analysis.medication_analyzer)
 
     main_facade = MainFacade(
         user_obj,
         first_day,
-        health_diary,
+        container_of_days,
         dairy_facade,
         user_body_info,
         user_body_daily_goals,
-        health_daily_analyzer,
-        health_in_some_period_analyzer,
+        facade_analysis,
         medication_manager,
     )
 
