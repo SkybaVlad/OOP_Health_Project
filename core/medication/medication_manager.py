@@ -1,5 +1,6 @@
 from core.dto_objects import MedicationDTO
-from core.analysis.health_analysis import MedicationAnalyzer
+from core.analysis.some_period_analysis import MedicationAnalyzer
+from core.exceptions import NotExistingReceiptWithAppropriateMedicationObjectError
 from core.medication.medication_objects import (
     MedicationReceiptList,
     MedicationReceipt,
@@ -66,9 +67,16 @@ class MedicationManager:
     ) -> list[tuple[Medication, str]]:
         return self.medication_analyzer.get_list_of_all_medication_that_user_not_take()
 
-    def took_medication_object_with_no_today_date(
-        self, medication_obj: Medication, _receipt_with_med_obj: MedicationReceipt
-    ):
+    def took_medication_object_with_no_today_date(self, medication_obj: Medication):
+        _receipt_with_med_obj = (
+            self.list_of_receipts.find_receipt_with_appropriate_med_obj(medication_obj)
+        )
+
+        if _receipt_with_med_obj is None:
+            raise NotExistingReceiptWithAppropriateMedicationObjectError(
+                f"{medication_obj.__repr__()} does not exist in list of receipts"
+            )
+
         if self.medication_obj_inside_receipt_is_completed(
             medication_obj, _receipt_with_med_obj
         ):
