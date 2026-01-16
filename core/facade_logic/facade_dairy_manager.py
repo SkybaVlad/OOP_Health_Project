@@ -1,5 +1,6 @@
 from core import User
 from core.activity.activity_type import SpecificActivityType
+from core.exceptions import DateOfDayIsGreaterThanTodayError
 from core.nutrition.meal import Meal
 from core.health_diary_container import HealthDiary
 from core.specification_for_filter import *
@@ -50,6 +51,9 @@ class DairyFacade:
         self, activity_object: SpecificActivityType, provided_time_value: str
     ) -> None:
 
+        if self.__is_date_of_activity_greater_than_today(provided_time_value):
+            raise DateOfDayIsGreaterThanTodayError()
+
         # if actual date of day is changed -> need to update current_day attribute
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
@@ -76,6 +80,13 @@ class DairyFacade:
         self.current_day = day
         self.health_diary.add_day(self.current_day)
 
+    def __is_date_of_activity_greater_than_today(self, _date: str) -> bool:
+        today = date.today()
+        _date_of_activity = date.fromisoformat(_date)
+        if _date_of_activity <= today:
+            return False
+        return True
+
     def __find_daily_health_with_specific_data(self, data: str) -> HealthDaily | None:
         return self.health_diary.find_day(data)
 
@@ -98,6 +109,10 @@ class DairyFacade:
     def add_amount_of_drunk_water(
         self, amount_of_drunk_water: float, provided_time_value: str
     ) -> None:
+
+        if self.__is_date_of_activity_greater_than_today(provided_time_value):
+            raise DateOfDayIsGreaterThanTodayError()
+
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
 
@@ -116,6 +131,10 @@ class DairyFacade:
     def add_amount_of_sleep(
         self, amount_of_sleep: float, provided_time_value: str
     ) -> None:
+
+        if self.__is_date_of_activity_greater_than_today(provided_time_value):
+            raise DateOfDayIsGreaterThanTodayError()
+
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
 
@@ -132,6 +151,10 @@ class DairyFacade:
         self.current_day.add_sleep(amount_of_sleep)
 
     def add_count_steps(self, count_of_steps: int, provided_time_value: str) -> None:
+
+        if self.__is_date_of_activity_greater_than_today(provided_time_value):
+            raise DateOfDayIsGreaterThanTodayError()
+
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
 
@@ -148,6 +171,10 @@ class DairyFacade:
         self.current_day.add_count_of_steps(count_of_steps)
 
     def set_weight(self, weight_value: float, provided_time_value: str) -> None:
+
+        if self.__is_date_of_activity_greater_than_today(provided_time_value):
+            raise DateOfDayIsGreaterThanTodayError()
+
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
 
@@ -164,6 +191,10 @@ class DairyFacade:
         self.current_day.set_weight(weight_value)
 
     def set_height(self, height_value: float, provided_time_value: str) -> None:
+
+        if self.__is_date_of_activity_greater_than_today(provided_time_value):
+            raise DateOfDayIsGreaterThanTodayError()
+
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
 
@@ -182,6 +213,10 @@ class DairyFacade:
     def set_fat_percentage(
         self, fat_percentage_value: float, provided_time_value: str
     ) -> None:
+
+        if self.__is_date_of_activity_greater_than_today(provided_time_value):
+            raise DateOfDayIsGreaterThanTodayError()
+
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
 
@@ -200,6 +235,10 @@ class DairyFacade:
     def add_burned_calories(
         self, burned_calories: float, provided_time_value: str
     ) -> None:
+
+        if self.__is_date_of_activity_greater_than_today(provided_time_value):
+            raise DateOfDayIsGreaterThanTodayError()
+
         if not self.is_current_day(str(date.today())):
             self.update_curr_day()
 
