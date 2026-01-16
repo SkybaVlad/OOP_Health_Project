@@ -1,7 +1,12 @@
+import datetime
+
+from core.analysis.function import (
+    get_list_of_days_in_some_period,
+    get_list_of_activities_from_days,
+)
 from core.exceptions import NotExistingDayInListOfDaysWithThisDateError
 from core.health_diary_container import HealthDiary
 from core.user.user_info import User
-from core.activity.activity_type import SpecificActivityType
 from core.analysis.medication_analysis import MedicationAnalyzer
 from core.analysis.activity_analysis import ActivityAnalyzer
 from core.analysis.daily_analysis import HealthDailyAnalyzer
@@ -10,7 +15,6 @@ from core.daily_health import HealthDaily
 from core.medication.medication_objects import MedicationReceiptList
 from core.user.user_body_goals import UserBodyDailyGoals
 from core.user.user_body_info import UserBodyInfo
-from core.validation_user_input.time_validator import time_in_period
 
 
 class FacadeAnalysis:
@@ -61,10 +65,15 @@ class FacadeAnalysis:
             self.medication_analyzer,
         )
 
-    def get_daily_results(self):
+    def get_result_of_day(self, day: HealthDaily):
+        self.daily_analyzer.set_day_that_need_to_analyze(day)
         return self.daily_analyzer.get_daily_result()
 
     def get_result_of_analyze_some_period(self, start_time: str, end_time: str):
+        self.some_period_analyzer.set_period_of_time(start_time, end_time)
+        self.some_period_analyzer.set_list_of_days(
+            self.days_container.get_history_of_days()
+        )
         return self.some_period_analyzer.get_result_of_analyze_some_period()
 
     def get_daily_result_of_another_day(self, date_of_day: str):
@@ -77,25 +86,19 @@ class FacadeAnalysis:
         dict_of_res = self.daily_analyzer.get_daily_result()
         return dict_of_res
 
-    def set_day_that_need_to_analyze_for_daily_results(self, day: HealthDaily):
-        self.daily_analyzer.set_day_that_need_to_analyze(day)
+    def get_result_of_activity_analysis(
+        self, start_time: str | None, end_time: str | None
+    ):
+        if start_time is None and end_time is None:
+            self.activity_analyzer.set_period(
+                self.days_container.get_first_day().date_of_day,
+                str(datetime.date.today()),
+            )
+        else:
+            self.activity_analyzer.set_period(start_time, end_time)
+        return self.activity_analyzer.get_result_of_analysis()
 
-
-def get_list_of_days_in_some_period(
-    start_time: str, end_time: str, list_of_days: list[HealthDaily]
-) -> list[HealthDaily]:
-    lst_of_days = []
-    for day in list_of_days:
-        if time_in_period(start_time, end_time, day.date_of_day):
-            lst_of_days.append(day)
-    return lst_of_days
-
-
-def get_list_of_activities_from_days(
-    list_of_days: list[HealthDaily],
-) -> list[SpecificActivityType]:
-    lst_of_activities = []
-    for day in list_of_days:
-        for activity in day.list_of_activities_for_day:
-            lst_of_activities.append(activity)
-    return lst_of_activities
+    def get_result_of_medication_analysis(
+        self, start_time: str | None, end_time: str | None
+    ):
+        raise NotImplementedError()
