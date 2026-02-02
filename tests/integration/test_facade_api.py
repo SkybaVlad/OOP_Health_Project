@@ -143,7 +143,7 @@ class TestFacadeAPIAddAndGetFunctionality(unittest.TestCase):
         self.assertEqual(day_dto.basal_metabolic_rate, None)
 
     def test_01_add_activity_other_date(self):
-        facade_api.date.fromisoformat = Mock(
+        facade_dairy_manager.date.fromisoformat = Mock(
             return_value=datetime.date.fromisoformat("2026-01-03")
         )
         self.facade_obj.add_activity(self.activity_obj_1, "2026-01-03")
@@ -158,7 +158,7 @@ class TestFacadeAPIAddAndGetFunctionality(unittest.TestCase):
         self.assertIn(self.activity_obj_1, day.list_of_activities_for_day)
 
     def test_02_add_activity_today_date(self):
-        facade_api.date.fromisoformat = Mock(
+        facade_dairy_manager.date.fromisoformat = Mock(
             return_value=datetime.date.fromisoformat(str(datetime.date(2026, 1, 4)))
         )
         self.facade_obj.add_activity(
@@ -179,21 +179,21 @@ class TestFacadeAPIAddAndGetFunctionality(unittest.TestCase):
         self.assertEqual(len(self.facade_obj.health_diary.get_history_of_days()), 2)
 
     def test_03_add_activity_with_date_than_greater_than_today(self):
-        facade_api.date.fromisoformat = Mock(
+        facade_dairy_manager.date.fromisoformat = Mock(
             return_value=datetime.date.fromisoformat("2045-12-12")
         )
         with self.assertRaises(DateOfDayIsGreaterThanTodayError):
             self.facade_obj.add_activity(self.activity_obj_3, "2045-12-12")
 
     def test_04_add_weight_today_date(self):
-        facade_api.date.fromisoformat = Mock(
+        facade_dairy_manager.date.fromisoformat = Mock(
             return_value=datetime.date.fromisoformat(str(datetime.date(2026, 1, 4)))
         )
         self.facade_obj.add_weight(100.0, str(datetime.date(2026, 1, 4)))
         self.assertEqual(self.facade_obj.health_diary_facade.current_day.weight, 100.0)
 
     def test_05_add_weight_to_exist_day(self):
-        facade_api.date.fromisoformat = Mock(
+        facade_dairy_manager.date.fromisoformat = Mock(
             return_value=datetime.date.fromisoformat("2026-01-03")
         )
         self.facade_obj.add_weight(100.0, "2026-01-03")
@@ -204,7 +204,7 @@ class TestFacadeAPIAddAndGetFunctionality(unittest.TestCase):
         self.assertEqual(day.weight, 101.0)
 
     def test_06_add_weight_to_new_day(self):
-        facade_api.date.fromisoformat = Mock(
+        facade_dairy_manager.date.fromisoformat = Mock(
             return_value=datetime.date.fromisoformat("2026-01-02")
         )
         self.facade_obj.add_weight(99.0, "2026-01-02")
@@ -216,7 +216,7 @@ class TestFacadeAPIAddAndGetFunctionality(unittest.TestCase):
         self.assertEqual(day.weight, 99.0)
 
     def test_07_add_height_value_today_date(self):
-        facade_api.date.fromisoformat = Mock(
+        facade_dairy_manager.fromisoformat = Mock(
             return_value=datetime.date.fromisoformat(str(datetime.date(2026, 1, 4)))
         )
         self.facade_obj.add_height(190.0, str(datetime.date(2026, 1, 4)))
@@ -226,7 +226,7 @@ class TestFacadeAPIAddAndGetFunctionality(unittest.TestCase):
         self.assertEqual(self.facade_obj.health_diary_facade.current_day.height, 191.0)
 
     def test_08_add_height_value_to_exist_day(self):
-        facade_api.date.fromisoformat = Mock(
+        facade_dairy_manager.date.fromisoformat = Mock(
             return_value=datetime.date.fromisoformat("2026-01-03")
         )
         self.facade_obj.add_height(185.0, "2026-01-03")
@@ -237,7 +237,7 @@ class TestFacadeAPIAddAndGetFunctionality(unittest.TestCase):
         self.assertEqual(day.height, 185.5)
 
     def test_09_add_height_value_new_date(self):
-        facade_api.date.fromisoformat = Mock(
+        facade_dairy_manager.date.fromisoformat = Mock(
             return_value=datetime.date.fromisoformat("2025-12-31")
         )
         self.facade_obj.add_height(184.0, "2025-12-31")
@@ -249,7 +249,7 @@ class TestFacadeAPIAddAndGetFunctionality(unittest.TestCase):
         )
 
     def test_10_add_fat_percentage_to_today_date(self):
-        facade_api.date.fromisoformat = Mock(
+        facade_dairy_manager.date.fromisoformat = Mock(
             return_value=datetime.date.fromisoformat("2026-01-04")
         )
         self.facade_obj.add_fat_percentage(13.5, "2026-01-04")
@@ -437,6 +437,24 @@ class TestFacadeAPIAddAndGetFunctionality(unittest.TestCase):
             len(self.facade_obj.health_diary_facade.health_diary.get_history_of_days()),
             5,
         )
+
+    def test_20_set_goal(self):
+        facade_dairy_manager.date.fromisoformat = Mock(
+            return_value=datetime.date.fromisoformat("2026-01-05")
+        )
+        facade_api.date = Mock()
+        facade_api.date.today = Mock(return_value=datetime.date(2026, 1, 5))
+        self.facade_obj.set_step_goal(10000)
+        self.facade_obj.add_count_of_steps(2000, "2026-01-05")
+        self.facade_obj.set_consumed_calories_goal(2500)
+        self.facade_obj.set_burned_calories_goal(500)
+        self.facade_obj.set_water_goal(2.5)
+        obj = self.facade_obj.get_today_results()
+        self.assertEqual(obj.step_goal, 10000.0)
+        self.assertEqual(obj.steps, 2000)
+        self.assertEqual(obj.burned_calories_goal, 500.0)
+        self.assertEqual(obj.consumed_calories_goal, 2500.0)
+        self.assertEqual(obj.water_goal, 2.5)
 
 
 if __name__ == '__main__':

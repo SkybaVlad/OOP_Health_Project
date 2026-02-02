@@ -3,10 +3,7 @@ from typing import Any
 from core.analysis.activity_analysis import ActivityAnalyzer
 from core.analysis.medication_analysis import MedicationAnalyzer
 from core.daily_health import HealthDaily
-from core.validation_user_input.time_validator import (
-    time_in_period,
-)  # move this function
-from core.activity.activity_type import SpecificActivityType
+from core.analysis.function import get_list_of_days_in_some_period
 
 
 class HealthInSomePeriodAnalyzer:
@@ -151,8 +148,8 @@ class HealthInSomePeriodAnalyzer:
 
     def get_result_of_analyze_some_period(self) -> dict[str, Any]:
         return {
-            "start_date": self.start_data,
-            "end_date": self.end_data,
+            "start_date": self.start_time,
+            "end_date": self.end_time,
             "total_activity_time": self.get_total_time_spent_on_activities_in_minutes_for_all_time(),
             "total_consumed_calories": self.get_total_consumed_calories_for_all_time(),
             "total_burned_calories": self.get_total_burned_calories_for_all_time(),

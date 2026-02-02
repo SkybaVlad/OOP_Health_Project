@@ -34,3 +34,6 @@ class HealthDiary:
 
     def get_history_of_days(self) -> list[HealthDaily]:
         return self.history_of_all_days
+
+    def get_first_day(self) -> HealthDaily:
+        return self.history_of_all_days[0]
