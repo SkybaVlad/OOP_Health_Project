@@ -27,7 +27,7 @@ class ActivityAnalyzer:
     def set_list_of_activities(self, list_of_activities=list[SpecificActivityType]):
         self.list_of_activities = list_of_activities
 
-    def get_total_spend_on_activity(self) -> float:
+    def get_total_time_spend_on_activity(self) -> float:
         total_time = 0.0
         for activity in self.list_of_activities:
             total_time += activity.calculate_activity_duration_in_minutes()
@@ -68,7 +68,36 @@ class ActivityAnalyzer:
         return dict_of_activities_categories
 
     def get_most_popular_activity_category_and_time_spend_on_this_activity(self):
-        pass
+        dict_of_activities_categories = {}
+        for activity in self.list_of_activities:
+            if dict_of_activities_categories.get(activity.category, None) is None:
+                dict_of_activities_categories[activity.category] = (
+                    activity.calculate_activity_duration_in_minutes()
+                )
+            else:
+                dict_of_activities_categories[
+                    activity.category
+                ] += activity.calculate_activity_duration_in_minutes()
+        return max(
+            dict_of_activities_categories,
+            key=lambda key: dict_of_activities_categories[key],
+        )
 
     def get_most_popular_activity_name_and_time_spend_on_this_category(self):
+        dict_of_activities_names = {}
+        for activity in self.list_of_activities:
+            if dict_of_activities_names.get(activity.name, None) is None:
+                dict_of_activities_names[activity.name] = (
+                    activity.calculate_activity_duration_in_minutes()
+                )
+            else:
+                dict_of_activities_names[
+                    activity.name
+                ] += activity.calculate_activity_duration_in_minutes()
+        return max(
+            dict_of_activities_names,
+            key=lambda key: dict_of_activities_names[key],
+        )
+
+    def get_result_of_analysis(self):
         pass
