@@ -1,30 +1,261 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}
+    <title>Activity</title>
+{% endblock %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    {% block title %}
-        <title>Title</title>
-    {% endblock %}
+{% block css_styles %}
+    <link rel="stylesheet" href="{% static 'activity/activity.css' %}">
+{% endblock %}
 
-    {% block css_styles %}
-        <link rel="stylesheet" href="{% static "activity/activity.css" %}">
-    {% endblock %}
+{% block body_content %}
 
-</head>
-    <body>
-        {% block body_content %}
-            <div class="test">
-                <div class="inside-1">
-                    <p>Hello</p>
+<div class="activity-page">
+
+    <header class="activity-header">
+        <div>
+            <h1>Workouts</h1>
+            <p>Track your activity and progress</p>
+        </div>
+
+        <div class="activity-date">
+            02.02.2026
+        </div>
+
+        <div class="activity-icons">
+            <span>⌕</span>
+            <span>♙</span>
+        </div>
+    </header>
+
+    <section class="activity-grid">
+
+        <div class="panel activity-chart-panel">
+            <div class="white-wrapper-color-radius chart-card">
+
+                <div class="card-title-row">
+                    <div>
+                        <h2>Activity period</h2>
+                        <p>Burned calories during the week</p>
+                    </div>
+
+                    <div class="period-tabs">
+                        <button class="active">1w</button>
+                        <button>1m</button>
+                        <button>1y</button>
+                        <button>Custom</button>
+                    </div>
                 </div>
-                <div class="inside-2">
-                    <p>Hi</p>
+
+                <div class="chart-wrapper">
+                    <div class="y-axis">
+                        <span>600</span>
+                        <span>480</span>
+                        <span>360</span>
+                        <span>240</span>
+                        <span>120</span>
+                        <span>0</span>
+                    </div>
+
+                    <div class="bar-chart">
+                        <div class="bar-item">
+                            <div class="bar" style="height: 82%;"></div>
+                            <span>Mon</span>
+                        </div>
+
+                        <div class="bar-item">
+                            <div class="bar" style="height: 52%;"></div>
+                            <span>Tue</span>
+                        </div>
+
+                        <div class="bar-item">
+                            <div class="bar" style="height: 70%;"></div>
+                            <span>Wed</span>
+                        </div>
+
+                        <div class="bar-item">
+                            <div class="bar" style="height: 32%;"></div>
+                            <span>Thu</span>
+                        </div>
+
+                        <div class="bar-item">
+                            <div class="bar" style="height: 80%;"></div>
+                            <span>Fri</span>
+                        </div>
+
+                        <div class="bar-item">
+                            <div class="bar" style="height: 62%;"></div>
+                            <span>Sat</span>
+                        </div>
+
+                        <div class="bar-item">
+                            <div class="bar" style="height: 68%;"></div>
+                            <span>Sun</span>
+                        </div>
+                    </div>
                 </div>
+
             </div>
-        {% endblock %}
-    </body>
-</html>
+        </div>
+
+        <div class="panel statistics-panel">
+
+            <h2>Statistics</h2>
+
+            <div class="statistics-grid">
+
+                <div class="stat-card">
+                    <div class="stat-icon green-icon">★</div>
+                    <div>
+                        <p>Best calories day</p>
+                        <h3>Monday</h3>
+                        <span>540 kcal</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon red-icon">↓</div>
+                    <div>
+                        <p>Lowest calories day</p>
+                        <h3>Thursday</h3>
+                        <span>180 kcal</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon green-icon">↗</div>
+                    <div>
+                        <p>Top activity</p>
+                        <h3>Running</h3>
+                        <span>1320 kcal</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon gray-icon">●</div>
+                    <div>
+                        <p>Average calories</p>
+                        <h3>315</h3>
+                        <span>kcal/day</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon purple-icon">◒</div>
+                    <div>
+                        <p>Total steps</p>
+                        <h3>45 300</h3>
+                        <span>this week</span>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon red-icon">♦</div>
+                    <div>
+                        <p>Total calories</p>
+                        <h3>2210 kcal</h3>
+                        <span>this week</span>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="panel summary-panel">
+            <div class="white-wrapper-color-radius summary-card">
+
+                <h2>Activity summary</h2>
+
+                <div class="summary-content">
+
+                    <div class="summary-text">
+                        <p>
+                            This chart shows how your time is distributed across different activities.
+                        </p>
+
+                        <p>
+                            Use it to understand your balance and focus on what matters most.
+                        </p>
+                    </div>
+
+                    <div class="vertical-line"></div>
+
+                    <div class="donut-chart"></div>
+
+                    <div class="legend">
+                        <div>
+                            <span class="legend-dot green-dot"></span>
+                            Running
+                        </div>
+
+                        <div>
+                            <span class="legend-dot purple-dot"></span>
+                            Gym
+                        </div>
+
+                        <div>
+                            <span class="legend-dot blue-dot"></span>
+                            Swimming
+                        </div>
+
+                        <div>
+                            <span class="legend-dot gray-dot"></span>
+                            Volleyball
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="panel add-workout-panel">
+            <div class="white-wrapper-color-radius add-workout-card">
+
+                <h2>Add workout data</h2>
+
+                <form class="workout-form">
+
+                    <div class="form-grid">
+
+                        <label class="input-box">
+                            <span>↗</span>
+                            <input type="text" placeholder="Activity name">
+                        </label>
+
+                        <label class="input-box">
+                            <span>◒</span>
+                            <input type="number" placeholder="Steps">
+                        </label>
+
+                        <label class="input-box">
+                            <span>◷</span>
+                            <input type="number" placeholder="Duration (min)">
+                        </label>
+
+                        <label class="input-box">
+                            <span>▣</span>
+                            <input type="date">
+                        </label>
+
+                        <label class="input-box">
+                            <span>♦</span>
+                            <input type="number" placeholder="Burned calories">
+                        </label>
+
+                    </div>
+
+                    <button type="submit">Add activity</button>
+
+                </form>
+
+            </div>
+        </div>
+
+    </section>
+
+</div>
+
+{% endblock %}

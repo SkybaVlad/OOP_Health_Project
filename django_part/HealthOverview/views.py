@@ -7,6 +7,11 @@ from django.shortcuts import render
 
 import sys
 
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parents[2]
+sys.path.append(str(BASE_DIR))
+
 from core import MainFacade
 from core.dto_objects import DailyObjectDTO
 

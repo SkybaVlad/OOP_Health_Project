@@ -7,5 +7,5 @@ from django.forms.fields import CharField
 class User(AbstractUser):
     name = CharField(max_length=120)
     surname = CharField(max_length=120)
-    age = models.IntegerField()
+    age = models.IntegerField(null=True, blank=True)
     sex = CharField(max_length=5)
