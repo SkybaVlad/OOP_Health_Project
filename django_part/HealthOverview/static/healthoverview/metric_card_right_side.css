@@ -1,0 +1,75 @@
+.metric_card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    padding: 12px;
+    box-sizing: border-box;
+    height: 100%;
+    gap: 5px;
+}
+
+.metric-card-header {
+    display: flex;
+    justify-content: start;
+    align-items: flex-end;
+    gap:10px;
+    min-width: 0;
+    min-height: 0;
+}
+
+.grey-square {
+    display: flex;
+    width: 21px;
+    height: 21px;
+    background-color: grey;
+    border-radius: 5px;
+    min-width: 0;
+    min-height: 0;
+}
+
+.inter-Inter {
+  font-family: "Inter", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400 ;
+  font-style: normal;
+}
+
+.montserrat-Mont {
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.metric-card-value-goal {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    min-width: 0;
+    min-height: 0;
+}
+
+.metric_card_week {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    min-width: 0;
+    min-height: 0;
+}
+
+.metric-card-graph {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex: 1;
+    align-items: flex-end;
+    min-width: 0;
+    min-height: 0;
+}
+
+.bar_of_graph {
+    background-color: cornflowerblue;
+    border-radius: 8px;
+    width: 24px;
+}

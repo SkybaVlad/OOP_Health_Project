@@ -1,0 +1,13 @@
+.metric-card-left-side {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    justify-content: center;
+    align-items: center;
+}
+
+.metric-card-left-side-body p {
+    margin: 0;
+    padding: 0;
+}

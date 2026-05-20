@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+        <title>Title</title>
+    {% endblock %}
+
+    {% block css_styles %}
+        <link rel="stylesheet" href="{% static "activity/activity.css" %}">
+    {% endblock %}
+
+</head>
+    <body>
+        {% block body_content %}
+            <div class="test">
+                <div class="inside-1">
+                    <p>Hello</p>
+                </div>
+                <div class="inside-2">
+                    <p>Hi</p>
+                </div>
+            </div>
+        {% endblock %}
+    </body>
+</html>
