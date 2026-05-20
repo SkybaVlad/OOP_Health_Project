@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    <title>Health Overview</title>
+{% endblock %}
+
+{% block css_styles %}
+    <link rel="stylesheet" href="{% static "healthoverview/health_overview.css" %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="{% static "healthoverview/metric_card_left_side.css" %}">
+    <link rel="stylesheet" href="{% static "healthoverview/metric_card_right_side.css" %}">
+    <link rel="stylesheet" href="{% static "reusable_classes" %}">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital@0;1&display=swap" rel="stylesheet">
+{% endblock %}
+
+
+{% block body_content %}
+
+    <div class="dashboard_page">
+
+        <div class="dashboard-date">Today {{ dashboard_date }}</div>
+
+        <div class="name-of-page">
+            <h2>Health Overview</h2>
+        </div>
+
+        <div class="user-overview-data">
+
+            <div class="dashboard-left-part">
+                <div class="panel">
+                    <div class="white-wrapper-color-radius">
+
+                        <div class="user-info">
+
+                            <div class="user-avatar">Here</div>
+
+                            <div class="montserrat-Username user_name">{{ user_data.get_name }} {{ user_data.get_surname }}</div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="wrapper-for-row-alignment">
+                    <div class="panel">
+                        <div class="daily-metrics">
+                            {% for metric_name, metric_value in left_side_metrics.items %}
+                                {% include "healthoverview/include/metric_card_left_side.html" with metric_name=metric_name metric_value=metric_value %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="white-wrapper-color-radius">
+                            <div class="meals">
+                                {% if meal|length != 0 %}
+                                    {% for meal in meal %}
+                                        <p>{{ meal }}</p>
+                                    {% endfor %}
+                                {% else %}
+                                    <p>No meals today</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="sport-wrapper">
+                        <div class="white-wrapper-color-radius">
+                            <div class="today-sport-list">
+                                <div class="today-sport-list-header">
+                                    <div class="inter-Inter">Today activity</div>
+                                </div>
+
+                                <div class="today-sport-list-body">
+                                    {% if activity|length != 0 %}
+                                        {% for activity in activity %}
+                                            <div class="sport-element">
+                                                <div class="grey-square"></div>
+                                                <div class="montserrat-Mont">{{ activity.activity_name }}</div>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <div>No activities today</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="white-wrapper-color-radius">
+                            <div class="sport-circle">
+                                {% if activity|length != 0 %}
+                                    {% for activity in activity %}
+                                        <p>{{ activity.activity_name }}</p>
+                                    {% endfor %}
+                                {% else %}
+                                    <p>No activities today</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="white-wrapper-color-radius">
+                        <div class="medications">
+                            {% if medication|length != 0 %}
+                                {% for medication in medication %}
+                                    <p>{{ medication.name }}</p>
+                                {% endfor %}
+                            {% else %}
+                            <p>No medication is taken</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="dashboard-right-part">
+                    {% for metric in right_side_metrics %}
+                        <div class="white-wrapper-color-radius">
+                            {% include "healthoverview/include/metric_card_right_side.html" with metric=metric %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}

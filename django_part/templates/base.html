@@ -1,0 +1,52 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {% block title %}
+        <title>Document</title>
+    {% endblock %}
+
+    <link rel="stylesheet" href="{% static "base_styles.css" %}">
+    {% block css_styles %}
+
+    {% endblock %}
+
+</head>
+    <body>
+        <div class="main_page">
+            <div class="side-bar">
+
+                <div class="project-name">
+                    <h1>
+                        Health
+                    </h1>
+                    <hr>
+                </div>
+
+                <nav>
+                    <ul class="list-of-options montserrat-Mont">
+                        <li><a href="{% url "dashboard" %}">Dashboard</a></li>
+                        <li><a href="{% url "activity_overview" %}">Activity</a></li>
+                        <li><a href="#">Nutrition</a></li>
+                        <li><a href="{% url "analyses" %}">Analyses</a></li>
+                        <li><a href="#">Goals</a></li>
+                        <li><a href="#">Water</a></li>
+                        <li><a href="#">Sleep</a></li>
+                    </ul>
+                    <form method="post" action="{% url "logout" %}">
+                        {% csrf_token %}
+                        <button type="submit">Log out</button>
+                    </form>
+                </nav>
+            </div>
+            <div class="content-block">
+                {% block body_content %}
+                {% endblock %}
+            </div>
+        </div>
+    </body>
+</html>

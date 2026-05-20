@@ -1,0 +1,16 @@
+.panel {
+    padding: 12px;
+    background-color: #C6E6FF;
+    border-radius: 16px;
+    min-height: 0;
+    min-width: 0;
+}
+
+.white-wrapper-color-radius {
+    background-color: #FFFDFD;
+    border-radius: 16px;
+    height: 100%;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+}

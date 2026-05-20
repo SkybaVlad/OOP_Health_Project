@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block body_content %}
+
+    <div class="analyses-block">
+        <div class="analyses-header">
+            <form method="GET" action="/analyses/">
+
+                <label>
+                    <input type="text"  placeholder="Enter start date" name="start-date">
+                </label>
+                <label>
+                    <input type="text"  placeholder="Enter end date" name="end-date">
+                </label>
+
+                <button type="submit">Set</button>
+            </form>
+        </div>
+        <div class="analyses-body">
+
+        </div>
+    </div>
+{% endblock %}

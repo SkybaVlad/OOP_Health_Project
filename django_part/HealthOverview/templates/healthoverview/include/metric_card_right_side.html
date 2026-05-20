@@ -1,0 +1,26 @@
+
+<div class="metric_card">
+    <div class="metric-card-header">
+        <div class="grey-square"></div>
+        <div class="inter-Inter">{{ metric.metric_name }}</div>
+    </div>
+
+    <div class="metric-card-value-goal">
+        <div class="inter-Inter">Today value/goal</div>
+        <div class="montserrat-Mont">
+            {{ metric.today_metric_value }}/{{ metric.metric_goal_value }}
+        </div>
+    </div>
+
+    <div class="metric_card_week">
+        <div class="inter-Inter">This week</div>
+        <div class="week-value montserrat-Mont"> {{ metric.weekly_metric_value }} </div>
+    </div>
+
+    <div class="metric-card-graph">
+        {% for data, value in metric.dict_of_dates_and_percentage_for_graph.items %}
+            <div style="height: {{ value }}%;" class="bar_of_graph">
+            </div>
+        {% endfor %}
+    </div>
+</div>
