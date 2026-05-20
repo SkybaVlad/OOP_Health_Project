@@ -254,6 +254,25 @@ class DairyFacade:
 
         self.current_day.add_burned_calories(burned_calories)
 
+    def add_consumed_calories(self, consumed_calories: float, provided_time_value: str):
+        if self.__is_date_of_activity_greater_than_today(provided_time_value):
+            raise DateOfDayIsGreaterThanTodayError()
+
+        if not self.is_current_day(str(date.today())):
+            self.update_curr_day()
+
+        if provided_time_value != self.current_day.date_of_day:
+            found_day = self.__find_daily_health_with_specific_data(provided_time_value)
+            if found_day:
+                found_day.add_consumed_calories(consumed_calories)
+            else:
+                created_day = self.create_new_health_daily(provided_time_value)
+                created_day.add_consumed_calories(consumed_calories)
+                self.health_diary.add_day(created_day)
+            return
+
+        self.current_day.add_consumed_calories(consumed_calories)
+
     def is_current_day(self, time_value: str) -> bool:
         if time_value == self.current_day.date_of_day:
             return True

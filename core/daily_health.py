@@ -38,6 +38,9 @@ class HealthDaily:
             activity_object.get_end_time_of_specific_activity(),
         )
 
+    def add_consumed_calories(self, consumed_calories) -> None:
+        self.consumed_calories_for_day += consumed_calories
+
     def add_meals(self, meal: Meal) -> None:
         self.list_of_meals_for_day.append(meal)
         self.consumed_calories_for_day += meal.calories

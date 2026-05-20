@@ -106,6 +106,9 @@ class MainFacade:
         """
         self.health_diary_facade.add_count_steps(count_of_steps, _date)
 
+    def add_consumed_calories(self, consumed_calories: int, _date: str) -> None:
+        self.health_diary_facade.add_consumed_calories(consumed_calories, _date)
+
     def add_burned_calories(self, burned_calories: float, _date: str) -> None:
         """This method add count of burned calories to Health Daily object with _date date.
         If _date > str(datetime.date.today()) the DateOfDayIsGreaterThanTodayError() will be raised.
