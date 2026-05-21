@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block css_styles %}
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'activity/activity.css' %}">
 {% endblock %}
 
@@ -14,243 +15,309 @@
 <div class="activity-page">
 
     <header class="activity-header">
-        <div>
+        <div class="header-left">
             <h1>Workouts</h1>
             <p>Track your activity and progress</p>
         </div>
 
         <div class="activity-date">
-            02.02.2026
+            {{ current_date }}
         </div>
 
         <div class="activity-icons">
-            <span>⌕</span>
-            <span>♙</span>
+            <div class="activity-icon-circle">
+                <img src="{% static 'images/Notification.svg' %}" alt="Notification">
+            </div>
+
+            <div class="activity-icon-circle">
+                <img src="{% static 'images/Profile.svg' %}" alt="Profile">
+            </div>
         </div>
     </header>
 
     <section class="activity-grid">
 
         <div class="panel activity-chart-panel">
-            <div class="white-wrapper-color-radius chart-card">
+            <div class="chart-inner">
+                <div class="chart-content-background">
+                    <div class="white-wrapper-color-radius chart-card">
 
-                <div class="card-title-row">
-                    <div>
-                        <h2>Activity period</h2>
-                        <p>Burned calories during the week</p>
-                    </div>
+                        <div class="card-title-row">
+                            <div>
+                                <h2>Activity period</h2>
+                                <p>Calories burned during the selected period</p>
+                            </div>
 
-                    <div class="period-tabs">
-                        <button class="active">1w</button>
-                        <button>1m</button>
-                        <button>1y</button>
-                        <button>Custom</button>
+                            <div class="period-tabs">
+                                <a href="{% url 'activity_overview' %}?period=1w"
+                                   class="{% if active_period == '1w' %}active{% endif %}">
+                                    1w
+                                </a>
+
+                                <a href="{% url 'activity_overview' %}?period=1m"
+                                   class="{% if active_period == '1m' %}active{% endif %}">
+                                    1m
+                                </a>
+
+                                <a href="{% url 'activity_overview' %}?period=1y"
+                                   class="{% if active_period == '1y' %}active{% endif %}">
+                                    1y
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="chart-wrapper">
+                            <div class="y-axis-title">kcal</div>
+
+                            <div class="chart-body">
+
+                                <div class="y-axis">
+                                    {% for label in y_axis_labels %}
+                                        <span>{{ label }}</span>
+                                    {% endfor %}
+                                </div>
+
+                                <div class="chart-content">
+
+                                    <div class="bar-plot">
+                                        {% for day in week_chart %}
+                                            <div class="bar-column">
+                                                <div class="bar" style="height: {{ day.height_px }}px;"></div>
+                                            </div>
+                                        {% empty %}
+                                            <p class="empty-message">No activity data for this period</p>
+                                        {% endfor %}
+                                    </div>
+
+                                    <div class="bar-labels">
+                                        {% for day in week_chart %}
+                                            <span>{{ day.day }}</span>
+                                        {% endfor %}
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+
                     </div>
                 </div>
-
-                <div class="chart-wrapper">
-                    <div class="y-axis">
-                        <span>600</span>
-                        <span>480</span>
-                        <span>360</span>
-                        <span>240</span>
-                        <span>120</span>
-                        <span>0</span>
-                    </div>
-
-                    <div class="bar-chart">
-                        <div class="bar-item">
-                            <div class="bar" style="height: 82%;"></div>
-                            <span>Mon</span>
-                        </div>
-
-                        <div class="bar-item">
-                            <div class="bar" style="height: 52%;"></div>
-                            <span>Tue</span>
-                        </div>
-
-                        <div class="bar-item">
-                            <div class="bar" style="height: 70%;"></div>
-                            <span>Wed</span>
-                        </div>
-
-                        <div class="bar-item">
-                            <div class="bar" style="height: 32%;"></div>
-                            <span>Thu</span>
-                        </div>
-
-                        <div class="bar-item">
-                            <div class="bar" style="height: 80%;"></div>
-                            <span>Fri</span>
-                        </div>
-
-                        <div class="bar-item">
-                            <div class="bar" style="height: 62%;"></div>
-                            <span>Sat</span>
-                        </div>
-
-                        <div class="bar-item">
-                            <div class="bar" style="height: 68%;"></div>
-                            <span>Sun</span>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
 
         <div class="panel statistics-panel">
+            <div class="statistics-inner">
+                <div class="statistics-content">
 
-            <h2>Statistics</h2>
+                    <h2>Statistics</h2>
 
-            <div class="statistics-grid">
+                    <div class="statistics-grid">
 
-                <div class="stat-card">
-                    <div class="stat-icon green-icon">★</div>
-                    <div>
-                        <p>Best calories day</p>
-                        <h3>Monday</h3>
-                        <span>540 kcal</span>
+                        <div class="stat-card">
+                            <div class="stat-icon green-icon">
+                                <img src="{% static 'images/star.svg' %}" alt="Best calorie day">
+                            </div>
+
+                            <div class="stat-content">
+                                <p>Best calorie day</p>
+                                <h3>{{ best_calories_day }}</h3>
+                                <span>{{ best_calories_value }} kcal</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon red-icon">
+                                <img src="{% static 'images/arrow-big-down.svg' %}" alt="Lowest calorie day">
+                            </div>
+
+                            <div class="stat-content">
+                                <p>Lowest calorie day</p>
+                                <h3>{{ lowest_calories_day }}</h3>
+                                <span>{{ lowest_calories_value }} kcal</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon green-icon">
+                                <img src="{% static 'images/dumbbell.svg' %}" alt="Top activity">
+                            </div>
+
+                            <div class="stat-content">
+                                <p>Top activity</p>
+                                <h3>{{ top_activity }}</h3>
+                                <span class="stat-accent">{{ top_activity_calories }} kcal</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon warm-icon">
+                                <img src="{% static 'images/flame.svg' %}" alt="Average calories">
+                            </div>
+
+                            <div class="stat-content">
+                                <p>Average calories</p>
+                                <h3>{{ average_calories }} kcal</h3>
+                                <span>per day</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon purple-icon">
+                                <img src="{% static 'images/footprints.svg' %}" alt="Total steps">
+                            </div>
+
+                            <div class="stat-content">
+                                <p>Total steps</p>
+                                <h3>{{ total_steps }}</h3>
+                                <span>
+                                    {% if active_period == '1w' %}
+                                        this week
+                                    {% elif active_period == '1m' %}
+                                        this month
+                                    {% elif active_period == '1y' %}
+                                        this year
+                                    {% else %}
+                                        selected period
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card">
+                            <div class="stat-icon red-icon">
+                                <img src="{% static 'images/flame.svg' %}" alt="Total calories burned">
+                            </div>
+
+                            <div class="stat-content">
+                                <p>Total calories burned</p>
+                                <h3>{{ total_calories }} kcal</h3>
+                                <span>burned during period</span>
+                            </div>
+                        </div>
+
                     </div>
-                </div>
 
-                <div class="stat-card">
-                    <div class="stat-icon red-icon">↓</div>
-                    <div>
-                        <p>Lowest calories day</p>
-                        <h3>Thursday</h3>
-                        <span>180 kcal</span>
-                    </div>
                 </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon green-icon">↗</div>
-                    <div>
-                        <p>Top activity</p>
-                        <h3>Running</h3>
-                        <span>1320 kcal</span>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon gray-icon">●</div>
-                    <div>
-                        <p>Average calories</p>
-                        <h3>315</h3>
-                        <span>kcal/day</span>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon purple-icon">◒</div>
-                    <div>
-                        <p>Total steps</p>
-                        <h3>45 300</h3>
-                        <span>this week</span>
-                    </div>
-                </div>
-
-                <div class="stat-card">
-                    <div class="stat-icon red-icon">♦</div>
-                    <div>
-                        <p>Total calories</p>
-                        <h3>2210 kcal</h3>
-                        <span>this week</span>
-                    </div>
-                </div>
-
             </div>
-
         </div>
 
         <div class="panel summary-panel">
-            <div class="white-wrapper-color-radius summary-card">
+            <div class="summary-inner">
+                <div class="summary-content-background">
+                    <div class="white-wrapper-color-radius summary-card">
 
-                <h2>Activity summary</h2>
+                        <h2>Activity summary</h2>
 
-                <div class="summary-content">
+                        <div class="summary-content">
 
-                    <div class="summary-text">
-                        <p>
-                            This chart shows how your time is distributed across different activities.
-                        </p>
+                            <div class="summary-text">
+                                <p>
+                                    This chart shows how your time is distributed across different activities.
+                                </p>
 
-                        <p>
-                            Use it to understand your balance and focus on what matters most.
-                        </p>
+                                <p>
+                                    Use it to understand your balance and focus on what matters most.
+                                </p>
+                            </div>
+
+                            <div class="donut-chart" style="background: {{ donut_gradient }};"></div>
+
+                            <div class="legend">
+                                {% for activity in activity_summary %}
+                                    <div class="legend-item">
+                                        <div class="legend-left">
+                                            <span class="legend-dot {{ activity.color_class }}"></span>
+                                            <span class="legend-name">{{ activity.name }}</span>
+                                        </div>
+
+                                        <span class="legend-percent">{{ activity.percent }}%</span>
+                                    </div>
+                                {% empty %}
+                                    <p class="empty-message">No activity summary</p>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+
                     </div>
-
-                    <div class="vertical-line"></div>
-
-                    <div class="donut-chart"></div>
-
-                    <div class="legend">
-                        <div>
-                            <span class="legend-dot green-dot"></span>
-                            Running
-                        </div>
-
-                        <div>
-                            <span class="legend-dot purple-dot"></span>
-                            Gym
-                        </div>
-
-                        <div>
-                            <span class="legend-dot blue-dot"></span>
-                            Swimming
-                        </div>
-
-                        <div>
-                            <span class="legend-dot gray-dot"></span>
-                            Volleyball
-                        </div>
-                    </div>
-
                 </div>
-
             </div>
         </div>
 
         <div class="panel add-workout-panel">
-            <div class="white-wrapper-color-radius add-workout-card">
+            <div class="add-workout-inner">
+                <div class="add-workout-content-background">
+                    <div class="white-wrapper-color-radius add-workout-card">
 
-                <h2>Add workout data</h2>
+                        <h2>Add workout data</h2>
 
-                <form class="workout-form">
+                        <form class="workout-form" method="post">
+                            {% csrf_token %}
 
-                    <div class="form-grid">
+                            <div class="form-grid">
 
-                        <label class="input-box">
-                            <span>↗</span>
-                            <input type="text" placeholder="Activity name">
-                        </label>
+                                <label class="input-box">
+                                    <span class="input-icon">
+                                        <img src="{% static 'images/dumbbell.svg' %}" alt="Activity name">
+                                    </span>
 
-                        <label class="input-box">
-                            <span>◒</span>
-                            <input type="number" placeholder="Steps">
-                        </label>
+                                    <div class="input-content">
+                                        <span class="input-label">Activity name</span>
+                                        <input type="text" name="activity_name" placeholder="Enter activity">
+                                    </div>
+                                </label>
 
-                        <label class="input-box">
-                            <span>◷</span>
-                            <input type="number" placeholder="Duration (min)">
-                        </label>
+                                <label class="input-box">
+                                    <span class="input-icon">
+                                        <img src="{% static 'images/calendar.svg' %}" alt="Date">
+                                    </span>
 
-                        <label class="input-box">
-                            <span>▣</span>
-                            <input type="date">
-                        </label>
+                                    <div class="input-content">
+                                        <span class="input-label">Date</span>
+                                        <input type="date" name="date_of_activity">
+                                    </div>
+                                </label>
 
-                        <label class="input-box">
-                            <span>♦</span>
-                            <input type="number" placeholder="Burned calories">
-                        </label>
+                                <label class="input-box">
+                                    <span class="input-icon">
+                                        <img src="{% static 'images/clock.svg' %}" alt="Start time">
+                                    </span>
+
+                                    <div class="input-content">
+                                        <span class="input-label">Start time</span>
+                                        <input type="time" name="start_time">
+                                    </div>
+                                </label>
+
+                                <label class="input-box">
+                                    <span class="input-icon">
+                                        <img src="{% static 'images/clock.svg' %}" alt="End time">
+                                    </span>
+
+                                    <div class="input-content">
+                                        <span class="input-label">End time</span>
+                                        <input type="time" name="end_time">
+                                    </div>
+                                </label>
+
+                                <label class="input-box burned-calories-input">
+                                    <span class="input-icon">
+                                        <img src="{% static 'images/flame.svg' %}" alt="Burned calories">
+                                    </span>
+
+                                    <div class="input-content">
+                                        <span class="input-label">Burned calories</span>
+                                        <input type="number" name="burned_calories" placeholder="Enter calories">
+                                    </div>
+                                </label>
+
+                            </div>
+
+                            <button type="submit">Add activity</button>
+                        </form>
 
                     </div>
-
-                    <button type="submit">Add activity</button>
-
-                </form>
-
+                </div>
             </div>
         </div>
 

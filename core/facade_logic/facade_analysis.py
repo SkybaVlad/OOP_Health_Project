@@ -44,12 +44,20 @@ class FacadeAnalysis:
         self.daily_analyzer.set_user_info(user_obj)
 
         self.activity_analyzer = ActivityAnalyzer()
+
+        days_in_period = get_list_of_days_in_some_period(
+            start_time,
+            end_time,
+            list_of_days,
+        )
+
+        activities_in_period = get_list_of_activities_from_days(days_in_period)
+
         self.activity_analyzer.load_default_values_to_initialize(
             start_time,
             end_time,
-            get_list_of_activities_from_days(
-                get_list_of_days_in_some_period(start_time, end_time, list_of_days)
-            ),
+            activities_in_period,
+            days_in_period,
         )
 
         self.days_container = health_diary
@@ -87,15 +95,24 @@ class FacadeAnalysis:
         return dict_of_res
 
     def get_result_of_activity_analysis(
-        self, start_time: str | None, end_time: str | None
+            self, start_time: str | None, end_time: str | None
     ):
         if start_time is None and end_time is None:
-            self.activity_analyzer.set_period(
-                self.days_container.get_first_day().date_of_day,
-                str(datetime.date.today()),
-            )
-        else:
-            self.activity_analyzer.set_period(start_time, end_time)
+            start_time = self.days_container.get_first_day().date_of_day
+            end_time = str(datetime.date.today())
+
+        days_in_period = get_list_of_days_in_some_period(
+            start_time,
+            end_time,
+            self.days_container.get_history_of_days(),
+        )
+
+        activities_in_period = get_list_of_activities_from_days(days_in_period)
+
+        self.activity_analyzer.set_period(start_time, end_time)
+        self.activity_analyzer.set_list_of_days(days_in_period)
+        self.activity_analyzer.set_list_of_activities(activities_in_period)
+
         return self.activity_analyzer.get_result_of_analysis()
 
     def get_result_of_medication_analysis(
