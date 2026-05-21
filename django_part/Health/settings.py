@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "Sleep",
     "User",
     "accounts",
+    "DailyTracking",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

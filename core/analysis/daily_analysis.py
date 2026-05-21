@@ -173,4 +173,6 @@ class HealthDailyAnalyzer:
             "step_goal": self.health_daily.step_goal_on_day,
             "burned_calories_goal": self.health_daily.burned_calories_goal_on_day,
             "consumed_calories_goal": self.health_daily.consumed_calories_goal_on_day,
+            "sleep_duration_goal": self.health_daily.sleep_duration_goal_on_day,
+            "activity_time_goal": self.health_daily.activity_time_goal_on_day,
         }

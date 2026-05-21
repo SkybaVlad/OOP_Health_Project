@@ -72,6 +72,7 @@ class FacadeAnalysis:
     def get_result_of_analyze_some_period(self, start_time: str, end_time: str):
         self.some_period_analyzer.set_period_of_time(start_time, end_time)
         self.some_period_analyzer.set_list_of_days(
+            # get history of all days
             self.days_container.get_history_of_days()
         )
         return self.some_period_analyzer.get_result_of_analyze_some_period()

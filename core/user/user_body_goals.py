@@ -13,6 +13,8 @@ class UserBodyDailyGoals:
         self.consumed_calories_goal = 0
         self.burned_calories_goal = 0
         self.step_goal = 0
+        self.sleep_duration_goal = 0
+        self.activity_time_goal = 0
 
     def set_water_goal(self, user_water_goal: float):
         self.water_goal = user_water_goal
@@ -37,6 +39,18 @@ class UserBodyDailyGoals:
 
     def get_step_goal(self) -> float:
         return self.step_goal
+
+    def set_sleep_duration_goal(self, sleep_duration_goal: float):
+        self.sleep_duration_goal = sleep_duration_goal
+
+    def get_sleep_duration_goal(self) -> float:
+        return self.sleep_duration_goal
+
+    def set_activity_time_goal(self, activity_time_goal: float):
+        self.activity_time_goal = activity_time_goal
+
+    def get_activity_time_goal(self) -> float:
+        return self.activity_time_goal
 
 
 class DefaultUserBodyGoals:

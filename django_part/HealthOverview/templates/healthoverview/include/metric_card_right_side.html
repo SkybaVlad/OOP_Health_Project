@@ -18,7 +18,7 @@
     </div>
 
     <div class="metric-card-graph">
-        {% for data, value in metric.dict_of_dates_and_percentage_for_graph.items %}
+        {% for value in metric.dict_of_dates_and_percentage_for_graph %}
             <div style="height: {{ value }}%;" class="bar_of_graph">
             </div>
         {% endfor %}

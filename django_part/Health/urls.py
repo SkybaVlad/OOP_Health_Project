@@ -25,6 +25,7 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path("dashboard/", include("HealthOverview.urls")),
     path("activity/", include("Activity.urls")),
+    path("daily-tracking/", include("DailyTracking.urls")),
     # path("medications/", include("Medications.urls")),
     # path("nutrition/", include("Nutrition.urls")),
     # path("goals/", include("Goals.urls")),

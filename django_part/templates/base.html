@@ -10,43 +10,106 @@
         <title>Document</title>
     {% endblock %}
 
-    <link rel="stylesheet" href="{% static "base_styles.css" %}">
+    <link rel="stylesheet" href="{% static 'base_styles.css' %}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600&display=swap" rel="stylesheet">
+
     {% block css_styles %}
-
     {% endblock %}
-
 </head>
-    <body>
-        <div class="main_page">
-            <div class="side-bar">
 
-                <div class="project-name">
-                    <h1>
-                        Health
-                    </h1>
-                    <hr>
+<body>
+    <div class="main_page">
+
+        <aside class="side-bar">
+
+            <div class="project-name">
+                <div class="project-logo">H</div>
+
+                <div class="project-text">
+                    <h1>Health</h1>
+                    <p>Personal tracker</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <ul class="list-of-options">
+
+                    <li>
+                        <a href="{% url 'dashboard' %}" class="sidebar-link">
+                            <span class="sidebar-icon">D</span>
+                            <span class="sidebar-text">Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'activity_overview' %}" class="sidebar-link">
+                            <span class="sidebar-icon">A</span>
+                            <span class="sidebar-text">Activity</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" class="sidebar-link">
+                            <span class="sidebar-icon">N</span>
+                            <span class="sidebar-text">Nutrition</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'analyses' %}" class="sidebar-link">
+                            <span class="sidebar-icon">S</span>
+                            <span class="sidebar-text">Analyses</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="{% url 'daily_tracking' %}" class="sidebar-link">
+                            <span class="sidebar-icon">T</span>
+                            <span class="sidebar-text">Daily Tracking</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" class="sidebar-link">
+                            <span class="sidebar-icon">G</span>
+                            <span class="sidebar-text">Goals</span>
+                        </a>
+                    </li>
+
+                </ul>
+
+                <div class="sidebar-bottom">
+                    <div class="sidebar-user-card">
+                        <div class="sidebar-user-avatar">M</div>
+
+                        <div class="sidebar-user-info">
+                            <div class="sidebar-user-name">Maks</div>
+                            <div class="sidebar-user-role">User</div>
+                        </div>
+                    </div>
+
+                    <form method="post" action="{% url 'logout' %}" class="logout-form">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-button">
+                            Log out
+                        </button>
+                    </form>
                 </div>
 
-                <nav>
-                    <ul class="list-of-options montserrat-Mont">
-                        <li><a href="{% url "dashboard" %}">Dashboard</a></li>
-                        <li><a href="{% url "activity_overview" %}">Activity</a></li>
-                        <li><a href="#">Nutrition</a></li>
-                        <li><a href="{% url "analyses" %}">Analyses</a></li>
-                        <li><a href="#">Goals</a></li>
-                        <li><a href="#">Water</a></li>
-                        <li><a href="#">Sleep</a></li>
-                    </ul>
-                    <form method="post" action="{% url "logout" %}">
-                        {% csrf_token %}
-                        <button type="submit">Log out</button>
-                    </form>
-                </nav>
-            </div>
-            <div class="content-block">
-                {% block body_content %}
-                {% endblock %}
-            </div>
-        </div>
-    </body>
+            </nav>
+
+        </aside>
+
+        <main class="content-block">
+            {% block body_content %}
+            {% endblock %}
+        </main>
+
+    </div>
+</body>
 </html>

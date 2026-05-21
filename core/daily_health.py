@@ -29,6 +29,8 @@ class HealthDaily:
         self.burned_calories_goal_on_day: float = 0.0
         self.consumed_calories_goal_on_day: float = 0.0
         self.step_goal_on_day: float = 0.0
+        self.sleep_duration_goal_on_day: float = 0.0
+        self.activity_time_goal_on_day: float = 0.0
 
     def add_activity(self, activity_object: SpecificActivityType) -> None:
         self.list_of_activities_for_day.append(activity_object)
@@ -77,10 +79,18 @@ class HealthDaily:
     ) -> None:
         self.burned_calories_goal_on_day = burned_calories_goal_for_day
 
+    def set_sleep_duration_goal_on_day(
+        self, sleep_duration_goal_for_day: float
+    ) -> None:
+        self.sleep_duration_goal_on_day = sleep_duration_goal_for_day
+
     def set_consumed_calories_goal_on_day(
         self, consumed_calories_goal_for_day: float
     ) -> None:
         self.consumed_calories_goal_on_day = consumed_calories_goal_for_day
+
+    def set_activity_time_goal_on_day(self, activity_time_goal_for_day: float) -> None:
+        self.activity_time_goal_on_day = activity_time_goal_for_day
 
     def set_step_goal_on_day(self, step_goal_on_day: float) -> None:
         self.step_goal_on_day = step_goal_on_day

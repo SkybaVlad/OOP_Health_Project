@@ -1,23 +1,291 @@
 {% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+    <title>Analyses</title>
+{% endblock %}
+
+{% block css_styles %}
+    <link rel="stylesheet" href="{% static 'reusable_classes.css' %}">
+    <link rel="stylesheet" href="{% static 'analyses/analyses.css' %}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital@0;1&display=swap" rel="stylesheet">
+{% endblock %}
 
 {% block body_content %}
 
-    <div class="analyses-block">
-        <div class="analyses-header">
-            <form method="GET" action="/analyses/">
+<div class="analyses-page">
 
-                <label>
-                    <input type="text"  placeholder="Enter start date" name="start-date">
-                </label>
-                <label>
-                    <input type="text"  placeholder="Enter end date" name="end-date">
-                </label>
+    <div class="analyses-top-bar">
+        <form method="get" class="period-form">
+            <input class="period-input inter-Inter" type="date" name="start_date">
+            <input class="period-input inter-Inter" type="date" name="end_date">
 
-                <button type="submit">Set</button>
-            </form>
-        </div>
-        <div class="analyses-body">
-
-        </div>
+            <button class="period-button montserrat-Mont" type="submit">
+                Set your own period for analysis
+            </button>
+        </form>
     </div>
+
+    <div class="analyses-title">
+        <h2>Statistics</h2>
+    </div>
+
+    <div class="analyses-main-grid">
+
+        <div class="panel">
+            <div class="white-wrapper-color-radius">
+                <div class="chart-card">
+
+                    <div class="chart-card-header">
+                        <div class="chart-title montserrat-Mont">Calories Over Time</div>
+
+                        <div class="chart-legend">
+                            <div class="legend-item inter-Inter">
+                                <span class="legend-line intake-line"></span>
+                                Intake
+                            </div>
+
+                            <div class="legend-item inter-Inter">
+                                <span class="legend-line burned-line"></span>
+                                Burned
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-with-axis">
+
+                        <div class="y-axis-labels inter-Inter">
+                            {% for label in calories_chart.y_labels %}
+                                <span>{{ label }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="line-chart">
+                            {% for label in calories_chart.y_labels %}
+                                <div class="chart-grid-line"></div>
+                            {% endfor %}
+
+                            <svg class="chart-svg" viewBox="0 0 300 150" preserveAspectRatio="none">
+                                <polyline class="intake-polyline"
+                                          points="{{ calories_chart.intake_values }}">
+                                </polyline>
+
+                                <polyline class="burned-polyline"
+                                          points="{{ calories_chart.burned_values }}">
+                                </polyline>
+                            </svg>
+
+                            <div class="chart-days inter-Inter">
+                                {% for day in calories_chart.days %}
+                                    <span>{{ day }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="white-wrapper-color-radius">
+                <div class="chart-card">
+
+                    <div class="chart-card-header">
+                        <div class="chart-title montserrat-Mont">Weight Trend</div>
+                    </div>
+
+                    <div class="chart-with-axis">
+
+                        <div class="y-axis-labels inter-Inter">
+                            {% for label in weight_chart.y_labels %}
+                                <span>{{ label }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="line-chart">
+                            {% for label in weight_chart.y_labels %}
+                                <div class="chart-grid-line"></div>
+                            {% endfor %}
+
+                            <svg class="chart-svg" viewBox="0 0 300 150" preserveAspectRatio="none">
+                                <polyline class="weight-polyline"
+                                          points="{{ weight_chart.values }}">
+                                </polyline>
+                            </svg>
+
+                            <div class="chart-days inter-Inter">
+                                {% for day in weight_chart.days %}
+                                    <span>{{ day }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="white-wrapper-color-radius">
+                <div class="burned-summary-card">
+
+                    <div class="circle-progress-column">
+
+                        <div class="circle-progress">
+                            <div class="circle-progress-text">
+                                <span class="inter-Inter">Avg burned<br>cal / goal</span>
+                                <strong class="montserrat-Mont">
+                                    {{ burned_calories_summary.avg_burned_percent }}%
+                                </strong>
+                            </div>
+                        </div>
+
+                        <div class="circle-progress second-progress">
+                            <div class="circle-progress-text">
+                                <span class="inter-Inter">Total burned<br>cal / goal</span>
+                                <strong class="montserrat-Mont">
+                                    {{ burned_calories_summary.total_burned_percent }}%
+                                </strong>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="bar-chart-column">
+
+                        <div class="small-bar-title montserrat-Mont">Burned Calories</div>
+
+                        <div class="mini-bar-chart">
+                            {% for value in burned_calories_summary.daily_values_percent %}
+                                <div class="mini-bar main-bar" style="height: {{ value }}%;"></div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mini-bar-days inter-Inter">
+                            {% for day in burned_calories_summary.days %}
+                                <span>{{ day }}</span>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="panel bottom-left-panel">
+            <div class="white-wrapper-color-radius">
+                <div class="small-stat-grid">
+                    {% for stat in small_statistics %}
+                        <div class="small-stat-item">
+                            <div class="grey-square"></div>
+
+                            <div class="small-stat-title inter-Inter">
+                                {{ stat.title }}
+                            </div>
+
+                            <div class="small-stat-value montserrat-Mont">
+                                {{ stat.value }} {{ stat.unit }}
+                            </div>
+
+                            <div class="small-stat-change inter-Inter">
+                                {% if stat.change > 0 %}
+                                    +{{ stat.change }}%
+                                {% else %}
+                                    {{ stat.change }}%
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="panel bottom-right-panel">
+            <div class="white-wrapper-color-radius">
+                <div class="large-summary-card">
+
+                    <div class="summary-top-row">
+
+                        <div class="streak-block">
+                            <div class="streak-title inter-Inter">Day Streak</div>
+
+                            <div class="streak-circle">
+                                <div class="streak-number montserrat-Mont">
+                                    {{ summary.day_streak }}
+                                </div>
+                                <div class="streak-days inter-Inter">days</div>
+                            </div>
+
+                            <div class="streak-note inter-Inter">Keep it up!</div>
+                        </div>
+
+                        <div class="summary-metric">
+                            <div class="summary-metric-title inter-Inter">Avg Fat value</div>
+                            <div class="summary-metric-value montserrat-Mont">
+                                {{ summary.avg_fat }}%
+                            </div>
+                        </div>
+
+                        <div class="summary-metric">
+                            <div class="summary-metric-title inter-Inter">Avg BMR value</div>
+                            <div class="summary-metric-value montserrat-Mont">
+                                {{ summary.avg_bmr }}
+                            </div>
+                            <div class="summary-metric-unit inter-Inter">kcal</div>
+                        </div>
+
+                        <div class="summary-metric">
+                            <div class="summary-metric-title inter-Inter">Avg BMI value</div>
+                            <div class="summary-metric-value montserrat-Mont">
+                                {{ summary.avg_bmi }}
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="chart-with-axis large-chart-with-axis">
+
+                        <div class="y-axis-labels inter-Inter">
+                            {% for label in body_metric_chart.y_labels %}
+                                <span>{{ label }}</span>
+                            {% endfor %}
+                        </div>
+
+                        <div class="large-line-chart">
+                            {% for label in body_metric_chart.y_labels %}
+                                <div class="chart-grid-line"></div>
+                            {% endfor %}
+
+                            <svg class="chart-svg" viewBox="0 0 600 150" preserveAspectRatio="none">
+                                <polyline class="weight-polyline"
+                                          points="{{ body_metric_chart.values }}">
+                                </polyline>
+                            </svg>
+
+                            <div class="chart-days inter-Inter">
+                                {% for day in body_metric_chart.days %}
+                                    <span>{{ day }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
 {% endblock %}

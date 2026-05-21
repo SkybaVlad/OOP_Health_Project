@@ -44,6 +44,8 @@ class DailyObjectDTO:
     step_goal: float
     burned_calories_goal: float
     consumed_calories_goal: float
+    sleep_duration_goal: float
+    activity_time_goal: float
 
 
 class SomePeriodAnalyzer:

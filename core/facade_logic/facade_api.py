@@ -115,6 +115,9 @@ class MainFacade:
         """
         self.health_diary_facade.add_burned_calories(burned_calories, _date)
 
+    def add_meal(self, meal_name):
+        pass
+
     def change_age(self, age: int) -> None:
         """This method change user age in User class"""
         # validate value of age , if < 15 or > 100 error or if less than curr age
@@ -125,6 +128,12 @@ class MainFacade:
         value will be used in daily analyzer class to analyze daily result"""
         self.user_body_daily_goals.set_burned_calories_goal(calories)
         self.health_diary_facade.current_day.set_burned_calories_goal_on_day(calories)
+
+    def set_activity_time_goal(self, activity_time_goal: float) -> None:
+        self.user_body_daily_goals.set_activity_time_goal(activity_time_goal)
+        self.health_diary_facade.current_day.set_activity_time_goal_on_day(
+            activity_time_goal
+        )
 
     def set_water_goal(self, water: float):
         """This method set user-defined value of water goal. This
@@ -145,6 +154,12 @@ class MainFacade:
         value will be used in daily analyzer class to analyze daily result"""
         self.user_body_daily_goals.set_step_goal(step_goal)
         self.health_diary_facade.current_day.set_step_goal_on_day(step_goal)
+
+    def set_sleep_duration_goal(self, sleep_duration_goal: float):
+        self.user_body_daily_goals.set_sleep_duration_goal(sleep_duration_goal)
+        self.health_diary_facade.current_day.set_sleep_duration_goal_on_day(
+            sleep_duration_goal
+        )
 
     def get_today_results(self) -> DailyObjectDTO:
         """This method responsible for analyze metrics of current day (current day that in DairyFacade class).

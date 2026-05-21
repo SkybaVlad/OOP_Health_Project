@@ -6,11 +6,11 @@
 {% endblock %}
 
 {% block css_styles %}
-    <link rel="stylesheet" href="{% static "healthoverview/health_overview.css" %}">
+    <link rel="stylesheet" href="{% static 'healthoverview/health_overview.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="stylesheet" href="{% static "healthoverview/metric_card_left_side.css" %}">
-    <link rel="stylesheet" href="{% static "healthoverview/metric_card_right_side.css" %}">
-    <link rel="stylesheet" href="{% static "reusable_classes" %}">
+    <link rel="stylesheet" href="{% static 'healthoverview/metric_card_left_side.css' %}">
+<link rel="stylesheet" href="{% static 'healthoverview/metric_card_right_side.css' %}">   <link rel="stylesheet" href="{% static "healthoverview/metric_card_right_side.css" %}">
+    <link rel="stylesheet" href="{% static 'reusable_classes.css' %}">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
@@ -36,7 +36,9 @@
 
                         <div class="user-info">
 
-                            <div class="user-avatar">Here</div>
+                            <div class="user-avatar">
+                                {{ user_data.get_name|first }}{{ user_data.get_surname|first }}
+                            </div>
 
                             <div class="montserrat-Username user_name">{{ user_data.get_name }} {{ user_data.get_surname }}</div>
 
@@ -56,14 +58,18 @@
 
                     <div class="panel">
                         <div class="white-wrapper-color-radius">
-                            <div class="meals">
-                                {% if meal|length != 0 %}
-                                    {% for meal in meal %}
-                                        <p>{{ meal }}</p>
-                                    {% endfor %}
-                                {% else %}
-                                    <p>No meals today</p>
-                                {% endif %}
+                            <div class="small-dashboard-section">
+                                <div class="section-title montserrat-Mont">Meals</div>
+
+                                <div class="section-body-centered meals">
+                                    {% if meal|length != 0 %}
+                                        {% for meal in meal %}
+                                            <p>{{ meal }}</p>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="empty-block-text">No meals today</p>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -74,7 +80,7 @@
                         <div class="white-wrapper-color-radius">
                             <div class="today-sport-list">
                                 <div class="today-sport-list-header">
-                                    <div class="inter-Inter">Today activity</div>
+                                    <div class="montserrat-Mont">Today activity</div>
                                 </div>
 
                                 <div class="today-sport-list-body">
@@ -86,7 +92,7 @@
                                             </div>
                                         {% endfor %}
                                     {% else %}
-                                        <div>No activities today</div>
+                                        <div class="empty-block-text">No activities today</div>
                                     {% endif %}
                                 </div>
                             </div>
@@ -94,13 +100,14 @@
 
                         <div class="white-wrapper-color-radius">
                             <div class="sport-circle">
-                                {% if activity|length != 0 %}
-                                    {% for activity in activity %}
-                                        <p>{{ activity.activity_name }}</p>
-                                    {% endfor %}
-                                {% else %}
-                                    <p>No activities today</p>
-                                {% endif %}
+                                <div class="activity-summary">
+                                    <div class="activity-summary-number montserrat-Mont">
+                                        {{ activity|length }}
+                                    </div>
+                                    <div class="activity-summary-text inter-Inter">
+                                        activities today
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -108,14 +115,18 @@
 
                 <div class="panel">
                     <div class="white-wrapper-color-radius">
-                        <div class="medications">
-                            {% if medication|length != 0 %}
-                                {% for medication in medication %}
-                                    <p>{{ medication.name }}</p>
-                                {% endfor %}
-                            {% else %}
-                            <p>No medication is taken</p>
-                            {% endif %}
+                        <div class="medications-section">
+                            <div class="section-title montserrat-Mont">Medications</div>
+
+                            <div class="medications">
+                                {% if medication|length != 0 %}
+                                    {% for medication in medication %}
+                                        <p>{{ medication.name }}</p>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="empty-block-text">No medication is taken</p>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
                 </div>
