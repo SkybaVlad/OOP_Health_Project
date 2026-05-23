@@ -24,6 +24,23 @@ def create_facade_obj(user_obj: core.User) -> MainFacade:
     return facade
 
 
+facades_by_user = {}
+demo_data_initialized = set()
+
+
+def get_or_create_facade(request) -> MainFacade:
+    user_key = str(request.user)
+
+    if user_key not in facades_by_user:
+        user = create_user_obj(request.user)
+        facade = create_facade_obj(user)
+
+        add_demo_data_to_test_the_system(facade)
+
+        facades_by_user[user_key] = facade
+
+    return facades_by_user[user_key]
+
 from random import Random
 import datetime
 
@@ -422,7 +439,21 @@ def get_weekly_health_overview(facade: MainFacade) -> dict[str, Any]:
     return weekly_result
 
 
-def get_metrics_info_for_left_side_dashboard_metrics(daily_result):
+def get_medication_names_for_health_overview(facade):
+    receipts = facade.get_list_of_all_available_receipts()
+
+    medication_names = []
+
+    for receipt in receipts:
+        for medication_obj in receipt.dict_of_medications_in_receipt.keys():
+            medication_names.append(medication_obj.name)
+
+    return medication_names
+
+
+def get_metrics_info_for_left_side_dashboard_metrics(daily_result, facade):
+    medication_names = get_medication_names_for_health_overview(facade)
+    activity_names = get_activity_names_for_health_overview(facade)
 
     return {
         "UserBodyMetrics": {
@@ -433,11 +464,26 @@ def get_metrics_info_for_left_side_dashboard_metrics(daily_result):
             "LBMI": round(daily_result.lean_body_mass_index, 2),
             "Fat": f"{round(daily_result.fat_mass, 2)} %",
         },
-        "Activities": daily_result.activity,
-        "Medications": daily_result.medication,
+        "Activities": activity_names,
+        "Medications": medication_names,
         "Meals": daily_result.meal,
     }
 
+def get_activity_names_for_health_overview(facade):
+    daily_result = facade.get_today_results()
+
+    activity_names = []
+
+    if daily_result.activity is None:
+        return activity_names
+
+    for activity_obj in daily_result.activity:
+        if hasattr(activity_obj, "activity_name"):
+            activity_names.append(activity_obj.activity_name)
+        else:
+            activity_names.append(str(activity_obj))
+
+    return activity_names
 
 def get_information_for_graph(list_of_values: dict):
     max_value = max(list_of_values)
@@ -536,9 +582,7 @@ def health_overview(request: HttpRequest) -> HttpResponse:
 
     user = create_user_obj(request.user)
 
-    facade = create_facade_obj(user)
-
-    add_demo_data_to_test_the_system(facade)
+    facade = get_or_create_facade(request)
 
     daily_results = get_daily_health_overview(facade)
     weekly_results = get_weekly_health_overview(facade)
@@ -550,7 +594,10 @@ def health_overview(request: HttpRequest) -> HttpResponse:
 
     # get data for left-side part of html
     metrics_info_for_left_side_dashboard: dict = (
-        get_metrics_info_for_left_side_dashboard_metrics(daily_results)
+        get_metrics_info_for_left_side_dashboard_metrics(
+            daily_results,
+            facade,
+        )
     )
 
     return render(

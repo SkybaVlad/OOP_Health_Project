@@ -7,13 +7,15 @@
     padding: 28px 24px 36px 24px;
     color: #141414;
     font-family: "Montserrat", Arial, sans-serif;
+    overflow-x: hidden;
 }
 
 .activity-header {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    margin-bottom: 20px;
+    column-gap: 24px;
+    margin-bottom: 22px;
 }
 
 .header-left {
@@ -25,7 +27,6 @@
     font-size: 24px;
     font-weight: 600;
     line-height: normal;
-    letter-spacing: 0;
     color: #000000;
 }
 
@@ -41,66 +42,42 @@
     justify-self: center;
     font-size: 24px;
     font-weight: 600;
-    line-height: normal;
     color: #000000;
-}
-
-.activity-icons {
-    justify-self: end;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.activity-icon-circle {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.activity-icon-circle img {
-    width: 22px;
-    height: 22px;
-    object-fit: contain;
-    display: block;
+    white-space: nowrap;
 }
 
 .activity-grid {
+    width: 100%;
     display: grid;
-    grid-template-columns: minmax(600px, 1.1fr) minmax(500px, 1fr);
+    grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
     grid-template-rows: minmax(410px, auto) minmax(430px, auto);
     gap: 18px;
+    align-items: stretch;
 }
 
 .activity-chart-panel,
 .statistics-panel,
 .summary-panel,
 .add-workout-panel {
+    min-width: 0;
+    max-width: 100%;
     box-sizing: border-box;
-    overflow: visible;
+    overflow: hidden;
 }
 
 .chart-inner,
+.statistics-inner,
 .summary-inner,
 .add-workout-inner {
     width: 100%;
     height: 100%;
+    min-width: 0;
+    max-width: 100%;
     box-sizing: border-box;
     padding: 12px;
     border-radius: 22px;
     background-color: #D7ECFF;
-}
-
-.statistics-inner {
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    padding: 12px;
-    border-radius: 22px;
-    background-color: #D7ECFF;
+    overflow: hidden;
 }
 
 .chart-content-background,
@@ -109,28 +86,39 @@
 .add-workout-content-background {
     width: 100%;
     height: 100%;
+    min-width: 0;
+    max-width: 100%;
     box-sizing: border-box;
     padding: 16px;
     border-radius: 18px;
     background-color: #EAF5FF;
+    overflow: hidden;
 }
 
 .chart-card,
 .summary-card,
 .add-workout-card {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     min-height: 100%;
-    height: auto;
     box-sizing: border-box;
     padding: 20px 24px;
     background-color: #FFFDFD;
     border-radius: 16px;
+    overflow: hidden;
 }
 
 .card-title-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    gap: 16px;
     margin-bottom: 16px;
+}
+
+.card-title-text {
+    min-width: 0;
 }
 
 .card-title-row h2,
@@ -139,7 +127,6 @@
     margin: 0;
     font-size: 22px;
     font-weight: 600;
-    line-height: normal;
     color: #000000;
 }
 
@@ -152,6 +139,7 @@
 }
 
 .period-tabs {
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -165,7 +153,6 @@
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    font-style: normal;
     font-size: 13px;
     font-weight: 600;
     color: #000000;
@@ -178,8 +165,12 @@
 }
 
 .chart-wrapper {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     height: 245px;
     background-color: #FFFDFD;
+    overflow: hidden;
 }
 
 .y-axis-title {
@@ -190,10 +181,14 @@
 }
 
 .chart-body {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     height: 210px;
     display: grid;
-    grid-template-columns: 48px 1fr;
-    gap: 6px;
+    grid-template-columns: 50px minmax(0, 1fr);
+    gap: 10px;
+    overflow: hidden;
 }
 
 .y-axis {
@@ -208,21 +203,29 @@
 }
 
 .chart-content {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     height: 210px;
     display: grid;
     grid-template-rows: 185px 25px;
+    overflow: hidden;
 }
 
 .bar-plot {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     height: 185px;
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    gap: 18px;
+    gap: 8px;
     background-color: #FFFDFD;
     position: relative;
     padding: 0 10px;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .bar-plot::before {
@@ -234,8 +237,8 @@
     height: 185px;
     background-image: linear-gradient(
         to bottom,
-        #EEF1F4 0,
-        #EEF1F4 1px,
+        #F0F3F6 0,
+        #F0F3F6 1px,
         transparent 1px,
         transparent 37px
     );
@@ -258,37 +261,48 @@
 }
 
 .bar-column {
-    width: 48px;
+    min-width: 0;
+    flex: 1 1 0;
     height: 185px;
     display: flex;
     align-items: flex-end;
     justify-content: center;
     position: relative;
     z-index: 2;
+    overflow: hidden;
 }
 
 .bar {
-    width: 34px;
+    width: min(30px, 70%);
+    max-width: 30px;
     min-height: 0;
     background-color: #8AAD08;
-    border-radius: 10px 10px 3px 3px;
+    border-radius: 9px 9px 3px 3px;
 }
 
 .bar-labels {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     height: 25px;
     display: flex;
     justify-content: space-between;
-    gap: 18px;
+    gap: 8px;
     padding: 6px 10px 0 10px;
     box-sizing: border-box;
+    overflow: hidden;
 }
 
 .bar-labels span {
-    width: 48px;
+    min-width: 0;
+    flex: 1 1 0;
     text-align: center;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
     color: #000000;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .statistics-content {
@@ -299,7 +313,6 @@
     margin: 0 0 18px 0;
     font-size: 22px;
     font-weight: 600;
-    line-height: normal;
     color: #000000;
 }
 
@@ -314,19 +327,20 @@
     min-height: 104px;
     background-color: #FFFFFF;
     border-radius: 16px;
-    padding: 16px 18px;
+    padding: 16px;
     box-sizing: border-box;
     display: grid;
-    grid-template-columns: 52px 1fr;
+    grid-template-columns: 50px minmax(0, 1fr);
     align-items: center;
     column-gap: 14px;
     border: 1px solid #EEF2F5;
     box-shadow: 0 6px 18px rgba(127, 154, 173, 0.08);
+    overflow: hidden;
 }
 
 .stat-icon {
-    width: 52px;
-    height: 52px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -357,6 +371,7 @@
 }
 
 .stat-content {
+    min-width: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -370,21 +385,39 @@
     line-height: 1.2;
     color: #AEA8A8;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .stat-content h3 {
     margin: 0 0 5px 0;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 700;
     line-height: 1.2;
     color: #000000;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.stat-date {
+    font-size: 12px;
+    font-weight: 600;
+    color: #AEA8A8;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .stat-content span {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 500;
     line-height: 1.2;
     color: #AEA8A8;
+    max-width: 100%;
 }
 
 .stat-accent {
@@ -396,7 +429,7 @@
     margin-top: 18px;
     min-height: 245px;
     display: grid;
-    grid-template-columns: 1fr 175px 1fr;
+    grid-template-columns: minmax(0, 1fr) 175px minmax(0, 1fr);
     gap: 24px;
     align-items: center;
 }
@@ -433,6 +466,7 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
+    min-width: 0;
 }
 
 .legend-item {
@@ -443,6 +477,7 @@
 }
 
 .legend-left {
+    min-width: 0;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -452,6 +487,9 @@
     font-size: 14px;
     font-weight: 500;
     color: #000000;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .legend-percent {
@@ -506,7 +544,7 @@
     border-radius: 14px;
     padding: 0 18px;
     display: grid;
-    grid-template-columns: 24px 1fr;
+    grid-template-columns: 24px minmax(0, 1fr);
     align-items: center;
     column-gap: 14px;
     box-sizing: border-box;
@@ -600,7 +638,6 @@
 
 .workout-form button {
     display: block;
-    grid-column: 1 / -1;
     width: 100%;
     height: 52px;
     margin: 24px auto 0 auto;
@@ -638,49 +675,34 @@
     }
 
     .activity-grid {
-        grid-template-columns: minmax(520px, 1.05fr) minmax(430px, 1fr);
-        grid-template-rows: minmax(410px, auto) minmax(440px, auto);
-    }
-
-    .bar-plot,
-    .bar-labels {
-        gap: 14px;
-    }
-
-    .bar-column,
-    .bar-labels span {
-        width: 42px;
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto;
     }
 }
 
 @media (max-width: 1050px) {
-    .activity-grid {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto;
-    }
-
     .activity-header {
         grid-template-columns: 1fr;
         row-gap: 10px;
     }
 
-    .header-left {
-        justify-self: start;
-    }
-
+    .header-left,
     .activity-date {
         justify-self: start;
     }
 
-    .activity-icons {
-        justify-self: start;
+    .summary-content {
+        grid-template-columns: 1fr;
+    }
+
+    .donut-chart {
+        justify-self: center;
     }
 }
 
 @media (max-width: 700px) {
     .statistics-grid,
-    .form-grid,
-    .summary-content {
+    .form-grid {
         grid-template-columns: 1fr;
     }
 
@@ -688,23 +710,14 @@
         grid-column: auto;
     }
 
-    .donut-chart {
-        justify-self: center;
-    }
-
     .bar-plot,
     .bar-labels {
-        gap: 8px;
-        padding-left: 8px;
-        padding-right: 8px;
-    }
-
-    .bar-column,
-    .bar-labels span {
-        width: 34px;
+        gap: 5px;
+        padding-left: 6px;
+        padding-right: 6px;
     }
 
     .bar {
-        width: 24px;
+        width: min(24px, 70%);
     }
 }

@@ -7,7 +7,8 @@ from django.shortcuts import render
 
 import core
 from core import MainFacade
-from django_part.HealthOverview.views import add_demo_data_to_test_the_system
+
+from HealthOverview.views import get_or_create_facade
 
 
 def get_y_axis_labels(values: list[float | int], count: int = 4) -> list[float | int]:
@@ -49,22 +50,6 @@ def get_analysis_period_from_request(request: HttpRequest) -> tuple[str, str]:
         return start_date, end_date
 
     return get_default_analysis_period()
-
-
-def create_user_obj(request_data) -> core.User:
-    name = "Maks"
-    surname = "Skyba"
-    age = 18
-    sex = "Male"
-
-    user = core.User(name=name, surname=surname, age=age, sex=sex)
-    return user
-
-
-def create_facade_obj(user_obj: core.User) -> MainFacade:
-    facade = core.create_and_configure_facade_for_start(user_obj)
-    return facade
-
 
 def normalize_values_for_bars(values: list[float | int]) -> list[float]:
     if not values:
@@ -282,10 +267,7 @@ def build_analyses_context(
 
 @login_required
 def analyses(request: HttpRequest) -> HttpResponse:
-    user = create_user_obj(request.user)
-    facade = create_facade_obj(user)
-
-    add_demo_data_to_test_the_system(facade)
+    facade = get_or_create_facade(request)
 
     start_period, end_period = get_analysis_period_from_request(request)
 

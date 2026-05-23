@@ -11,136 +11,163 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block body_content %}
 
-<div class="form-page">
+<div class="daily-page">
 
-    <div class="form-page-date inter-Inter">
-        Today {{ dashboard_date }}
-    </div>
+    <header class="daily-header">
+        <div class="daily-header-left">
+            <h1>Daily Tracking</h1>
+            <p>Track your daily health</p>
+        </div>
 
-    <div class="form-page-title">
-        <h2 class="montserrat-Mont">Daily Tracking</h2>
-    </div>
+        <div class="daily-date">
+            {{ dashboard_date|date:"d.m.Y" }}
+        </div>
+    </header>
 
-    <div class="daily-tracking-layout">
+    <section class="daily-tracking-layout">
 
         <div class="daily-left-part">
 
-            <div class="panel water-sleep-panel">
-                <div class="white-wrapper-color-radius">
-                    <form method="post" class="form-card">
+            <div class="panel daily-panel">
+                <div class="white-wrapper-color-radius daily-card">
+                    <form method="post" class="daily-form">
                         {% csrf_token %}
                         <input type="hidden" name="form_type" value="water_sleep">
 
-                        <div class="form-card-header">
+                        <input type="hidden" name="current_water" value="{{ today_summary.water }}">
+                        <input type="hidden" name="current_sleep" value="{{ today_summary.sleep }}">
+                        <input type="hidden" name="current_weight" value="{{ today_summary.weight }}">
+                        <input type="hidden" name="current_height" value="{{ today_summary.height }}">
+                        <input type="hidden" name="current_fat_percentage" value="{{ today_summary.fat_percentage }}">
+
+                        <div class="daily-card-header">
                             <div>
-                                <div class="form-card-title montserrat-Mont">Water & Sleep</div>
-                                <div class="form-card-subtitle inter-Inter">Track your daily recovery</div>
+                                <h2>Water & Sleep</h2>
+                                <p>Add water or sleep for today</p>
                             </div>
-                            <div class="form-card-icon">W</div>
+
+                            <div class="daily-card-icon water-icon">W</div>
                         </div>
 
-                        <div class="form-fields-grid">
-                            <div class="input-box">
-                                <label class="form-label inter-Inter">Water</label>
-                                <div class="input-with-unit">
-                                    <input class="form-input" type="number" step="0.1" name="water" placeholder="1.5">
-                                    <span class="input-unit inter-Inter">L</span>
-                                </div>
-                            </div>
+                        <div class="daily-form-grid">
+                            <label class="daily-input-box">
+                                <span class="daily-input-label">Water</span>
 
-                            <div class="input-box">
-                                <label class="form-label inter-Inter">Sleep</label>
-                                <div class="input-with-unit">
-                                    <input class="form-input" type="number" step="0.1" name="sleep" placeholder="7.5">
-                                    <span class="input-unit inter-Inter">h</span>
+                                <div class="daily-input-with-unit">
+                                    <input type="number" step="0.1" name="water" placeholder="Add water">
+                                    <span>L</span>
                                 </div>
-                            </div>
+                            </label>
+
+                            <label class="daily-input-box">
+                                <span class="daily-input-label">Sleep</span>
+
+                                <div class="daily-input-with-unit">
+                                    <input type="number" step="0.1" name="sleep" placeholder="Add sleep">
+                                    <span>h</span>
+                                </div>
+                            </label>
                         </div>
 
-                        <button type="submit" class="form-button">Save</button>
+                        <button type="submit" class="daily-button">Save</button>
                     </form>
                 </div>
             </div>
 
-            <div class="panel body-panel">
-                <div class="white-wrapper-color-radius">
-                    <form method="post" class="form-card">
+            <div class="panel daily-panel">
+                <div class="white-wrapper-color-radius daily-card">
+                    <form method="post" class="daily-form">
                         {% csrf_token %}
                         <input type="hidden" name="form_type" value="body_metrics">
 
-                        <div class="form-card-header">
+                        <input type="hidden" name="current_water" value="{{ today_summary.water }}">
+                        <input type="hidden" name="current_sleep" value="{{ today_summary.sleep }}">
+                        <input type="hidden" name="current_weight" value="{{ today_summary.weight }}">
+                        <input type="hidden" name="current_height" value="{{ today_summary.height }}">
+                        <input type="hidden" name="current_fat_percentage" value="{{ today_summary.fat_percentage }}">
+
+                        <div class="daily-card-header">
                             <div>
-                                <div class="form-card-title montserrat-Mont">Body metrics</div>
-                                <div class="form-card-subtitle inter-Inter">Update your physical data</div>
+                                <h2>Body metrics</h2>
+                                <p>Update only the fields you need</p>
                             </div>
-                            <div class="form-card-icon">B</div>
+
+                            <div class="daily-card-icon body-icon">B</div>
                         </div>
 
-                        <div class="form-fields-grid body-fields-grid">
-                            <div class="input-box">
-                                <label class="form-label inter-Inter">Weight</label>
-                                <div class="input-with-unit">
-                                    <input class="form-input" type="number" step="0.1" name="weight" placeholder="87">
-                                    <span class="input-unit inter-Inter">kg</span>
-                                </div>
-                            </div>
+                        <div class="daily-form-grid body-grid">
+                            <label class="daily-input-box">
+                                <span class="daily-input-label">Weight</span>
 
-                            <div class="input-box">
-                                <label class="form-label inter-Inter">Height</label>
-                                <div class="input-with-unit">
-                                    <input class="form-input" type="number" step="0.1" name="height" placeholder="188">
-                                    <span class="input-unit inter-Inter">cm</span>
+                                <div class="daily-input-with-unit">
+                                    <input type="number" step="0.1" name="weight" placeholder="Update weight">
+                                    <span>kg</span>
                                 </div>
-                            </div>
+                            </label>
 
-                            <div class="input-box">
-                                <label class="form-label inter-Inter">Fat percentage</label>
-                                <div class="input-with-unit">
-                                    <input class="form-input" type="number" step="0.1" name="fat_percentage" placeholder="14">
-                                    <span class="input-unit inter-Inter">%</span>
+                            <label class="daily-input-box">
+                                <span class="daily-input-label">Height</span>
+
+                                <div class="daily-input-with-unit">
+                                    <input type="number" step="0.1" name="height" placeholder="Update height">
+                                    <span>cm</span>
                                 </div>
-                            </div>
+                            </label>
+
+                            <label class="daily-input-box">
+                                <span class="daily-input-label">Fat percentage</span>
+
+                                <div class="daily-input-with-unit">
+                                    <input type="number" step="0.1" name="fat_percentage" placeholder="Update fat">
+                                    <span>%</span>
+                                </div>
+                            </label>
                         </div>
 
-                        <button type="submit" class="form-button">Save</button>
+                        <button type="submit" class="daily-button">Save</button>
                     </form>
                 </div>
             </div>
 
-            <div class="panel medication-panel">
-                <div class="white-wrapper-color-radius">
-                    <form method="post" class="form-card">
+            <div class="panel daily-panel">
+                <div class="white-wrapper-color-radius daily-card">
+                    <form method="post" class="daily-form">
                         {% csrf_token %}
                         <input type="hidden" name="form_type" value="medication">
 
-                        <div class="form-card-header">
+                        <input type="hidden" name="current_water" value="{{ today_summary.water }}">
+                        <input type="hidden" name="current_sleep" value="{{ today_summary.sleep }}">
+                        <input type="hidden" name="current_weight" value="{{ today_summary.weight }}">
+                        <input type="hidden" name="current_height" value="{{ today_summary.height }}">
+                        <input type="hidden" name="current_fat_percentage" value="{{ today_summary.fat_percentage }}">
+
+                        <div class="daily-card-header">
                             <div>
-                                <div class="form-card-title montserrat-Mont">Medication</div>
-                                <div class="form-card-subtitle inter-Inter">Add medicine for today</div>
+                                <h2>Medication</h2>
+                                <p>Add medicine for today</p>
                             </div>
-                            <div class="form-card-icon">M</div>
+
+                            <div class="daily-card-icon medication-icon">M</div>
                         </div>
 
-                        <div class="form-fields-grid">
-                            <div class="input-box">
-                                <label class="form-label inter-Inter">Name</label>
-                                <input class="form-input" type="text" name="medication_name" placeholder="medicine">
-                            </div>
+                        <div class="daily-form-grid">
+                            <label class="daily-input-box">
+                                <span class="daily-input-label">Name</span>
+                                <input type="text" name="medication_name" placeholder="Medicine">
+                            </label>
 
-                            <div class="input-box">
-                                <label class="form-label inter-Inter">Time</label>
-                                <input class="form-input" type="time" name="medication_time">
-                            </div>
+                            <label class="daily-input-box">
+                                <span class="daily-input-label">Time</span>
+                                <input type="time" name="medication_time">
+                            </label>
                         </div>
 
-                        <button type="submit" class="form-button">Add</button>
+                        <button type="submit" class="daily-button">Add</button>
                     </form>
                 </div>
             </div>
@@ -149,52 +176,71 @@
 
         <div class="daily-right-part">
 
-            <div class="panel today-overview-panel">
-                <div class="white-wrapper-color-radius">
-                    <div class="right-card">
-                        <div class="form-card-title montserrat-Mont">Today overview</div>
+            <div class="panel daily-panel">
+                <div class="white-wrapper-color-radius daily-card">
+                    <div class="daily-info-card">
+                        <div class="daily-card-header">
+                            <div>
+                                <h2>Today overview</h2>
+                                <p>Your main records for today</p>
+                            </div>
+                        </div>
 
                         <div class="overview-grid">
                             <div class="overview-item">
-                                <div class="grey-square"></div>
-                                <div class="overview-label inter-Inter">Water</div>
-                                <div class="overview-value montserrat-Mont">{{ today_summary.water }} L</div>
+                                <div class="overview-marker water-marker">W</div>
+                                <div class="overview-text">
+                                    <p>Water</p>
+                                    <h3>{{ today_summary.water }} L</h3>
+                                </div>
                             </div>
 
                             <div class="overview-item">
-                                <div class="grey-square"></div>
-                                <div class="overview-label inter-Inter">Sleep</div>
-                                <div class="overview-value montserrat-Mont">{{ today_summary.sleep }} h</div>
+                                <div class="overview-marker sleep-marker">S</div>
+                                <div class="overview-text">
+                                    <p>Sleep</p>
+                                    <h3>{{ today_summary.sleep }} h</h3>
+                                </div>
                             </div>
 
                             <div class="overview-item">
-                                <div class="grey-square"></div>
-                                <div class="overview-label inter-Inter">Weight</div>
-                                <div class="overview-value montserrat-Mont">{{ today_summary.weight }} kg</div>
+                                <div class="overview-marker weight-marker">Kg</div>
+                                <div class="overview-text">
+                                    <p>Weight</p>
+                                    <h3>{{ today_summary.weight }} kg</h3>
+                                </div>
                             </div>
 
                             <div class="overview-item">
-                                <div class="grey-square"></div>
-                                <div class="overview-label inter-Inter">Fat</div>
-                                <div class="overview-value montserrat-Mont">{{ today_summary.fat_percentage }}%</div>
+                                <div class="overview-marker fat-marker">%</div>
+                                <div class="overview-text">
+                                    <p>Fat</p>
+                                    <h3>{{ today_summary.fat_percentage }}%</h3>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="panel progress-panel">
-                <div class="white-wrapper-color-radius">
-                    <div class="right-card">
-                        <div class="form-card-title montserrat-Mont">Daily progress</div>
+            <div class="panel daily-panel">
+                <div class="white-wrapper-color-radius daily-card">
+                    <div class="daily-info-card">
+                        <div class="daily-card-header">
+                            <div>
+                                <h2>Daily progress</h2>
+                                <p>Progress toward your daily goals</p>
+                            </div>
+                        </div>
 
                         <div class="progress-list">
 
                             <div class="progress-row">
                                 <div class="progress-row-top">
-                                    <span class="inter-Inter">Water goal</span>
-                                    <span class="montserrat-Mont">{{ progress.water_percent }}%</span>
+                                    <span>Water goal</span>
+                                    <strong>{{ progress.water_percent }}%</strong>
                                 </div>
+
                                 <div class="progress-track">
                                     <div class="progress-fill" style="width: {{ progress.water_percent }}%;"></div>
                                 </div>
@@ -202,9 +248,10 @@
 
                             <div class="progress-row">
                                 <div class="progress-row-top">
-                                    <span class="inter-Inter">Sleep goal</span>
-                                    <span class="montserrat-Mont">{{ progress.sleep_percent }}%</span>
+                                    <span>Sleep goal</span>
+                                    <strong>{{ progress.sleep_percent }}%</strong>
                                 </div>
+
                                 <div class="progress-track">
                                     <div class="progress-fill" style="width: {{ progress.sleep_percent }}%;"></div>
                                 </div>
@@ -212,9 +259,10 @@
 
                             <div class="progress-row">
                                 <div class="progress-row-top">
-                                    <span class="inter-Inter">Body data</span>
-                                    <span class="montserrat-Mont">{{ progress.body_data_percent }}%</span>
+                                    <span>Body data</span>
+                                    <strong>{{ progress.body_data_percent }}%</strong>
                                 </div>
+
                                 <div class="progress-track">
                                     <div class="progress-fill" style="width: {{ progress.body_data_percent }}%;"></div>
                                 </div>
@@ -225,21 +273,30 @@
                 </div>
             </div>
 
-            <div class="panel recent-panel">
-                <div class="white-wrapper-color-radius">
-                    <div class="right-card">
-                        <div class="form-card-title montserrat-Mont">Recent records</div>
+            <div class="panel daily-panel">
+                <div class="white-wrapper-color-radius daily-card">
+                    <div class="daily-info-card">
+                        <div class="daily-card-header">
+                            <div>
+                                <h2>Recent records</h2>
+                                <p>Latest data added today</p>
+                            </div>
+                        </div>
 
                         <div class="recent-list">
                             {% if recent_records %}
                                 {% for record in recent_records %}
                                     <div class="recent-item">
                                         <div class="recent-dot"></div>
+
                                         <div class="recent-info">
-                                            <div class="recent-title inter-Inter">{{ record.title }}</div>
-                                            <div class="recent-time inter-Inter">{{ record.time }}</div>
+                                            <h3>{{ record.title }}</h3>
+                                            <p>{{ record.time }}</p>
                                         </div>
-                                        <div class="recent-value montserrat-Mont">{{ record.value }}</div>
+
+                                        <div class="recent-value">
+                                            {{ record.value }}
+                                        </div>
                                     </div>
                                 {% endfor %}
                             {% else %}
@@ -252,7 +309,7 @@
 
         </div>
 
-    </div>
+    </section>
 
 </div>
 

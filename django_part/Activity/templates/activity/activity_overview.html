@@ -7,6 +7,7 @@
 
 {% block css_styles %}
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'reusable_classes.css' %}">
     <link rel="stylesheet" href="{% static 'activity/activity.css' %}">
 {% endblock %}
 
@@ -23,16 +24,6 @@
         <div class="activity-date">
             {{ current_date }}
         </div>
-
-        <div class="activity-icons">
-            <div class="activity-icon-circle">
-                <img src="{% static 'images/Notification.svg' %}" alt="Notification">
-            </div>
-
-            <div class="activity-icon-circle">
-                <img src="{% static 'images/Profile.svg' %}" alt="Profile">
-            </div>
-        </div>
     </header>
 
     <section class="activity-grid">
@@ -43,7 +34,7 @@
                     <div class="white-wrapper-color-radius chart-card">
 
                         <div class="card-title-row">
-                            <div>
+                            <div class="card-title-text">
                                 <h2>Activity period</h2>
                                 <p>Calories burned during the selected period</p>
                             </div>
@@ -57,11 +48,6 @@
                                 <a href="{% url 'activity_overview' %}?period=1m"
                                    class="{% if active_period == '1m' %}active{% endif %}">
                                     1m
-                                </a>
-
-                                <a href="{% url 'activity_overview' %}?period=1y"
-                                   class="{% if active_period == '1y' %}active{% endif %}">
-                                    1y
                                 </a>
                             </div>
                         </div>
@@ -120,7 +106,14 @@
 
                             <div class="stat-content">
                                 <p>Best calorie day</p>
-                                <h3>{{ best_calories_day }}</h3>
+
+                                <h3>
+                                    {{ best_calories_day }}
+                                    {% if best_calories_date %}
+                                        <span class="stat-date">{{ best_calories_date }}</span>
+                                    {% endif %}
+                                </h3>
+
                                 <span>{{ best_calories_value }} kcal</span>
                             </div>
                         </div>
@@ -132,7 +125,14 @@
 
                             <div class="stat-content">
                                 <p>Lowest calorie day</p>
-                                <h3>{{ lowest_calories_day }}</h3>
+
+                                <h3>
+                                    {{ lowest_calories_day }}
+                                    {% if lowest_calories_date %}
+                                        <span class="stat-date">{{ lowest_calories_date }}</span>
+                                    {% endif %}
+                                </h3>
+
                                 <span>{{ lowest_calories_value }} kcal</span>
                             </div>
                         </div>
@@ -174,8 +174,6 @@
                                         this week
                                     {% elif active_period == '1m' %}
                                         this month
-                                    {% elif active_period == '1y' %}
-                                        this year
                                     {% else %}
                                         selected period
                                     {% endif %}
@@ -206,17 +204,17 @@
                 <div class="summary-content-background">
                     <div class="white-wrapper-color-radius summary-card">
 
-                        <h2>Activity summary</h2>
+                        <h2>Workout summary</h2>
 
                         <div class="summary-content">
 
                             <div class="summary-text">
                                 <p>
-                                    This chart shows how your time is distributed across different activities.
+                                    This chart shows how your workout time is distributed across physical activities.
                                 </p>
 
                                 <p>
-                                    Use it to understand your balance and focus on what matters most.
+                                    Use it to understand your training balance and focus on the activities that matter most.
                                 </p>
                             </div>
 
@@ -233,7 +231,7 @@
                                         <span class="legend-percent">{{ activity.percent }}%</span>
                                     </div>
                                 {% empty %}
-                                    <p class="empty-message">No activity summary</p>
+                                    <p class="empty-message">No workout summary</p>
                                 {% endfor %}
                             </div>
 
@@ -253,6 +251,8 @@
 
                         <form class="workout-form" method="post">
                             {% csrf_token %}
+
+                            <input type="hidden" name="form_type" value="add_activity">
 
                             <div class="form-grid">
 
@@ -274,7 +274,7 @@
 
                                     <div class="input-content">
                                         <span class="input-label">Date</span>
-                                        <input type="date" name="date_of_activity">
+                                        <input type="date" name="activity_date">
                                     </div>
                                 </label>
 
@@ -307,7 +307,7 @@
 
                                     <div class="input-content">
                                         <span class="input-label">Burned calories</span>
-                                        <input type="number" name="burned_calories" placeholder="Enter calories">
+                                        <input type="number" step="1" name="burned_calories" placeholder="Enter calories">
                                     </div>
                                 </label>
 
